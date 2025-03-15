@@ -36,6 +36,8 @@ public class CharStats : MonoBehaviour
     public delegate void DeathEvent();
     public event DeathEvent deathEvent;
 
+    // TODO: XP, level, (encumberance?)
+
 
     public void Start()
     {

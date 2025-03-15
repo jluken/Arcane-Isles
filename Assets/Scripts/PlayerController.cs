@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -9,7 +10,18 @@ public class PlayerController : MonoBehaviour
     private int maxParty = 4;
     public List<(CharStats, bool)> party;  // Char and if selected
 
+    public List<CharStats> startParty;
+
     public UIScript uIScript;
+
+    public void Start()
+    {
+        party = new List<(CharStats, bool)>();
+        for (int i = 0; i < startParty.Count; i++)
+        {
+            party.Add((startParty[i], true));
+        }
+    }
 
 
     public bool AddPlayer(CharStats player, int playerSlot = 3)
@@ -54,13 +66,6 @@ public class PlayerController : MonoBehaviour
     public GameObject CurrentSelectedLeader()
     {
         return selectedParty()[0].gameObject;
-    }
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
     }
 
     // Update is called once per frame

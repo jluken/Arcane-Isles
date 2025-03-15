@@ -27,7 +27,7 @@ public class ItemScript : Selectable
         
     }
 
-    public override void Activate()
+    public override void Interact()
     {
         int leftOver = inventoryManager.AddNewItem(itemData, stackSize);
         stackSize = leftOver;

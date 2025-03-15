@@ -4,5 +4,5 @@ using UnityEngine.UI;
 
 public class ButtonScript : MonoBehaviour
 {
-    public TMP_Text buttonText;
+    public TMP_Text buttonText;  
 }

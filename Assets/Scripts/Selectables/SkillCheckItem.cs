@@ -27,7 +27,21 @@ public class SkillCheckItem : Selectable
         base.Start();
     }
 
-    public override void Activate()
+    public override List<(string, Action)> Actions()
+    {
+        var acts = new List<(string, Action)>();
+        acts.Add(("Check Item", SkillCheckTarget));
+
+        return acts;
+    }
+
+    public void SkillCheckTarget()
+    {
+        base.SetTarget();
+        base.SetInteractAction(() => { SkillCheck(); });
+    }
+
+    public void SkillCheck()
     {
         Debug.Log("Activate check item");
         SkillCheckManager.successEvent += successListener;

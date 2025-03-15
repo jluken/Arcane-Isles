@@ -17580,7 +17580,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 
+  selectActions: 0000000000000000
   itemData: {fileID: 11400000, guid: 2a44f5dfb2b097d46981986dd7256619, type: 2}
   skillCheck: {fileID: 11400000, guid: 3d1425243a17c1f4982aa1a62f53d6b1, type: 2}
   stackSize: 1
@@ -29921,9 +29921,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef24ef82df93701458c0a537a9c3ddc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetSelectableObj: {fileID: 0}
-  hoverObj: {fileID: 0}
-  mover: {fileID: 1534538499}
 --- !u!4 &1433356187
 Transform:
   m_ObjectHideFlags: 0
@@ -30161,7 +30158,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2c12cbde26f70f4a94909327a5df935, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uIScript: {fileID: 0}
+  startParty:
+  - {fileID: 1534538502}
+  uIScript: {fileID: 672209784}
 --- !u!4 &1463809791
 Transform:
   m_ObjectHideFlags: 0
@@ -40788,6 +40787,7 @@ GameObject:
   - component: {fileID: 1955702649}
   - component: {fileID: 1955702648}
   - component: {fileID: 1955702651}
+  - component: {fileID: 1955702652}
   m_Layer: 9
   m_Name: Floor
   m_TagString: Untagged
@@ -40916,6 +40916,18 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 58884771b8c334d4bb17bc48b51a8460, type: 2}
   m_BuildHeightMesh: 0
+--- !u!114 &1955702652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1955702646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc2ded74259f1af4684a19d5e6e05db7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1957346458
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41593,7 +41605,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 016ea6da0867b7f419f750b880320878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryMenu: {fileID: 0}
+  inventoryMenu: {fileID: 1537391772}
   ItemSOs:
   - {fileID: 11400000, guid: 5175460b9b96cef47bbc4b0fa9b69f5d, type: 2}
   player: {fileID: 1534538492}

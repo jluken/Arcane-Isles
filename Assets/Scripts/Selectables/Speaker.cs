@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -15,7 +16,7 @@ public class Speaker : Selectable
 
     private string description = "Hello World!";
 
-    public void Start()
+    public override void Start()
     {
         textLogText = textLog.GetComponent<TextLog>();
         itemPopUp.SetActive(false);
@@ -25,7 +26,7 @@ public class Speaker : Selectable
         base.Start();
     }
 
-    public override void Select()
+    public void Inspect()
     {
 
         textLogText.AddText(description);
@@ -43,10 +44,18 @@ public class Speaker : Selectable
         itemPopUp.SetActive(false); // TODO: fade out animation?
     }
 
-    public override void Talk()
+    public override List<(string, Action)> Actions()
+    {
+        var acts = new List<(string, Action)>();
+        acts.Add(("Inspect", Inspect));
+        acts.Add(("Talk", Talk));
+
+        return acts;
+    }
+
+    public void Talk()
     {
         base.SetTarget();
-        //Action act = () => { dialogueBox.ActivateChat(dialogue, charStats.charImage); };
-        base.SetActivateAction(() => { dialogueBox.ActivateChat(dialogue, null); });
+        base.SetInteractAction(() => { dialogueBox.ActivateChat(dialogue, null); });
     }
 }

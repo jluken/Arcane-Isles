@@ -5,6 +5,7 @@ using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
 
 public class SelectMenu : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class SelectMenu : MonoBehaviour
     private List<GameObject> buttons;
 
     private bool menuOpen;
+    private bool frameDelay;
 
     void Start()
     {
@@ -28,19 +30,22 @@ public class SelectMenu : MonoBehaviour
     {
         // TODO: put this in controller somehow? Allow for immediate right clicking on new thing while first menu is open?
         RaycastHit hit;
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, -1, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1))
+        if (frameDelay && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, -1, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1))
         {
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {
                 DeactivateMenu();
             }
         }
+        if(menuOpen) frameDelay = true;
     }
 
     public void DeactivateMenu()
     {
+        Debug.Log("Deactivate menu");
         menu.SetActive(false);
         menuOpen = false;
+        frameDelay = false;
         cam.GetComponent<camScript>().CamHalt(false); // TODO: this should be handled by UI manager
         foreach (GameObject button in buttons)
         {
@@ -49,16 +54,18 @@ public class SelectMenu : MonoBehaviour
         buttons = new List<GameObject>();
     }
 
-    public void ActivateMenu(Vector3 pos, Dictionary<string, Action> actionList)
+    public void ActivateMenu(Vector3 pos, List<(string, Action)> actionList)
     {
         menu.SetActive(true);
         menuOpen = true;
         cam.GetComponent<camScript>().CamHalt(true);
         int i = 0;
-        foreach (KeyValuePair<string, Action> entry in actionList) {  // TODO: possibly make list of tuples to preserve order
+        Debug.Log("action list: ");
+        foreach ((string, Action) entry in actionList) {  // TODO: possibly make list of tuples to preserve order
+            Debug.Log(entry.Item1);
             buttons.Add(Instantiate(menuButtonPrefab, gameObject.transform));
-            buttons[i].GetComponent<ButtonScript>().buttonText.text = entry.Key;
-            buttons[i].GetComponent<Button>().onClick.AddListener(() => entry.Value.Invoke());
+            buttons[i].GetComponent<ButtonScript>().buttonText.text = entry.Item1;
+            buttons[i].GetComponent<Button>().onClick.AddListener(() => entry.Item2.Invoke());
             buttons[i].GetComponent<Button>().onClick.AddListener(() => DeactivateMenu());
             buttons[i].transform.SetParent(menu.transform);
             i++;

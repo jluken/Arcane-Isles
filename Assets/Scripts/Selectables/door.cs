@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
 
@@ -9,19 +11,33 @@ public class doorway : Selectable
 
     private NavMeshSurface surface;
 
-    private void Start()
+    public override void Start()
     {
         surface = GameObject.Find("Floor").GetComponent<NavMeshSurface>();
         door.SetActive(!open);
         base.Start();
     }
 
-    public override void Activate()
+    public override List<(string, Action)> Actions()
+    {
+        var acts = new List<(string, Action)>();
+        if (open) acts.Add(("Close", DoorTarget));
+        else acts.Add(("Open", DoorTarget));
+
+        return acts;
+    }
+
+    public void DoorTarget()
+    {
+        Debug.Log("Door Target");
+        base.SetTarget();
+        base.SetInteractAction(() => { OpenClose();});
+    }
+
+    public void OpenClose()
     {
         Debug.Log("activate door");
         open = !open;
         door.SetActive(!open);
-        //surface.BuildNavMesh();
-        base.Activate();
     }
 }

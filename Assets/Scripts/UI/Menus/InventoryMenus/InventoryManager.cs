@@ -62,7 +62,7 @@ public class InventoryManager : MonoBehaviour
 
     public void DeactivateInventory()
     {
-        controller.targetSelectableObj = null;
+        controller.NewSelection();
         currentInventory = null;
         menuActivated?.SetActive(false);
         ui.GetComponent<UIScript>().ActivateUI();

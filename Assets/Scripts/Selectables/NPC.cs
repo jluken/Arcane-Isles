@@ -18,24 +18,26 @@ public class NPC : Selectable
         inventory = gameObject.GetComponent<EntityInventory>();
         base.Start();
     }
-    public override void Activate()
+
+    public override List<(string, Action)> Actions()
     {
-        //Talk();
-        base.Activate();
-        base.Deselect(); // TODO: handle "deselection" better
+        var acts = new List<(string, Action)>();
+        acts.Add(("Talk", Talk));
+        acts.Add(("Trade", Trade));
+        return acts;
     }
 
-    public override void Talk()
+    public void Talk()
     {
         base.SetTarget();
         //Action act = () => { dialogueBox.ActivateChat(dialogue, charStats.charImage); };
-        base.SetActivateAction(() => { dialogueBox.ActivateChat(dialogue, charStats.charImage); });
+        base.SetInteractAction(() => { dialogueBox.ActivateChat(dialogue, charStats.charImage); });
     }
 
-    public override void Trade()
+    public void Trade()
     {
         //inventoryManager.ActivateInventory(inventory);
         base.SetTarget();
-        base.SetActivateAction(() => { inventoryManager.ActivateInventory(inventory); });
+        base.SetInteractAction(() => { inventoryManager.ActivateInventory(inventory); });
     }
 }
