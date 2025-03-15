@@ -995,7 +995,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 1.5, y: 0, z: 0}
-  selectActions: 
 --- !u!224 &44897826 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 9204340057094480080, guid: 409aec0816ce2c640a067ece11e4fb82, type: 3}
@@ -1373,7 +1372,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 
   itemData: {fileID: 11400000, guid: 2a44f5dfb2b097d46981986dd7256619, type: 2}
   stackSize: 1
 --- !u!54 &66077714
@@ -5549,7 +5547,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 
   open: 0
   door: {fileID: 1921501356}
 --- !u!23 &276862658
@@ -13255,7 +13252,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 
 --- !u!114 &605977425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17361,7 +17357,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 01000000
   textLog: {fileID: 21670390}
   itemPopUp: {fileID: 517379820}
   dialogueBox: {fileID: 1361729618}
@@ -17451,7 +17446,7 @@ Transform:
   m_GameObject: {fileID: 772118976}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.58, y: -0.84, z: -8.08}
+  m_LocalPosition: {x: -0.247, y: -0.84, z: -6.353}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17580,7 +17575,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 0000000000000000
   itemData: {fileID: 11400000, guid: 2a44f5dfb2b097d46981986dd7256619, type: 2}
   skillCheck: {fileID: 11400000, guid: 3d1425243a17c1f4982aa1a62f53d6b1, type: 2}
   stackSize: 1
@@ -18079,7 +18073,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 
 --- !u!114 &818298410 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8481372413926403330, guid: 409aec0816ce2c640a067ece11e4fb82, type: 3}
@@ -19033,7 +19026,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 0100000002000000
   dialogueBox: {fileID: 1361729618}
   dialogue:
   - Hi there!
@@ -20219,7 +20211,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0.31, y: 0, z: 0}
-  selectActions: 
 --- !u!1001 &944447229
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21822,7 +21813,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 
   itemData: {fileID: 11400000, guid: f943ec78084539848a4f4a960afdebb7, type: 2}
   stackSize: 1
 --- !u!114 &1060246971
@@ -33756,7 +33746,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: 0, z: 0}
-  selectActions: 
   itemData: {fileID: 11400000, guid: abfee545eda31c841bb302cdd2879e3d, type: 2}
   stackSize: 1
 --- !u!114 &1605794114
@@ -40143,7 +40132,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standPoint: {x: 0, y: -1, z: 0}
-  selectActions: 
   open: 0
   door: {fileID: 1921501356}
 --- !u!208 &1921501362

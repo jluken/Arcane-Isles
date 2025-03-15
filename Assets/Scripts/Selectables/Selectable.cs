@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -17,10 +18,14 @@ public class Selectable : MonoBehaviour
 
     private Action interactAction;
 
-    private Color natColor;
-
     private PlayerController playerController;
     private SelectMenu selectMenu;
+
+    public string description;
+    private IEnumerator displayRoutine;
+    public GameObject itemPopUp;
+    public GameObject textLog; // TODO: should be able to get this from UI Manager
+    private TextLog textLogText;
 
     private void Awake()
     {
@@ -30,11 +35,14 @@ public class Selectable : MonoBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
-        natColor = GetComponent<Renderer>().material.color;
         controller = GameObject.Find("Controller").GetComponent<Controller>();
         controller.selectEvent += Deselect;
         playerController = GameObject.Find("PlayerController").GetComponent<PlayerController>();
         selectMenu = GameObject.Find("SelectMenu").GetComponent<SelectMenu>();
+
+        if (textLog != null) textLogText = textLog.GetComponent<TextLog>(); // TODO: should be able to get this from UI Manager
+        displayRoutine = DisplayText();
+        //itemPopUp = GameObject.Find("sharedpopup"); // TODO: use prefab manager to create these instead
         selected = false;
     }
 
@@ -101,7 +109,6 @@ public class Selectable : MonoBehaviour
 
     public void SetTarget()
     {
-        Debug.Log("Set Target");
         controller.NewSelection();
         selected = true;
         var currentLeader = playerController.CurrentSelectedLeader().GetComponent<MoveToClick>(); 
@@ -110,14 +117,11 @@ public class Selectable : MonoBehaviour
 
     public void SetInteractAction(Action activeAct)
     {
-        Debug.Log("Set interact " + activeAct);
         interactAction = activeAct;
     }
 
     public void Deselect()
     {
-        //GetComponent<Renderer>().material.color = natColor;
-        Debug.Log("Deselect");
         interactAction = null;
         selected = false;
         Deactivate();
@@ -125,11 +129,31 @@ public class Selectable : MonoBehaviour
 
     public virtual List<(string, Action)> Actions()
     {
-        // Return the actions that the menu will need
         var acts = new List<(string, Action)>();
         acts.Add(("Go Here", SetTarget));
         
         return acts;
+    }
+
+    public void Inspect()
+    {
+
+        textLogText.AddText(description); // TODO: Consolidate Text updates into event controller
+
+        StopCoroutine(displayRoutine);
+        displayRoutine = DisplayText();
+        StartCoroutine(displayRoutine);
+    }
+
+    IEnumerator DisplayText()
+    {
+        Debug.Log("is itempopup " + (itemPopUp != null));  // TODO: instantiate as child from prefab
+        var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
+        itemPopUp.transform.localPosition = new Vector3(0, (height / 2) + 2, 0);
+        itemPopUp.GetComponent<TMP_Text>().text = description;
+        itemPopUp.SetActive(true);
+        yield return new WaitForSeconds(3);
+        itemPopUp.SetActive(false); // TODO: fade out animation?
     }
 
 }

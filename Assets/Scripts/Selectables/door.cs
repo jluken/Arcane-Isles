@@ -23,6 +23,7 @@ public class doorway : Selectable
         var acts = new List<(string, Action)>();
         if (open) acts.Add(("Close", DoorTarget));
         else acts.Add(("Open", DoorTarget));
+        acts.Add(("Inspect", base.Inspect));
 
         return acts;
     }
