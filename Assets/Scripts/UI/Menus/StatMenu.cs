@@ -11,7 +11,7 @@ public class StatMenu : MonoBehaviour
 
     public TMP_Text vigorText;
     public TMP_Text finesseText;
-    public TMP_Text witText;
+    public TMP_Text psycheText;
 
     public TMP_Text skillsText;
 
@@ -20,23 +20,22 @@ public class StatMenu : MonoBehaviour
     { 
         charStats = player.GetComponent<CharStats>();
         UpdateStatData();
-        charStats.updateStatEvent += UpdateStatData;
     }
 
     // Update is called once per frame
     void UpdateStatData()
     {
         Debug.Log("Update stat text");
-        Debug.Log("Vigor: " + charStats.currVigor());
+        Debug.Log("Vigor: " + charStats.GetCurrStat(CharStats.StatVal.vigor));
         playerName.text = charStats.charName;
-        vigorText.text = "Vigor: " + charStats.currVigor();
-        finesseText.text = "Finesse: " + charStats.currFinesse();
-        witText.text = "Wit: " + charStats.currWit();
+        vigorText.text = "Vigor: " + charStats.GetCurrStat(CharStats.StatVal.vigor);
+        finesseText.text = "Finesse: " + charStats.GetCurrStat(CharStats.StatVal.finesse);
+        psycheText.text = "Psyche: " + charStats.GetCurrStat(CharStats.StatVal.psyche);
 
         string skillText = "";
-        foreach (SkillCheckManager.Skill skill in Enum.GetValues(typeof(SkillCheckManager.Skill)))
+        foreach (CharStats.StatVal skill in Enum.GetValues(typeof(CharStats.StatVal)))
         {
-            skillText += skill.ToString() + " " + charStats.getSkill(skill) + "\n";
+            skillText += skill.ToString() + " " + charStats.GetCurrStat(skill) + "\n";
         }
         skillsText.text = skillText;
 

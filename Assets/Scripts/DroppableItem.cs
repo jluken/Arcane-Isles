@@ -12,24 +12,25 @@ public class ItemScript : Selectable
     public int stackSize = 1;
 
 
-    private InventoryManager inventoryManager;
+    private EntityInventory playerInventory;
 
     // Start is called before the first frame update
     public override void Start()
     {
-        inventoryManager = GameObject.Find("InventoryCanvas").GetComponent<InventoryManager>();
+        playerInventory = GameObject.Find("Player").GetComponent<EntityInventory>();  // TODO: use singleton after player/companion update
         base.Start();
+        Debug.Log("Droppable started");
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    //void Update()
+    //{
         
-    }
+    //}
 
     public override void Interact()
     {
-        int leftOver = inventoryManager.AddNewItem(itemData, stackSize);
+        int leftOver = playerInventory.AddNewItem(itemData, stackSize);
         stackSize = leftOver;
         if (stackSize <= 0)
         {

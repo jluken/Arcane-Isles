@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
 
@@ -15,7 +17,7 @@ public class EntityInventory : MonoBehaviour
     public int money;
     public bool merchant;
 
-    public void SetInventory(int idx, InventoryData itemData, int count)
+    public void SetInventory(int idx, InventoryData itemData, int count=1)
     {
         if (count == 0) itemData = null;
         inventoryTypes[idx] = itemData;
@@ -37,20 +39,16 @@ public class EntityInventory : MonoBehaviour
         return equipment[idx];
     }
 
-    public Dictionary<InventoryData.StatToChange, int> GetStatMods()
+    public Dictionary<CharStats.StatVal, int> GetEquipmentStatMods()
     {
-        var modifiers = new Dictionary<InventoryData.StatToChange, int>();
-        modifiers[InventoryData.StatToChange.stamina] = 0;
-        modifiers[InventoryData.StatToChange.finesse] = 0;
-        modifiers[InventoryData.StatToChange.wit] = 0;
-        modifiers[InventoryData.StatToChange.health] = 0;
-        modifiers[InventoryData.StatToChange.vigor] = 0;
+        var modifiers = new Dictionary<CharStats.StatVal, int>();
         for (int i = 0; i < equipment.Length; i++)
         {
             if (equipment[i] == null) continue;
-            for (int j = 0; j < equipment[i].statsToChange.Length; j++)
+            foreach (var equipStat in equipment[i].equipStats)
             {
-                modifiers[equipment[i].statsToChange[j]] += (int)equipment[i].statChanges[j];
+                if (!modifiers.ContainsKey(equipStat.equipStat)) modifiers[equipStat.equipStat] = 0;
+                modifiers[equipStat.equipStat] += equipStat.value;
             }
         }
         return modifiers;
@@ -59,5 +57,41 @@ public class EntityInventory : MonoBehaviour
     public void Deselect()
     {
 
+    }
+
+    public int AddNewItem(InventoryData itemData, int newStackSize=1)
+    {
+        for (int i = 0; i < EntityInventory.invSize; i++)
+        {
+            if (GetInventory(i).Item2 == 0)
+            {
+                Debug.Log("empty stack " + i);
+                int transferStack = Math.Min(itemData.maxStackSize, newStackSize);
+                //ItemSlots[i].AddItem(itemData, transferStack, true);
+                SetInventory(i, itemData, transferStack);
+                newStackSize -= transferStack;
+            }
+            else if (GetInventory(i).Item1 == itemData)
+            {
+                Debug.Log("Same data in " + i + " for " + itemData.itemName);
+                int currentStack = GetInventory(i).Item2;
+                int freeSpace = itemData.maxStackSize - currentStack;
+                int transferStack = Math.Min(freeSpace, newStackSize);
+                //ItemSlots[i].AddItem(itemData, transferStack);
+                SetInventory(i, itemData, currentStack + transferStack);
+                newStackSize -= transferStack;
+            }
+
+            if (newStackSize <= 0) return 0;
+        }
+        //if (menuActivated != null) { ActivateInventory(currentContainer); } // Update menu if currently open
+        return newStackSize;
+    }
+
+    public float getEncumberance()
+    {
+        var invWeight = Enumerable.Range(0, invSize).Where(i => inventoryCounts[i] > 0).Select(i => inventoryTypes[i].weight * inventoryCounts[i]).Sum();
+        var equippedWeight = Enumerable.Range(0, 4).Where(i => equipment[i] != null).Select(i => equipment[i].weight).Sum();
+        return invWeight + equippedWeight;
     }
 }

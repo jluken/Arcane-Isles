@@ -7,12 +7,14 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     // TODO: allow moving ordering of players using draggable object code; handle in UI code?
+
+    // TODO: will need to rework if there is always just one "main" character and you can order companions
     private int maxParty = 4;
     public List<(CharStats, bool)> party;  // Char and if selected
 
     public List<CharStats> startParty;
 
-    public UIScript uIScript;
+    public DefaultUI uIScript;
 
     public void Start()
     {
@@ -30,7 +32,7 @@ public class PlayerController : MonoBehaviour
         if (playerSlot > party.Count) playerSlot = party.Count;
 
         party.Insert(playerSlot, (player, false));
-        uIScript.UpdateStats();  // TODO: event subscription instead?
+        uIScript.UpdateStats();
         return true;
     }
 

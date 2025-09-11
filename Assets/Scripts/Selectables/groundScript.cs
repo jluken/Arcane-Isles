@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 public class groundScript : MonoBehaviour
 {
-    private Controller controller;
+    //private SelectionController controller;
 
     private PlayerController playerController;
 
@@ -12,7 +12,7 @@ public class groundScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
     {
-        controller = GameObject.Find("Controller").GetComponent<Controller>();
+        //controller = SelectionController.Instance;
         playerController = GameObject.Find("PlayerController").GetComponent<PlayerController>();
     }
 
@@ -35,7 +35,7 @@ public class groundScript : MonoBehaviour
 
     public void SetTarget(Vector3 dest)
     {
-        controller.NewSelection();
+        SelectionController.Instance.NewSelection();
         var currentLeader = playerController.CurrentSelectedLeader().GetComponent<MoveToClick>();
         currentLeader.SetDestination(dest); // TODO: Will need to handle more complex navigation; possibly update MoveToClick to handle parties
     }

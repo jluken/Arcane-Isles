@@ -5,16 +5,15 @@ using UnityEngine;
 
 public class NPC : Selectable
 {
-    public DialogueBox dialogueBox;
+    private UIController ui;
     private CharStats charStats;
-    private InventoryManager inventoryManager;
     private EntityInventory inventory;
 
     public List<string> dialogue;
     public override void Start()
     {
+        ui = UIController.Instance;
         charStats = gameObject.GetComponent<CharStats>();
-        inventoryManager = GameObject.Find("InventoryCanvas").GetComponent<InventoryManager>();
         inventory = gameObject.GetComponent<EntityInventory>();
         base.Start();
     }
@@ -31,13 +30,13 @@ public class NPC : Selectable
     {
         base.SetTarget();
         //Action act = () => { dialogueBox.ActivateChat(dialogue, charStats.charImage); };
-        base.SetInteractAction(() => { dialogueBox.ActivateChat(dialogue, charStats.charImage); });
+        base.SetInteractAction(() => { ui.ActivateDialog(dialogue, charStats.charImage); });
     }
 
     public void Trade()
     {
         //inventoryManager.ActivateInventory(inventory);
         base.SetTarget();
-        base.SetInteractAction(() => { inventoryManager.ActivateInventory(inventory); });
+        base.SetInteractAction(() => { ui.ActivateTradeScreen(inventory); });
     }
 }

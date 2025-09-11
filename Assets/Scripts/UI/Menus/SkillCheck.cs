@@ -8,10 +8,9 @@ using UnityEngine.Events;
 [CreateAssetMenu(fileName = "SkillCheck", menuName = "Scriptable Objects/SkillCheck")]
 public class SkillCheck : ScriptableObject
 {
-    public SkillCheckManager.Ability ability;
     public int dc;
 
-    public SkillCheckManager.Skill skill;
+    public CharStats.StatVal skill;
     public List<string> modifiers;
 
     private GameObject player;
@@ -25,9 +24,8 @@ public class SkillCheck : ScriptableObject
         playerStats = player.GetComponent<CharStats>();
 
         
-        (string, int)[] abilitySkillScores = { (ability.ToString(), playerStats.getAbility(ability)),
-        (skill.ToString(), playerStats.getSkill(skill))};
-        skillCheckManager.ActivateSkillCheck(ability, dc, abilitySkillScores.Concat(GetModifiers(modifiers)).ToArray());
+        (string, int)[] abilitySkillScores = { (skill.ToString(), playerStats.GetCurrStat(skill)) };
+        skillCheckManager.ActivateSkillCheck(skill, dc, abilitySkillScores.Concat(GetModifiers(modifiers)).ToArray());
     }
 
 

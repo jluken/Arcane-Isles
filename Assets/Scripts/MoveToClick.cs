@@ -12,7 +12,7 @@ public class MoveToClick : MonoBehaviour
 
     private string[] interactTags = { "object", "npc" };
     //private GameObject target;
-    public Controller controller;
+    //private SelectionController selectionController;
     public float activateDist = 1.0f;
     public GameObject destMarkerPrefab;
     private GameObject destMarker;
@@ -26,6 +26,7 @@ public class MoveToClick : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        //selectionController = SelectionController.Instance;
         stopCount = 0;
     }
 
@@ -101,7 +102,7 @@ public class MoveToClick : MonoBehaviour
 
     public void SetDestination(Vector3 dest)
     {
-        agent.SetDestination(dest);
+        agent.SetDestination(dest);  // TODO: will need to rework for companions
         Destroy(destMarker);
         destMarker = Instantiate(destMarkerPrefab, agent.destination, destMarkerPrefab.transform.rotation);
     }

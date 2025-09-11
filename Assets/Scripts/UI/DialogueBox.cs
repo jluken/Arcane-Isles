@@ -3,12 +3,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogueBox : MonoBehaviour // TODO: handle more complex behavior like trees and updating char pic with dialogueTree system
+public class DialogueBox : MenuScreen // TODO: handle more complex behavior like trees and updating char pic with dialogueTree system
 {
+    public static DialogueBox Instance { get; private set; }
+
     public GameObject chatBox;
     public TMP_Text textContent;
     public GameObject speakerImg;
-    public UIScript ui;
+    private UIController ui;
 
     public List<string> textEntries;
 
@@ -21,12 +23,17 @@ public class DialogueBox : MonoBehaviour // TODO: handle more complex behavior l
     //{
     //    ActivateChat(new List<string>() { "Prime the textbox", "iterate" }, null);
     //}
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
-        //textEntries = new List<string>();
+        ui = UIController.Instance;
         //ActivateChat(new List<string>() { "Prime the textbox", "iterate"}, null);  // TODO: hopefully asset text system will fix textbox problem
         //ProgressChat(); ProgressChat();
-        DeactivateChat();
+        //DeactivateChat();
     }
 
     void Update()
@@ -42,33 +49,42 @@ public class DialogueBox : MonoBehaviour // TODO: handle more complex behavior l
         //}
     }
 
-    public void DeactivateChat()
+    public override void DeactivateMenu()
     {
         chatBox.SetActive(false);
         speakerImg.SetActive(false);
         dialogue = new List<string>();
         chatOpen = false;
-        ui.ActivateUI();
     }
 
-    public void ActivateChat(List<string> newDialogue, Sprite speakerPic)
+    public void SetSpeaker(List<string> newDialogue, Sprite speakerPic)
     {
-        ui.DeactivateUI();
+        speakerImg.GetComponent<Image>().sprite = speakerPic;
+        dialogue = newDialogue;
+    }
+
+    public override void ActivateMenu()
+    {
         chatBox.SetActive(true);
         textEntries = new List<string>();
-        dialogue = newDialogue;
         speakerImg.SetActive(true);
-        speakerImg.GetComponent<Image>().sprite = speakerPic;
         chatOpen = true;
         currDialogue = 0;
         ProgressChat();
     }
 
+    public override bool IsActive()
+    {
+        return chatOpen;
+    }
+
+    public override bool overlay => false;
+
     private void ProgressChat()
     {
         currDialogue++;
         Debug.Log("curr dialogue " + currDialogue);
-        if (currDialogue > dialogue.Count) DeactivateChat();
+        if (currDialogue > dialogue.Count) ui.ActivateDefaultScreen();
         else AddText(dialogue[currDialogue - 1]);
     }
     

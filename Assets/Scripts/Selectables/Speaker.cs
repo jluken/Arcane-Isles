@@ -8,17 +8,16 @@ public class Speaker : Selectable
 {
     //public GameObject textLog;
     private TextLog textLogText;
-    public GameObject itemPopUp;
+    //public GameObject itemPopUp;
     private IEnumerator displayRoutine;
 
-    public DialogueBox dialogueBox;
     public List<string> dialogue;
-
-    private string description = "Hello World!";
+    private UIController ui;
 
     public override void Start()
     {
         //textLogText = textLog.GetComponent<TextLog>();
+        ui = UIController.Instance;
         itemPopUp.SetActive(false);
         var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
         itemPopUp.transform.localPosition = new Vector3(0, (height/2) + 2, 0);
@@ -56,6 +55,6 @@ public class Speaker : Selectable
     public void Talk()
     {
         base.SetTarget();
-        base.SetInteractAction(() => { dialogueBox.ActivateChat(dialogue, null); });
+        base.SetInteractAction(() => { ui.ActivateDialog(dialogue, null); });
     }
 }

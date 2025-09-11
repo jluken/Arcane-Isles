@@ -23,7 +23,7 @@ public class SkillCheckItem : Selectable
     // Start is called before the first frame update
     public override void Start()
     {
-        skillCheckManager = GameObject.Find("SkillCheckCanvas").GetComponent<SkillCheckManager>();
+        skillCheckManager = SkillCheckManager.Instance;
         base.Start();
     }
 

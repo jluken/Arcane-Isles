@@ -2,7 +2,7 @@ using System;
 using System.Data;
 using UnityEngine;
 
-public class JournalScript : MonoBehaviour
+public class JournalScript : MenuScreen
 {
     public GameObject journal;
 
@@ -10,30 +10,37 @@ public class JournalScript : MonoBehaviour
 
     void Start()
     {
-        DeactivateJournal();
+        //DeactivateJournal();
     }
 
     void Update()
     {
-        if (!journalOpen && Input.GetKeyDown(KeyCode.J))
-        {
-            ActivateJournal();
-        }
-        else if (journalOpen && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.J)))
-        {
-            DeactivateJournal();
-        }
+        //if (!journalOpen && Input.GetKeyDown(KeyCode.J))
+        //{
+        //    ActivateJournal();
+        //}
+        //else if (journalOpen && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.J)))
+        //{
+        //    DeactivateJournal();
+        //}
     }
 
-    public void DeactivateJournal()
+    public override void DeactivateMenu()
     {
         journal.SetActive(false);
         journalOpen = false;
     }
 
-    public void ActivateJournal()
+    public override void ActivateMenu()
     {
         journal.SetActive(true);
         journalOpen = true;
     }
+
+    public override bool IsActive()
+    {
+        return journalOpen;
+    }
+
+    public override bool overlay => true;
 }

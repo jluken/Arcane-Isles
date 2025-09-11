@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class camScript : MonoBehaviour
 {
+    public static camScript Instance { get; private set; }
 
     public float scrollSpeed = 0.002f; // Set camera movement speed.
     public float zoomSpeed = 0.1f; // Set camera movement speed.
@@ -13,6 +14,11 @@ public class camScript : MonoBehaviour
     private Transform ct;
 
     private bool haltCam;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
 
     // Start is called before the first frame update

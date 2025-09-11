@@ -8,7 +8,10 @@ using UnityEngine.UI;
 
 public class SelectMenu : MonoBehaviour
 {
+    public static SelectMenu Instance { get; private set; }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // TODO: Can this be brought into the UI format? If not, make more clearly separate with "SelectPopUp" or something and renamed functions
     public GameObject menu;
     public GameObject cam;
     private camScript camScript;
@@ -18,9 +21,14 @@ public class SelectMenu : MonoBehaviour
     private bool menuOpen;
     private bool frameDelay;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
-        camScript = cam.GetComponent<camScript>();
+        camScript = camScript.Instance;
         buttons = new List<GameObject>();
         DeactivateMenu();
     }

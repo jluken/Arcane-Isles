@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 public class SkillCheckManager : MonoBehaviour
 {
+    public static SkillCheckManager Instance { get; private set; }
     public GameObject skillMenu;
     public TMP_Text checkDesc;
     public TMP_Text modifierText;
@@ -32,10 +33,15 @@ public class SkillCheckManager : MonoBehaviour
     public delegate void SuccessEvent();
     public static event SuccessEvent successEvent;
 
-    public Controller controller;
+    //private SelectionController selectionController;
 
     private float[] rollProbs = { 100, 100, 100, 97.2f, 91.6f, 83.3f, 72.2f, 58.3f, 41.7f, 27.8f, 16.7f, 8.3f, 2.8f };  // TODO: possibly replace with dynamic sum formula
     private int moddedDC;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -44,6 +50,7 @@ public class SkillCheckManager : MonoBehaviour
         failEvent = null;
         successEvent = null;
         rollState = RollState.NotRolled;
+        //selectionController = SelectionController.Instance;
     }
 
     // Update is called once per frame
@@ -52,23 +59,8 @@ public class SkillCheckManager : MonoBehaviour
         
     }
 
-    public enum Ability  //TODO: should this go in player stats?
-    {
-        none,
-        vigor,
-        finesse,
-        wit
-    };
 
-    public enum Skill  //TODO: should this go in player stats?
-    {
-        none,
-        prying,
-        navigation
-    };
-
-
-    public void ActivateSkillCheck(Ability ability, int dc, (string, int)[] modifiers)  // TODO: reevaluate action approach after dialog is implemented
+    public void ActivateSkillCheck(CharStats.StatVal stat, int dc, (string, int)[] modifiers)  // TODO: reevaluate action approach after dialog is implemented
     {
         // TODO: the dialog will be a list of scriptable objects, each containing a dialog chunk, a face, a color (face and color default to what was before if not specified),
         // as well as a toggle for whether to take input. A similar toggle will also exist for a "skill check" input, which will branch it like normal selection input (Skill check should just return true/false)
@@ -79,7 +71,7 @@ public class SkillCheckManager : MonoBehaviour
         var percent = 100f;
         if (0 <= moddedDC && moddedDC < 13) { percent = rollProbs[moddedDC]; }
         else if (moddedDC >= 13) { percent = 0f; }
-        checkDesc.text = ability + " " + dc + " (" + percent + "%)";
+        checkDesc.text = stat + " " + dc + " (" + percent + "%)";
         var modText = "";
         foreach ((string, int) mod in modifiers)
         {
@@ -122,7 +114,7 @@ public class SkillCheckManager : MonoBehaviour
             // Clear listeners to roll event
             failEvent = null;
             successEvent = null;
-            controller.NewSelection();
+            SelectionController.Instance.NewSelection();
             Time.timeScale = 1;
         }
     }

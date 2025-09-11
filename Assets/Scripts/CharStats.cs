@@ -3,26 +3,70 @@ using System;
 using UnityEngine;
 using System.Linq;
 using Random = System.Random;
-using UnityEditor;
 
 public class CharStats : MonoBehaviour
 {
-    public int level = 1;
-    public int baseMaxHealth;
+    public int xp;
+
+    private int[] levelThresholds = { 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200};
+
     public int health;
-    public int baseMaxStamina;
-    public int stamina;
+    public int magick;
 
     //Abilities
-    public int baseVigor;
-    public int baseFinesse;
-    public int baseWit;
+    public int vigor;
+    public int finesse;
+    public int psyche;
 
-    //Skill levels (TODO: can put an amount of points into a skill equal to that skill's corresponding ability)
-    public int prying;
-    public int navigation;
+    //Skill levels
+    public int intimidation;
+    public int athletics;
+    public int melee;
+    public int endurance;
 
-    private Dictionary<int, (InventoryData.StatToChange, int)> modifiers = new Dictionary<int, (InventoryData.StatToChange, int)>(); // id: (stat, amount) // TODO: find better way to handle StatToChange dict
+    public int guile;
+    public int precision;
+    public int sleightOfHand;
+    public int stealth;
+
+    public int persuasion;
+    public int survival;
+    public int perception;
+    public int arcana;
+
+    //Values used for combat
+    private int dodge;
+    private int armor;
+
+    // This is a list of every core and derived stat, which can be used to add modifiers
+    public enum StatVal 
+    {
+        xp,
+        level,
+        health,
+        maxHealth,
+        magick,
+        maxMagick,
+        vigor,
+        finesse,
+        psyche,
+        intimidation,
+        athletics,
+        melee,
+        endurance,
+        guile,
+        precision,
+        sleightOfHand, 
+        stealth,
+        persuasion,
+        perception, 
+        arcana,
+        survival,
+        dodge,
+        armor
+    };
+
+    private Dictionary<int, (StatVal, int)> modifiers = new Dictionary<int, (StatVal, int)>(); // id: (stat, amount)
 
     private EntityInventory charInventory;
 
@@ -36,40 +80,64 @@ public class CharStats : MonoBehaviour
     public delegate void DeathEvent();
     public event DeathEvent deathEvent;
 
-    // TODO: XP, level, (encumberance?)
-
 
     public void Start()
     {
         rnd = new Random();
         charInventory = gameObject.GetComponent<EntityInventory>();
-        setBaseStats(this.baseVigor, this.baseFinesse, this.baseWit);
-        //updateStatEvent = null;
+        setBaseStats(this.vigor, this.finesse, this.psyche);
+        updateStatEvent = null;
+        this.health = GetCurrStat(StatVal.maxHealth);
+        this.magick = GetCurrStat(StatVal.maxMagick);
     }
 
     public void setBaseStats(int vig, int fin, int wit)
     {
-        this.baseVigor = vig;
-        this.baseFinesse = fin;
-        this.baseWit = wit;
-
-        this.baseMaxHealth = 10 + ((3 + this.baseVigor) * this.level);
-        this.health = this.baseMaxHealth;
-        this.baseMaxStamina = 3 + this.baseFinesse;
-        this.stamina = this.baseMaxStamina;
-        UpdateStats();
+        this.vigor = vig;
+        this.finesse = fin;
+        this.psyche = wit;
     }
 
-    // TODO: get effective stats based on equipment (plus maybe stuff like skills, potions - treat like controller)
-    //
-    // 
+    public int GetCurrStat(StatVal stat)
+    {
+        int premod = 0;
+        switch (stat)
+        {
+            case StatVal.xp: premod = this.xp; break;
+            case StatVal.level: premod = Array.FindIndex(levelThresholds, threshold => xp > threshold) + 1; break;
+            case StatVal.health: premod = Math.Min(this.health, GetCurrStat(StatVal.maxHealth)); break;
+            case StatVal.maxHealth: premod = 10 + GetCurrStat(StatVal.level) + 2 * (GetCurrStat(StatVal.endurance)); break;
+            case StatVal.magick: premod = Math.Min(this.magick, GetCurrStat(StatVal.maxMagick)); break;
+            case StatVal.maxMagick: premod = GetCurrStat(StatVal.level) + 2 * (GetCurrStat(StatVal.arcana)); break;
+            case StatVal.vigor: premod = this.vigor; break;
+            case StatVal.finesse: premod = this.finesse; break;
+            case StatVal.psyche: premod = this.psyche; break;
+            case StatVal.intimidation: premod = GetCurrStat(StatVal.vigor) + this.intimidation; break;
+            case StatVal.athletics: premod = GetCurrStat(StatVal.vigor) + this.athletics; break;
+            case StatVal.melee: premod = GetCurrStat(StatVal.vigor) + this.melee; break;
+            case StatVal.endurance: premod = GetCurrStat(StatVal.vigor) + this.endurance; break;
+            case StatVal.guile: premod = GetCurrStat(StatVal.finesse) + this.guile; break;
+            case StatVal.precision: premod = GetCurrStat(StatVal.finesse) + this.precision; break;
+            case StatVal.sleightOfHand: premod = GetCurrStat(StatVal.finesse) + this.sleightOfHand; break;
+            case StatVal.stealth: premod = GetCurrStat(StatVal.finesse) + this.stealth; break;
+            case StatVal.persuasion: premod = GetCurrStat(StatVal.psyche) + this.persuasion; break;
+            case StatVal.perception: premod = GetCurrStat(StatVal.psyche) + this.perception; break;
+            case StatVal.arcana: premod = GetCurrStat(StatVal.psyche) + this.arcana; break;
+            case StatVal.survival: premod = GetCurrStat(StatVal.psyche) + this.survival; break;
+            case StatVal.dodge: premod = GetCurrStat(StatVal.finesse) + this.survival; break;
+            case StatVal.armor: premod = 0; break;
+        }
+        return premod + currStatMods(stat);
+    }
 
-    public int addModifier(InventoryData.StatToChange stat, int amount)
+    public int addModifier(StatVal stat, int amount, float duration)
     {
         int[] existingIDs = this.modifiers.Keys.ToArray();
         var newId = rnd.Next();
-        while (existingIDs.Contains(newId)) newId = rnd.Next();  // TODO: what if there are a TON of IDs?
+        while (existingIDs.Contains(newId)) newId = rnd.Next();
         modifiers[newId] = (stat, amount);
+        updateStatEvent?.Invoke();
+        // TODO: create event that removes modifier after duration seconds if not None
         return newId;
     }
 
@@ -80,105 +148,49 @@ public class CharStats : MonoBehaviour
 
     public void updateHealth(int amount = 0)
     {
-        this.health += amount; 
-        this.health = Math.Min(this.health, currMaxHealth());
+        this.health = GetCurrStat(StatVal.health) + amount; 
+        this.health = Math.Min(this.health, GetCurrStat(StatVal.maxHealth));
+        updateStatEvent?.Invoke();
         if (this.health <= 0) { 
             this.health = 0;
             deathEvent?.Invoke();
         }
-        UpdateStats();
     }
 
-    public void updateStamina(int amount = 0)
+    public void updateMagick(int amount = 0)
     {
-        this.stamina += amount;
-        this.stamina = Math.Min(this.stamina, currMaxStamina());
-        UpdateStats();
+        this.magick = GetCurrStat(StatVal.magick) + amount;
+        this.magick = Math.Min(this.magick, GetCurrStat(StatVal.maxMagick));
+        this.magick = Math.Max(this.magick, 0);
+        updateStatEvent?.Invoke();
     }
 
-    public int currHealth()
-    {
-        return this.health;
-    }
 
-    public int currStamina()
-    {
-        return this.stamina;
-    }
+    //public int currPsyche()
+    //{
+    //    return this.basePsyche + currStatMods(InventoryData.StatToChange.psyche);
+    //}
 
-    public int getAbility(SkillCheckManager.Ability ability)
-    {
-        switch (ability)
-        {
-            case SkillCheckManager.Ability.finesse:
-                return currFinesse();
-            case SkillCheckManager.Ability.wit:
-                return currWit();
-            case SkillCheckManager.Ability.vigor:
-                return currVigor();
-            default:
-                return 0;
-        }
-    }
+    //public int currVigor()
+    //{
+    //    return this.baseVigor + currStatMods(InventoryData.StatToChange.vigor);
+    //}
 
-    public int currWit()
-    {
-        return this.baseWit + currStatMods(InventoryData.StatToChange.wit);
-    }
+    //public int currFinesse()
+    //{
+    //    return this.baseFinesse + currStatMods(InventoryData.StatToChange.finesse);
+    //}
 
-    public int currVigor()
-    {
-        return this.baseVigor + currStatMods(InventoryData.StatToChange.vigor);
-    }
-
-    public int currFinesse()
-    {
-        return this.baseFinesse + currStatMods(InventoryData.StatToChange.finesse);
-    }
-
-    public int getSkill(SkillCheckManager.Skill skill)
-    {
-        switch (skill)
-        {
-            case SkillCheckManager.Skill.prying:
-                return prying;
-            case SkillCheckManager.Skill.navigation:
-                return navigation;
-            default:
-                return 0;
-        }
-    }
-
-    public int currMaxHealth()
-    {
-        return this.baseMaxHealth + currStatMods(InventoryData.StatToChange.health);
-    }
-
-    public int currMaxStamina()
-    {
-        return this.baseMaxStamina + currStatMods(InventoryData.StatToChange.stamina);
-    }
-
-    public int currStatMods(InventoryData.StatToChange stat)  // TODO: This should possibly return list of inventory modifiers so they can be listed separately
+    public int currStatMods(StatVal stat)
     {
         var statMod = 0;
-        statMod += charInventory.GetStatMods()[stat];
+        var equipStats = charInventory.GetEquipmentStatMods();
+        if (equipStats.ContainsKey(stat)) statMod += equipStats[stat];
         foreach (var entry in modifiers)
         {
             if (entry.Value.Item1 == stat) statMod += entry.Value.Item2;
         }
         return statMod;
     }
-
-    public void UpdateStats()
-    {
-        Debug.Log("UpdateStatEvent");
-        bool isnull = updateStatEvent == null;
-        Debug.Log("is null " + isnull);
-        updateStatEvent?.Invoke();
-    }
-
-
-    // TODO: skills beyond base abilities, determined by skill check; possibly put everything in a big dictionary of skills/stats
 
 }

@@ -7,7 +7,7 @@ public class rollButton : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        skillManager = GameObject.Find("SkillCheckCanvas").GetComponent<SkillCheckManager>();
+        skillManager = SkillCheckManager.Instance;
     }
 
     public void RollClick()

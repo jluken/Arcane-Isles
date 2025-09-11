@@ -1,7 +1,7 @@
 using System.Data;
 using UnityEngine;
 
-public class MapScript : MonoBehaviour
+public class MapScript : MenuScreen
 {
     public GameObject localMap;
     public GameObject worldMap;
@@ -10,40 +10,50 @@ public class MapScript : MonoBehaviour
     public GameObject localMarker;
     public GameObject worldMarker;
 
-    public GameObject ui;
+    //public GameObject ui;
 
     private bool mapOpen;
 
     void Start()
     {
-        DeactivateMap(); 
+        //DeactivateMap(); 
     }
 
     void Update()
     {
-        if (!mapOpen && Input.GetKeyDown(KeyCode.M))
-        {
-            ActivateLocalMap();
-        }
-        else if (mapOpen && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.M)))
-        {
-            DeactivateMap();
-        }
+        //if (!mapOpen && Input.GetKeyDown(KeyCode.M))
+        //{
+        //    ActivateLocalMap();
+        //}
+        //else if (mapOpen && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.M)))
+        //{
+        //    DeactivateMap();
+        //}
     }
 
-    public void DeactivateMap()
+    public override void DeactivateMenu()
     {
         worldMap.SetActive(false);
         localMap.SetActive(false);
         mapOpen = false;
-        ui.GetComponent<UIScript>().ActivateUI();
     }
+
+    public override void ActivateMenu()
+    {
+        ActivateLocalMap();
+    }
+
+    public override bool IsActive()
+    {
+        return mapOpen;
+    }
+
+    public override bool overlay => true;
 
     public void ActivateLocalMap()
     {
         worldMap.SetActive(false);
         localMap.SetActive(true);
-        ui.GetComponent<UIScript>().DeactivateUI();
         mapOpen = true;
 
         // TODO: create meaningful relationship between worldspace and map space
@@ -53,11 +63,13 @@ public class MapScript : MonoBehaviour
         var mapHeight = Screen.height;
         localMarker.transform.localPosition = new Vector3(mapWidth * player.transform.position.x / worldWidth, mapHeight * player.transform.position.y / worldHeight);
     }
+
+
     public void ActivateWorldMap()
     {
+        // TODO: activated from button on the map screen
         worldMap.SetActive(true);
         localMap.SetActive(false);
-        ui.GetComponent<UIScript>().DeactivateUI();
         mapOpen = true;
         float xCoord = 0.0f;  // TODO: get coord from scene data
         float yCoord = 0.0f;

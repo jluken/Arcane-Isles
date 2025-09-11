@@ -6,11 +6,11 @@ public class CollectAll : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     //public Button collectButton;
 
-    public InventoryManager inventoryManager;
+    //public ContainerInventoryMenu inventoryMenu;
 
     void Start()
     {
-        inventoryManager = GameObject.Find("InventoryCanvas").GetComponent<InventoryManager>();
+        //inventoryMenu = ContainerInventoryMenu.Instance;
         //Button btn = collectButton.GetComponent<Button>();
         //btn.onClick.AddListener(CollectClick);
     }
@@ -23,6 +23,6 @@ public class CollectAll : MonoBehaviour
 
     public void CollectClick()
     {
-        inventoryManager.CollectAll();
+        ContainerInventoryMenu.Instance.CollectAll();
     }
 }

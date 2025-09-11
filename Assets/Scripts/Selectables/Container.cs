@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class Container : Selectable
 {
-    
-    private InventoryManager inventoryManager;
     private EntityInventory inventory;
+    private UIController ui;
 
     public override void Start()
     {
-        inventoryManager = GameObject.Find("InventoryCanvas").GetComponent<InventoryManager>();
+        ui = UIController.Instance;
         inventory = gameObject.GetComponent<EntityInventory>();
         base.Start();
     }
@@ -25,6 +24,6 @@ public class Container : Selectable
     public void OpenContainer()
     {
         base.SetTarget();
-        base.SetInteractAction(() => { inventoryManager.ActivateInventory(inventory); });
+        base.SetInteractAction(() => { ui.ActivateContainerScreen(inventory); });
     }
 }

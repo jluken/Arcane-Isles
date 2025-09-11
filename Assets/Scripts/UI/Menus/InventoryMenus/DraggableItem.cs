@@ -10,7 +10,9 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public Transform parentBeforeDrag;
     public Transform parentAfterDrag;
     public InventoryData inventoryData;
-    private InventoryManager inventoryManager;
+    private UIController uiController;
+    //private InventoryMenu invMenu;
+    
 
     public int stackSize;
 
@@ -19,17 +21,12 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public Image image;
     public TMP_Text counterText;
 
-    private GameObject player; // TODO: these assignments will be handled with a controller once swapping players is functional
-    private CharStats charStats;
-
     public bool draggable;
 
     private void Start()
     {
-        inventoryManager = GameObject.Find("InventoryCanvas").GetComponent<InventoryManager>();
-
-        player = GameObject.Find("Player");
-        charStats = player.GetComponent<CharStats>();
+        uiController = UIController.Instance;
+        //invMenu = uiController.CurrentInventory();
         draggable = true;
     }
 
@@ -46,8 +43,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         var startSlot = parentBeforeDrag.gameObject.GetComponent<ItemSlot>();
         stackSize = startSlot.currentStack;
         inventoryData = startSlot.ClearItem();
-        inventoryManager.UpdateEntity();
-        inventoryManager.DeselectAllSlots();
+        //invMenu.UpdateEntity();
+        //invMenu.DeselectAllSlots();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -102,11 +99,15 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
         else if (stackSize <= roomLeft)  // Absorbed
         {
+            Debug.Log("Absorb");
             parentAfterDrag.gameObject.GetComponent<ItemSlot>().AddItem(inventoryData, stackSize);
             Destroy(gameObject);
         }
         else  // Split
         {
+            Debug.Log("Split");
+            Debug.Log(stackSize);
+            Debug.Log(roomLeft);
             int leftOver = stackSize - roomLeft;
             int transfer = Math.Min(stackSize, roomLeft);
             parentAfterDrag.gameObject.GetComponent<ItemSlot>().AddItem(inventoryData, transfer);
@@ -116,7 +117,5 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             parentBeforeDrag.gameObject.GetComponent<ItemSlot>().dragObject = gameObject;
             parentBeforeDrag.gameObject.GetComponent<ItemSlot>().AddItem(inventoryData, leftOver);
         }
-        inventoryManager.UpdateEntity();
-        charStats.UpdateStats();
     }
 }

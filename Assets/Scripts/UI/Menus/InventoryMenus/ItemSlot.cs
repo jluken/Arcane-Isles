@@ -9,6 +9,8 @@ using Unity.VisualScripting;
 public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     public int slotID;
+    public string slotGroup;
+    public InventoryMenu parentMenu;
     
     public InventoryData itemData;
     public int currentStack = 0;
@@ -19,27 +21,22 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 
     public GameObject dragObject;
 
-    public Image itemDescriptionImage;
-    public TMP_Text itemDescriptionNameText;
-    public TMP_Text itemDescriptionText;
-
     public bool itemSelected;
     public GameObject selectedShader;
 
     public GameObject dragPrefab;
 
-    private InventoryManager inventoryManager;
-
     public virtual void Start()
     {
-        inventoryManager = GameObject.Find("InventoryCanvas").GetComponent<InventoryManager>();
     }
 
-    public virtual void AddItem(InventoryData itemData, int newStackSize = 1, bool createDrag = false)
+    public virtual void AddItem(InventoryData itemData, int newStackSize = 1, bool createNewIcon = false)
     {
         Debug.Log("ADD " + itemData.itemName + " to slot " + slotID);
         Debug.Log("dragg object: " + dragObject);
-        if (createDrag && dragObject == null)
+        if (this.currentStack > 0 && itemData != this.itemData) throw new System.Exception("Cannot add item to a slot if different item is already there");
+        if (this.currentStack >= itemData.maxStackSize && newStackSize > 0) throw new System.Exception("Item slot already at max stack size");
+        if (createNewIcon && dragObject == null)  // TODO: should you ever not create a dragObject if null?
         {
             Debug.Log("Create new draggable");
             CreateDraggable(itemData);
@@ -55,7 +52,6 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 
         itemText.text = this.itemData.itemName; // Could just be used for counter over icon
         itemText.enabled = true;
-        //inventoryManager.UpdateEntity(); //TODO: fine better handling of this update (event listener?)
     }
 
     public void CreateDraggable(InventoryData itemData) 
@@ -74,7 +70,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         this.currentStack -= amount;
         var oldData = this.itemData;
         dragObject.GetComponent<DraggableItem>().counterText.text = this.currentStack.ToString();
-        if (this.currentStack == 0)
+        if (this.currentStack == 1)
         {
             dragObject.GetComponent<DraggableItem>().counterText.text = "";
         }
@@ -82,7 +78,6 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         {
             ClearItem(destroyDrag);
         }
-        //inventoryManager.UpdateEntity(); //TODO: fine better handling of this update (event listener?)
         return oldData;
     }
 
@@ -102,11 +97,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         itemText.text = null;
         itemText.enabled = false;
 
-        itemDescriptionImage.sprite = emptySprite; // TODO: why is this being handled on the slot level?
-        itemDescriptionNameText.text = "";
-        itemDescriptionText.text = "";
-
-        //inventoryManager.UpdateEntity(); //TODO: fine better handling of this update (event listener?)
+        parentMenu.SelectItem(null, slotGroup, slotID);
         return oldData;
     }
 
@@ -134,36 +125,27 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 
     public void OnLeftClick()
     {
-        if (itemSelected && this.itemData != null && this.itemData.itemType == InventoryData.ItemType.consumable)
+        if (itemSelected && this.itemData != null)
         {
-            inventoryManager.UseItem(this.itemData);
-            RemoveItem(1, true);
-        }
-        Debug.Log("Left Click");
-        Debug.Log(inventoryManager);
-        inventoryManager.DeselectAllSlots();
-        selectedShader.SetActive(true);
-        itemSelected = true;
-
-        if (this.itemData != null)
-        {
-            itemDescriptionImage.sprite = this.itemData.sprite;
-            itemDescriptionNameText.text = this.itemData.itemName;
-            itemDescriptionText.text = this.itemData.description;
+            parentMenu.ActivateItem(this.itemData, slotGroup, slotID);
         }
         else
         {
-            itemDescriptionImage.sprite = emptySprite;
-            itemDescriptionNameText.text = "";
-            itemDescriptionText.text = "";
+            parentMenu.SelectItem(this.itemData, slotGroup, slotID);
         }
+
+        Debug.Log("Left Click");
+        Debug.Log(parentMenu);
+        
+        selectedShader.SetActive(true);
+        itemSelected = true;
     }
 
     public void OnRightClick()
     {
     }
 
-    public virtual void OnDrop(PointerEventData eventData)
+    public virtual void OnDrop(PointerEventData eventData) // TODO: is this used?
     {
         Debug.Log("DROP");
         GameObject dropped = eventData.pointerDrag;

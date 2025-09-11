@@ -14,7 +14,7 @@ public class Selectable : MonoBehaviour
     private bool isActive;
     //private bool reached;
     public Vector3 standPoint;  // TODO: possibly reevaluate whether this is best practice. Old 2d games like BG1 use it, but not modern games like BG3
-    private Controller controller;
+    //private SelectionController selectionController;
 
     private Action interactAction;
 
@@ -24,23 +24,25 @@ public class Selectable : MonoBehaviour
     public string description;
     private IEnumerator displayRoutine;
     public GameObject itemPopUp;
-    public GameObject textLog; // TODO: should be able to get this from UI Manager
-    private TextLog textLogText;
+    private DialogueBox dialogueBox;
 
-    private void Awake()
-    {
-        isActive = false;
-    }
+    //private void Awake()
+    //{
+        
+    //}
 
     // Start is called before the first frame update
     public virtual void Start()
     {
-        controller = GameObject.Find("Controller").GetComponent<Controller>();
-        controller.selectEvent += Deselect;
-        playerController = GameObject.Find("PlayerController").GetComponent<PlayerController>();
-        selectMenu = GameObject.Find("SelectMenu").GetComponent<SelectMenu>();
+        isActive = false;
+        //selectionController = SelectionController.Instance;
+        SelectionController.Instance.selectEvent += Deselect;
+        //itemPopUp = GameObject.Find("popup"); // TODO: fix with pop up prefab
+        playerController = GameObject.Find("PlayerController").GetComponent<PlayerController>();  // TODO: fix after player update
+        selectMenu = SelectMenu.Instance;
+        dialogueBox = DialogueBox.Instance;
 
-        if (textLog != null) textLogText = textLog.GetComponent<TextLog>(); // TODO: should be able to get this from UI Manager
+        //if (textLog != null) textLogText = textLog.GetComponent<TextLog>();
         displayRoutine = DisplayText();
         //itemPopUp = GameObject.Find("sharedpopup"); // TODO: use prefab manager to create these instead
         selected = false;
@@ -100,6 +102,7 @@ public class Selectable : MonoBehaviour
     public void HoverDisplay()
     {
         //Debug.Log("Hover over object " + gameObject.name);
+        //TODO: highlight object - possibly use asset if can't find way to "outline" in 3D
     }
 
     public bool IsActive()
@@ -109,10 +112,10 @@ public class Selectable : MonoBehaviour
 
     public void SetTarget()
     {
-        controller.NewSelection();
+        SelectionController.Instance.NewSelection();
         selected = true;
         var currentLeader = playerController.CurrentSelectedLeader().GetComponent<MoveToClick>(); 
-        currentLeader.SetDestination(gameObject.transform.TransformPoint(standPoint)); // TODO: Will need to handle more complex navigation; possibly update MoveToClick to handle parties
+        currentLeader.SetDestination(gameObject.transform.TransformPoint(standPoint));
     }
 
     public void SetInteractAction(Action activeAct)
@@ -131,6 +134,7 @@ public class Selectable : MonoBehaviour
     {
         var acts = new List<(string, Action)>();
         acts.Add(("Go Here", SetTarget));
+        // Derived classes can have more options
         
         return acts;
     }
@@ -138,8 +142,7 @@ public class Selectable : MonoBehaviour
     public void Inspect()
     {
 
-        textLogText.AddText(description); // TODO: Consolidate Text updates into event controller
-
+        dialogueBox.AddText(description);
         StopCoroutine(displayRoutine);
         displayRoutine = DisplayText();
         StartCoroutine(displayRoutine);
@@ -147,7 +150,7 @@ public class Selectable : MonoBehaviour
 
     IEnumerator DisplayText()
     {
-        Debug.Log("is itempopup " + (itemPopUp != null));  // TODO: instantiate as child from prefab
+        Debug.Log("is itempopup " + (itemPopUp != null));  // TODO: instantiate as child from prefab, allowing multiple popups at once
         var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
         itemPopUp.transform.localPosition = new Vector3(0, (height / 2) + 2, 0);
         itemPopUp.GetComponent<TMP_Text>().text = description;
