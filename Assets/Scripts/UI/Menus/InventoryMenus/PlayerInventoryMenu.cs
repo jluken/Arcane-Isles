@@ -13,9 +13,6 @@ using UnityEngine.UI;
 public class PlayerInventoryMenu : InventoryMenu
 {
     public GameObject inventoryMenu;
-
-    public GameObject player;  // TODO: find all instances of player and find instance of player (separate from companions)
-    private EntityInventory playerInventory;
     private CharStats playerStats;
 
     //private SelectionController selectionController;
@@ -43,9 +40,9 @@ public class PlayerInventoryMenu : InventoryMenu
 
     private void Awake()
     {
-        playerInventory = player.GetComponent<EntityInventory>();
-        playerStats = player.GetComponent<CharStats>();
-        Debug.Log("player inv awake: " + playerInventory);
+        //playerInventory = player.GetComponent<EntityInventory>();
+        //playerStats = player.GetComponent<CharStats>();
+        //Debug.Log("player inv awake: " + playerInventory);
         for (int i = 0; i < PlayerInventorySlots.Length; i++)
         {
             PlayerInventorySlots[i].slotID = i;
@@ -107,11 +104,11 @@ public class PlayerInventoryMenu : InventoryMenu
         ClearInventorySlots();
 
         PlayerInventorySlots.ToList().ForEach(slot => {
-            var playerSlot = playerInventory.GetInventory(slot.slotID);
+            var playerSlot = PartyController.Instance.leaderObject.GetComponent<EntityInventory>().GetInventory(slot.slotID);
             if (playerSlot.Item1 != null) { slot.AddItem(playerSlot.Item1, playerSlot.Item2, true); }
         });
         EquipSlots.ToList().ForEach(slot => {
-            var equipSlot = playerInventory.GetEquipment(slot.slotID);
+            var equipSlot = PartyController.Instance.leaderObject.GetComponent<EntityInventory>().GetEquipment(slot.slotID);
             if (equipSlot != null) { slot.AddItem(equipSlot, 1 , true); }
         });
     }
@@ -158,6 +155,7 @@ public class PlayerInventoryMenu : InventoryMenu
         }
         else if (equipTypes.ContainsKey(itemData.itemType))
         {
+            var playerInventory = PartyController.Instance.leaderObject.GetComponent<EntityInventory>();
             var equipSlot = equipTypes[itemData.itemType];
             if (slotGroup == "inventory")
             {
@@ -194,6 +192,7 @@ public class PlayerInventoryMenu : InventoryMenu
     public void UpdateEntity()
     {
         Debug.Log("Update player entity");
+        var playerInventory = PartyController.Instance.leaderObject.GetComponent<EntityInventory>();
         PlayerInventorySlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
         EquipSlots.ToList().ForEach(slot => playerInventory.SetEquipment(slot.slotID, slot.itemData));
 

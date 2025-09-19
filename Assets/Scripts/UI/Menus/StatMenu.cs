@@ -2,10 +2,8 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public class StatMenu : MonoBehaviour
+public class StatMenu : MonoBehaviour  //TODO: used?
 {
-    public GameObject player; // TODO: these assignments will be handled with a controller once swapping players is functional
-    private CharStats charStats;
 
     public TMP_Text playerName;
 
@@ -18,24 +16,24 @@ public class StatMenu : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     { 
-        charStats = player.GetComponent<CharStats>();
         UpdateStatData();
     }
 
     // Update is called once per frame
     void UpdateStatData()
     {
+        var playerStats = PartyController.Instance.leaderObject.GetComponent<CharStats>();
         Debug.Log("Update stat text");
-        Debug.Log("Vigor: " + charStats.GetCurrStat(CharStats.StatVal.vigor));
-        playerName.text = charStats.charName;
-        vigorText.text = "Vigor: " + charStats.GetCurrStat(CharStats.StatVal.vigor);
-        finesseText.text = "Finesse: " + charStats.GetCurrStat(CharStats.StatVal.finesse);
-        psycheText.text = "Psyche: " + charStats.GetCurrStat(CharStats.StatVal.psyche);
+        Debug.Log("Vigor: " + playerStats.GetCurrStat(CharStats.StatVal.vigor));
+        playerName.text = playerStats.charName;
+        vigorText.text = "Vigor: " + playerStats.GetCurrStat(CharStats.StatVal.vigor);
+        finesseText.text = "Finesse: " + playerStats.GetCurrStat(CharStats.StatVal.finesse);
+        psycheText.text = "Psyche: " + playerStats.GetCurrStat(CharStats.StatVal.psyche);
 
         string skillText = "";
         foreach (CharStats.StatVal skill in Enum.GetValues(typeof(CharStats.StatVal)))
         {
-            skillText += skill.ToString() + " " + charStats.GetCurrStat(skill) + "\n";
+            skillText += skill.ToString() + " " + playerStats.GetCurrStat(skill) + "\n";
         }
         skillsText.text = skillText;
 

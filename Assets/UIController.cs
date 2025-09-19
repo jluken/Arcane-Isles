@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -25,6 +26,7 @@ public class UIController : MonoBehaviour
     //public GameObject tradeScreen;
     public TradingMenu tradeScreenScript;
     public ContainerInventoryMenu containerScreenScript;
+    public ItemSelectMenu itemSelectScript;
 
     private List<MenuScreen> screens;
     //private List<MenuScreen> exitableScreens;
@@ -50,7 +52,7 @@ public class UIController : MonoBehaviour
         //pauseScreenScript = pauseScreen.GetComponent<MenuScreen>();
         //charScreenScript = charScreen.GetComponent<InventoryManager>();
         //tradeScreenScript = tradeScreen.GetComponent<InventoryManager>();
-        screens = new List<MenuScreen> { mapScript, buttonsScript, dialogScript, journalScript, pauseScreenScript, charScreenScript, containerScreenScript, tradeScreenScript};
+        screens = new List<MenuScreen> { mapScript, buttonsScript, dialogScript, journalScript, pauseScreenScript, charScreenScript, containerScreenScript, tradeScreenScript, itemSelectScript };
         //exitableScreens = new List<MenuScreen> { mapScript, journalScript, pauseScreenScript, charScreenScript, tradeScreenScript };
         //stickyScreens = new List<MenuScreen> { buttonsScript, dialogScript };
 
@@ -72,7 +74,6 @@ public class UIController : MonoBehaviour
             if(Input.GetKeyDown(screenKey) && !screenKeyCodes[screenKey].IsActive())
             {
                 CloseOverlays();
-                camScript.Instance.CamHalt(true);
                 Time.timeScale = 0; // Pause
                 screenKeyCodes[screenKey].ActivateMenu();
             }
@@ -80,7 +81,6 @@ public class UIController : MonoBehaviour
             {
                 //screenKeyCodes[screenKey].DeactivateMenu();
                 CloseOverlays();
-                camScript.Instance.CamHalt(false);
                 Time.timeScale = 1; // Unpause
             }
         }
@@ -102,7 +102,6 @@ public class UIController : MonoBehaviour
     public void ActivateDefaultScreen()
     {
         DeactivateAllMenus();
-        camScript.Instance.CamHalt(false);
         Time.timeScale = 1; // Unpause
         buttonsScript.ActivateMenu();
         //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
@@ -114,6 +113,7 @@ public class UIController : MonoBehaviour
         {
             if (screen.overlay && screen.IsActive()) screen.DeactivateMenu();
         }
+        Time.timeScale = 1; // Unpause
     }
 
     public bool OverlayOpen()
@@ -124,7 +124,6 @@ public class UIController : MonoBehaviour
     public void ActivateMapScreen()
     {
         DeactivateAllMenus();
-        camScript.Instance.CamHalt(true);
         Time.timeScale = 0; // Pause
         mapScript.ActivateMenu();
     }
@@ -132,7 +131,6 @@ public class UIController : MonoBehaviour
     public void ActivateJournalScreen()
     {
         DeactivateAllMenus();
-        camScript.Instance.CamHalt(true);
         Time.timeScale = 0; // Pause
         journalScript.ActivateMenu();
     }
@@ -141,7 +139,6 @@ public class UIController : MonoBehaviour
     {
         DeactivateAllMenus();
         //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
-        camScript.Instance.CamHalt(true);
         Time.timeScale = 0; // Pause
         dialogScript.SetSpeaker(newDialogue, speakerPic);
         dialogScript.ActivateMenu();
@@ -149,7 +146,6 @@ public class UIController : MonoBehaviour
 
     public void ActivatePauseScreen()
     {
-        camScript.Instance.CamHalt(true);
         Time.timeScale = 0; // Pause
         pauseScreenScript.ActivateMenu();
     }
@@ -165,7 +161,6 @@ public class UIController : MonoBehaviour
     public void ActivateCharScreen()
     {
         DeactivateAllMenus();
-        camScript.Instance.CamHalt(true);
         Time.timeScale = 0; // Pause
         charScreenScript.ActivateMenu();
     }
@@ -173,7 +168,6 @@ public class UIController : MonoBehaviour
     public void ActivateTradeScreen(EntityInventory inventory)
     {
         DeactivateAllMenus();
-        camScript.Instance.CamHalt(true);
         Time.timeScale = 0; // Pause
         tradeScreenScript.SetInventory(inventory);
         tradeScreenScript.ActivateMenu();
@@ -182,9 +176,21 @@ public class UIController : MonoBehaviour
     public void ActivateContainerScreen(EntityInventory inventory)
     {
         DeactivateAllMenus();
-        camScript.Instance.CamHalt(true);
         Time.timeScale = 0; // Pause
         containerScreenScript.SetInventory(inventory);
         containerScreenScript.ActivateMenu();
+    }
+
+    public void ActivateItemSelect(Vector3 pos, List<(string, Action)> actionList)
+    {
+        //DeactivateAllMenus();
+        //Time.timeScale = 0; // Pause
+        itemSelectScript.SetItemSelection(pos, actionList);
+        itemSelectScript.ActivateMenu();
+    }
+
+    public bool DefaultUIOpen()
+    {
+        return buttonsScript.IsActive() && !OverlayOpen();
     }
 }

@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using System.Linq;
 using TMPro;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
@@ -14,7 +16,7 @@ public class MoveToClick : MonoBehaviour
     //private GameObject target;
     //private SelectionController selectionController;
     public float activateDist = 1.0f;
-    public GameObject destMarkerPrefab;
+    private GameObject destMarkerPrefab;
     private GameObject destMarker;
 
     public float movingThreshold = 0.1f;
@@ -26,8 +28,10 @@ public class MoveToClick : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        startedMoving = false;
         //selectionController = SelectionController.Instance;
         stopCount = 0;
+        destMarkerPrefab = Resources.Load<GameObject>("Prefabs/Destination");
     }
 
     private void FixedUpdate()
@@ -36,20 +40,20 @@ public class MoveToClick : MonoBehaviour
         if (!agent.pathPending)
         {
             if (!startedMoving && agent.velocity.sqrMagnitude > movingThreshold) { startedMoving = true; stopCount = 0; Debug.Log("Start moving"); }
-            if (agent.hasPath && startedMoving && agent.velocity.sqrMagnitude <= movingThreshold) //stuck
+            if (agent.hasPath && agent.velocity.sqrMagnitude <= movingThreshold) //stuck
             {
-                Debug.Log("stopped");
+                //Debug.Log("stopped");
                 stopCount++;
-                if (stopCount >= maxStopCount) // TODO: what if start out stuck?
+                if (stopCount >= maxStopCount)
                 {
                     // end pathing
-                    Debug.Log("stuck end");
+                    //Debug.Log("stuck end");
                     StopMoving();
                 }
             }
             else if (!agent.hasPath && startedMoving && agent.velocity.sqrMagnitude <= movingThreshold) // finished
             {
-                Debug.Log("done");
+                //Debug.Log("done");
                 StopMoving();
             }
         }
@@ -102,7 +106,21 @@ public class MoveToClick : MonoBehaviour
 
     public void SetDestination(Vector3 dest)
     {
-        agent.SetDestination(dest);  // TODO: will need to rework for companions
+        //agent.SetDestination(dest);
+        //yield return new WaitForEndOfFrame();
+        Debug.Log("dest");
+        Debug.Log(dest);
+        NavMeshPath path = new NavMeshPath();
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(dest, out hit, 5.0f, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path))
+        {
+            Debug.Log("calculated");
+            agent.SetPath(path);
+        }
+        else
+        {
+            Debug.Log("calcfail");
+        }
         Destroy(destMarker);
         destMarker = Instantiate(destMarkerPrefab, agent.destination, destMarkerPrefab.transform.rotation);
     }
@@ -115,4 +133,11 @@ public class MoveToClick : MonoBehaviour
         Destroy(destMarker);
         stopCount = 0;
     }
+
+    public NavMeshPath AgentPath()
+    {
+        return agent.path;
+    }
+
+    // TODO: Create child dummy navmeshagent for that cannot move, but is used for "hovering" to display how far it will go, and maximum (UI/combat stage)
 }

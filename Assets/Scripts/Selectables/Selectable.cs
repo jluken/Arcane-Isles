@@ -6,7 +6,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
-using static Selectable;
 
 public class Selectable : MonoBehaviour
 {
@@ -18,12 +17,12 @@ public class Selectable : MonoBehaviour
 
     private Action interactAction;
 
-    private PlayerController playerController;
-    private SelectMenu selectMenu;
+    private ItemSelectMenu selectMenu;
 
     public string description;
     private IEnumerator displayRoutine;
-    public GameObject itemPopUp;
+    private GameObject itemPopUpPrefab;
+    private GameObject itemPopUp;
     private DialogueBox dialogueBox;
 
     //private void Awake()
@@ -37,14 +36,12 @@ public class Selectable : MonoBehaviour
         isActive = false;
         //selectionController = SelectionController.Instance;
         SelectionController.Instance.selectEvent += Deselect;
-        //itemPopUp = GameObject.Find("popup"); // TODO: fix with pop up prefab
-        playerController = GameObject.Find("PlayerController").GetComponent<PlayerController>();  // TODO: fix after player update
-        selectMenu = SelectMenu.Instance;
+        itemPopUpPrefab = Resources.Load<GameObject>("Prefabs/ItemPopup");
+        selectMenu = ItemSelectMenu.Instance;
         dialogueBox = DialogueBox.Instance;
 
         //if (textLog != null) textLogText = textLog.GetComponent<TextLog>();
         displayRoutine = DisplayText();
-        //itemPopUp = GameObject.Find("sharedpopup"); // TODO: use prefab manager to create these instead
         selected = false;
     }
 
@@ -62,7 +59,7 @@ public class Selectable : MonoBehaviour
             else if (Input.GetMouseButtonDown(1))
             {
                 Debug.Log("select menu: " + selectMenu);
-                selectMenu.GetComponent<SelectMenu>().ActivateMenu(Input.mousePosition, Actions());
+                UIController.Instance.ActivateItemSelect(Input.mousePosition, Actions());
             }
 
             HoverDisplay();
@@ -71,7 +68,7 @@ public class Selectable : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject == playerController.CurrentSelectedLeader() && !IsActive() && selected)
+        if (other.gameObject == PartyController.Instance.leaderObject && !IsActive() && selected)
         {
             RaycastHit hit;
             var rayDirection = other.gameObject.transform.position - transform.position;
@@ -80,7 +77,7 @@ public class Selectable : MonoBehaviour
                 if (hit.transform == other.gameObject.transform)
                 {  // Line of sight between player and target
                     Interact();
-                    playerController.CurrentSelectedLeader().GetComponent<MoveToClick>().StopMoving();
+                    PartyController.Instance.leaderObject.GetComponent<MoveToClick>().StopMoving();
                 }
 
             }
@@ -114,8 +111,7 @@ public class Selectable : MonoBehaviour
     {
         SelectionController.Instance.NewSelection();
         selected = true;
-        var currentLeader = playerController.CurrentSelectedLeader().GetComponent<MoveToClick>(); 
-        currentLeader.SetDestination(gameObject.transform.TransformPoint(standPoint));
+        PartyController.Instance.SetPartyDestination(transform.position);  // TODO: if standpoint, set here with absolute values
     }
 
     public void SetInteractAction(Action activeAct)
@@ -142,7 +138,7 @@ public class Selectable : MonoBehaviour
     public void Inspect()
     {
 
-        dialogueBox.AddText(description);
+        //dialogueBox.AddText(description); // TODO: what sort of dialogue box should be persistant, separate from talking box
         StopCoroutine(displayRoutine);
         displayRoutine = DisplayText();
         StartCoroutine(displayRoutine);
@@ -150,13 +146,15 @@ public class Selectable : MonoBehaviour
 
     IEnumerator DisplayText()
     {
-        Debug.Log("is itempopup " + (itemPopUp != null));  // TODO: instantiate as child from prefab, allowing multiple popups at once
         var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
+        Destroy(itemPopUp);
+        itemPopUp = Instantiate(itemPopUpPrefab, transform.position, itemPopUpPrefab.transform.rotation);
+        itemPopUp.transform.SetParent(transform);
         itemPopUp.transform.localPosition = new Vector3(0, (height / 2) + 2, 0);
         itemPopUp.GetComponent<TMP_Text>().text = description;
         itemPopUp.SetActive(true);
         yield return new WaitForSeconds(3);
-        itemPopUp.SetActive(false); // TODO: fade out animation?
+        Destroy(itemPopUp);// TODO: fade out animation?
     }
 
 }

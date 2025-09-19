@@ -16,10 +16,6 @@ public class ContainerInventoryMenu : InventoryMenu
     public GameObject inventoryMenu;
     EntityInventory currentInventory;
 
-    public GameObject player;
-    private EntityInventory playerInventory;
-    private CharStats playerStats;
-
     //private SelectionController selectionController;
 
     public Image itemDescriptionImage;
@@ -43,7 +39,7 @@ public class ContainerInventoryMenu : InventoryMenu
     private void Awake()
     {
         Instance = this;
-        playerInventory = player.GetComponent<EntityInventory>();
+
 
         for (int i = 0; i < PlayerInventorySlots.Length; i++)
         {
@@ -103,7 +99,7 @@ public class ContainerInventoryMenu : InventoryMenu
         ClearInventorySlots();
 
         PlayerInventorySlots.ToList().ForEach(slot => {
-            var playerSlot = playerInventory.GetInventory(slot.slotID);
+            var playerSlot = PartyController.Instance.leaderObject.GetComponent<EntityInventory>().GetInventory(slot.slotID);
             if (playerSlot.Item1 != null) { slot.AddItem(playerSlot.Item1, playerSlot.Item2, true); }
         });
         ContainerInventorySlots.ToList().ForEach(slot => {
@@ -129,6 +125,7 @@ public class ContainerInventoryMenu : InventoryMenu
 
     public override void ActivateItem(InventoryData itemData, string slotGroup, int slotId)
     {
+        var playerInventory = PartyController.Instance.leaderObject.GetComponent<EntityInventory>();
         if (slotGroup == "player")
         {
             var grabbedInv = playerInventory.GetInventory(slotId);
@@ -158,6 +155,7 @@ public class ContainerInventoryMenu : InventoryMenu
 
     public void CollectAll()
     {
+        var playerInventory = PartyController.Instance.leaderObject.GetComponent<EntityInventory>();
         if (currentInventory == null)
         {
             Debug.LogError("This should never be null in the collect all method");
@@ -185,6 +183,7 @@ public class ContainerInventoryMenu : InventoryMenu
 
     public void UpdateEntity()
     {
+        var playerInventory = PartyController.Instance.leaderObject.GetComponent<EntityInventory>();
         PlayerInventorySlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
         //Debug.Log("inv slots");
         //ContainerInventorySlots.ToList().ForEach(slot => Debug.Log(slot));

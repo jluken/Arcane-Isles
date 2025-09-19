@@ -41,14 +41,14 @@ public class SkillCheckManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        failEvent = null;
+        successEvent = null;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         skillMenu.SetActive(false);
-        failEvent = null;
-        successEvent = null;
         rollState = RollState.NotRolled;
         //selectionController = SelectionController.Instance;
     }

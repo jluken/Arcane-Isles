@@ -14,10 +14,6 @@ public class TradingMenu : InventoryMenu
     public GameObject inventoryMenu;
     EntityInventory currentInventory;
 
-    public GameObject player;
-    private EntityInventory playerInventory;
-    private CharStats playerStats;
-
     // TODO: merchant trading menu to activate if container has merchant flag - only allow "buying" goods - will also need to add "price" to game object data
 
     //private SelectionController selectionController;
@@ -36,8 +32,6 @@ public class TradingMenu : InventoryMenu
 
     private void Awake()
     {
-        playerInventory = player.GetComponent<EntityInventory>();
-        Debug.Log("player inv awake: " + playerInventory);
         for (int i = 0; i < PlayerInventorySlots.Length; i++)
         {
             PlayerInventorySlots[i].slotID = i;
@@ -94,6 +88,7 @@ public class TradingMenu : InventoryMenu
         Time.timeScale = 0;
 
         ClearInventorySlots();
+        var playerInventory = PartyController.Instance.leaderObject.GetComponent<EntityInventory>();
 
         PlayerInventorySlots.ToList().ForEach(slot => {
             var playerSlot = playerInventory.GetInventory(slot.slotID);
@@ -130,6 +125,7 @@ public class TradingMenu : InventoryMenu
 
     public void UpdateEntity()
     {
+        var playerInventory = PartyController.Instance.leaderObject.GetComponent<EntityInventory>();
         PlayerInventorySlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
         if (currentInventory != null)
             NPCInventorySlots.ToList().ForEach(slot => currentInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));

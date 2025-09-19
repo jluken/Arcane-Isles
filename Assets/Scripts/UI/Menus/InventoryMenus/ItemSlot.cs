@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using Unity.VisualScripting;
+using UnityEngine.UI;
 
 public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
@@ -24,10 +23,18 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
     public bool itemSelected;
     public GameObject selectedShader;
 
-    public GameObject dragPrefab;
+    private GameObject dragPrefab;
+
+    public virtual void Awake()
+    {
+        dragPrefab = Resources.Load<GameObject>("Prefabs/dragObj"); // TODO: improve asset performance with Object Pool
+        Debug.Log("dragprefab");
+        Debug.Log(dragPrefab);
+    }
 
     public virtual void Start()
     {
+        
     }
 
     public virtual void AddItem(InventoryData itemData, int newStackSize = 1, bool createNewIcon = false)

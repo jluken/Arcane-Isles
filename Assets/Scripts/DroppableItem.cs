@@ -11,13 +11,9 @@ public class ItemScript : Selectable
     private InventoryData itemData;
     public int stackSize = 1;
 
-
-    private EntityInventory playerInventory;
-
     // Start is called before the first frame update
     public override void Start()
     {
-        playerInventory = GameObject.Find("Player").GetComponent<EntityInventory>();  // TODO: use singleton after player/companion update
         base.Start();
         Debug.Log("Droppable started");
     }
@@ -30,7 +26,7 @@ public class ItemScript : Selectable
 
     public override void Interact()
     {
-        int leftOver = playerInventory.AddNewItem(itemData, stackSize);
+        int leftOver = PartyController.Instance.leaderObject.GetComponent<EntityInventory>().AddNewItem(itemData, stackSize);
         stackSize = leftOver;
         if (stackSize <= 0)
         {

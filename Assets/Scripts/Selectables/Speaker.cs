@@ -18,9 +18,9 @@ public class Speaker : Selectable
     {
         //textLogText = textLog.GetComponent<TextLog>();
         ui = UIController.Instance;
-        itemPopUp.SetActive(false);
+        //itemPopUp.SetActive(false);
         var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
-        itemPopUp.transform.localPosition = new Vector3(0, (height/2) + 2, 0);
+        //itemPopUp.transform.localPosition = new Vector3(0, (height/2) + 2, 0);
         //displayRoutine = DisplayText();
         base.Start();
     }

@@ -13,15 +13,13 @@ public class SkillCheck : ScriptableObject
     public CharStats.StatVal skill;
     public List<string> modifiers;
 
-    private GameObject player;
     private CharStats playerStats;
     private SkillCheckManager skillCheckManager;
 
     public void CheckSkill()
     {
-        player = GameObject.Find("Player");  // TODO: get "current player" this with player manager once multiple characters are selectable
-        skillCheckManager = GameObject.Find("SkillCheckCanvas").GetComponent<SkillCheckManager>();
-        playerStats = player.GetComponent<CharStats>();
+        skillCheckManager = GameObject.Find("SkillCheckCanvas").GetComponent<SkillCheckManager>(); // TODO: put skill check into the UI manager (and right click select)
+        playerStats = PartyController.Instance.leaderObject.GetComponent<CharStats>();
 
         
         (string, int)[] abilitySkillScores = { (skill.ToString(), playerStats.GetCurrStat(skill)) };

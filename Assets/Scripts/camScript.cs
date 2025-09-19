@@ -13,8 +13,6 @@ public class camScript : MonoBehaviour
    // private Camera iconCam; // Used to view icons
     private Transform ct;
 
-    private bool haltCam;
-
     private void Awake()
     {
         Instance = this;
@@ -28,7 +26,6 @@ public class camScript : MonoBehaviour
         //iconCam = GameObject.Find("IconCamera").GetComponent<Camera>();
         ct = cam.transform;
         Camera.main.orthographic = true;
-        haltCam = false;
     }
 
     void Update()
@@ -43,31 +40,24 @@ public class camScript : MonoBehaviour
         float moveVertical = Input.GetAxis("Vertical");  // TODO: legacy code
         float moveHorizontal = Input.GetAxis("Horizontal");
 
-        if (moveVertical==0 && Input.mousePosition.y >= Screen.height * 0.99) moveVertical = 1.0f;
-        else if (moveVertical == 0 && Input.mousePosition.y <= Screen.height * 0.01) moveVertical = -1.0f;
-        if (moveHorizontal == 0 && Input.mousePosition.x >= Screen.width * 0.99) moveHorizontal = 1.0f;
-        else if (moveHorizontal == 0 && Input.mousePosition.x <= Screen.width * 0.01) moveHorizontal = -1.0f;
+        if (moveVertical==0 && Screen.height * 0.95 <= Input.mousePosition.y && Input.mousePosition.y <= Screen.height * 1.05) moveVertical = 1.0f;
+        else if (moveVertical == 0 && Input.mousePosition.y <= Screen.height * 0.05 && Input.mousePosition.y >= Screen.height * -0.05) moveVertical = -1.0f;
+        if (moveHorizontal == 0 && Input.mousePosition.x >= Screen.width * 0.95 && Input.mousePosition.x <= Screen.width * 1.05) moveHorizontal = 1.0f;
+        else if (moveHorizontal == 0 && Input.mousePosition.x <= Screen.width * 0.05 && Input.mousePosition.x >= Screen.width * -0.05) moveHorizontal = -1.0f;
         //Debug.Log("Horz: " + moveHorizontal);
         Vector3 screenUp = new Vector3(1.0f, 0.0f, -1.0f);
         Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
         Vector3 movement = ((screenUp * moveVertical) + (screenRight * moveHorizontal)) * scrollSpeed * cam.orthographicSize;
 
-        // TODO: put in a check with the menu controller once that exists so this doesn't move when menu open
-
-        if (!haltCam)
+        if (UIController.Instance.DefaultUIOpen())
         {
             ct.position += movement;
 
-            cam.orthographicSize -= Input.mouseScrollDelta.y * zoomSpeed; // TODO: check if not over a panel (zooming while scrolling through text log)
+            cam.orthographicSize -= Input.mouseScrollDelta.y * zoomSpeed;
             cam.orthographicSize = Math.Max(cam.orthographicSize, 2.0f);
             cam.orthographicSize = Math.Min(cam.orthographicSize, 5.0f);
             //iconCam.orthographicSize = cam.orthographicSize;
         }
-    }
-
-    public void CamHalt(bool halt) // TODO: what to do if multiple agents are "holding" at once? keep a stack?
-    {
-        haltCam = halt;
     }
 
     //private void FixedUpdate()

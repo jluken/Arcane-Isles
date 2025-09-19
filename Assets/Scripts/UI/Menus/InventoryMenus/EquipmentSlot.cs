@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 public class EquipmentSlot : ItemSlot
 {
     public InventoryData.ItemType equipType;
-    public GameObject player;
 
     public override void Start()
     {

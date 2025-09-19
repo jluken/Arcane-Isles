@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class SwordPickup : SkillCheckItem
 {
-    public GameObject player;
-    private CharStats playerStats;
+    //public GameObject player;
+    //private CharStats playerStats;
 
     //private void Awake()
     //{

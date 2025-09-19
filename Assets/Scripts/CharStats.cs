@@ -75,20 +75,28 @@ public class CharStats : MonoBehaviour
     public Sprite charImage;
     public string charName;
 
-    public delegate void StatEvent(); // TODO: do I need multiple void delegates?
-    public event StatEvent updateStatEvent;
+    //public delegate void StatEvent();
+    //public event StatEvent updateStatEvent;
     public delegate void DeathEvent();
-    public event DeathEvent deathEvent;
+    public event DeathEvent deathEvent;  //TODO: change party AI if dead
 
 
-    public void Start()
+    public void Awake()
     {
         rnd = new Random();
         charInventory = gameObject.GetComponent<EntityInventory>();
         setBaseStats(this.vigor, this.finesse, this.psyche);
-        updateStatEvent = null;
         this.health = GetCurrStat(StatVal.maxHealth);
         this.magick = GetCurrStat(StatVal.maxMagick);
+    }
+
+    public void Start()
+    {
+        //rnd = new Random();
+        //charInventory = gameObject.GetComponent<EntityInventory>();
+        //setBaseStats(this.vigor, this.finesse, this.psyche);
+        //this.health = GetCurrStat(StatVal.maxHealth);
+        //this.magick = GetCurrStat(StatVal.maxMagick);
     }
 
     public void setBaseStats(int vig, int fin, int wit)
@@ -136,7 +144,7 @@ public class CharStats : MonoBehaviour
         var newId = rnd.Next();
         while (existingIDs.Contains(newId)) newId = rnd.Next();
         modifiers[newId] = (stat, amount);
-        updateStatEvent?.Invoke();
+        PartyController.Instance.UpdateParty();
         // TODO: create event that removes modifier after duration seconds if not None
         return newId;
     }
@@ -150,7 +158,7 @@ public class CharStats : MonoBehaviour
     {
         this.health = GetCurrStat(StatVal.health) + amount; 
         this.health = Math.Min(this.health, GetCurrStat(StatVal.maxHealth));
-        updateStatEvent?.Invoke();
+        PartyController.Instance.UpdateParty();
         if (this.health <= 0) { 
             this.health = 0;
             deathEvent?.Invoke();
@@ -162,7 +170,7 @@ public class CharStats : MonoBehaviour
         this.magick = GetCurrStat(StatVal.magick) + amount;
         this.magick = Math.Min(this.magick, GetCurrStat(StatVal.maxMagick));
         this.magick = Math.Max(this.magick, 0);
-        updateStatEvent?.Invoke();
+        PartyController.Instance.UpdateParty();
     }
 
 
@@ -184,6 +192,7 @@ public class CharStats : MonoBehaviour
     public int currStatMods(StatVal stat)
     {
         var statMod = 0;
+        Debug.Log(charInventory);
         var equipStats = charInventory.GetEquipmentStatMods();
         if (equipStats.ContainsKey(stat)) statMod += equipStats[stat];
         foreach (var entry in modifiers)

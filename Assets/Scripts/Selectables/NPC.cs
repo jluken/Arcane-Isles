@@ -1,42 +1,65 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class NPC : Selectable
 {
-    private UIController ui;
     private CharStats charStats;
     private EntityInventory inventory;
+
+    public enum ActionName  //TODO: possibly apply this logic to other Selectables as well
+    {
+        Talk,
+        Trade,
+        Recruit
+    };
+    private Dictionary<ActionName, Action> actionMapping; 
+    public List<ActionName> actionNames;
 
     public List<string> dialogue;
     public override void Start()
     {
-        ui = UIController.Instance;
         charStats = gameObject.GetComponent<CharStats>();
         inventory = gameObject.GetComponent<EntityInventory>();
+
+        actionMapping = new Dictionary<ActionName, Action> {
+            { ActionName.Talk, Talk },
+            { ActionName.Trade, Trade },
+            { ActionName.Recruit, Recruit },
+        };
         base.Start();
     }
 
     public override List<(string, Action)> Actions()
     {
         var acts = new List<(string, Action)>();
-        acts.Add(("Talk", Talk));
-        acts.Add(("Trade", Trade));
+        foreach (var action in actionNames) { 
+            acts.Add((action.ToString(), actionMapping[action]));
+        }
         return acts;
     }
 
     public void Talk()
     {
+        // TODO: will need to overhaul when introduce dialogue
         base.SetTarget();
         //Action act = () => { dialogueBox.ActivateChat(dialogue, charStats.charImage); };
-        base.SetInteractAction(() => { ui.ActivateDialog(dialogue, charStats.charImage); });
+        base.SetInteractAction(() => { UIController.Instance.ActivateDialog(dialogue, charStats.charImage); });
     }
 
     public void Trade()
     {
         //inventoryManager.ActivateInventory(inventory);
         base.SetTarget();
-        base.SetInteractAction(() => { ui.ActivateTradeScreen(inventory); });
+        base.SetInteractAction(() => { UIController.Instance.ActivateTradeScreen(inventory); });
+    }
+
+    public void Recruit()
+    {
+        //inventoryManager.ActivateInventory(inventory);
+        base.SetTarget();
+        base.SetInteractAction(() => { PartyController.Instance.AddCompanion(this.GetComponent<PartyMember>()); });
     }
 }

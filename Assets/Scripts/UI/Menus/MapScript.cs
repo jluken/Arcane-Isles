@@ -6,7 +6,6 @@ public class MapScript : MenuScreen
     public GameObject localMap;
     public GameObject worldMap;
 
-    public GameObject player; // TODO: these assignments will be handled with a controller once swapping players is functional
     public GameObject localMarker;
     public GameObject worldMarker;
 
@@ -61,13 +60,13 @@ public class MapScript : MenuScreen
         var worldHeight = 20;
         var mapWidth = Screen.width;
         var mapHeight = Screen.height;
-        localMarker.transform.localPosition = new Vector3(mapWidth * player.transform.position.x / worldWidth, mapHeight * player.transform.position.y / worldHeight);
+        var playerPos = PartyController.Instance.leaderObject.transform.position;
+        localMarker.transform.localPosition = new Vector3(mapWidth * playerPos.x / worldWidth, mapHeight * playerPos.y / worldHeight);
     }
 
 
     public void ActivateWorldMap()
     {
-        // TODO: activated from button on the map screen
         worldMap.SetActive(true);
         localMap.SetActive(false);
         mapOpen = true;

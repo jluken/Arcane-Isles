@@ -4,16 +4,11 @@ using UnityEngine.EventSystems;
 
 public class groundScript : MonoBehaviour
 {
-    //private SelectionController controller;
-
-    private PlayerController playerController;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
     {
-        //controller = SelectionController.Instance;
-        playerController = GameObject.Find("PlayerController").GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -36,7 +31,6 @@ public class groundScript : MonoBehaviour
     public void SetTarget(Vector3 dest)
     {
         SelectionController.Instance.NewSelection();
-        var currentLeader = playerController.CurrentSelectedLeader().GetComponent<MoveToClick>();
-        currentLeader.SetDestination(dest); // TODO: Will need to handle more complex navigation; possibly update MoveToClick to handle parties
+        PartyController.Instance.SetPartyDestination(dest);
     }
 }
