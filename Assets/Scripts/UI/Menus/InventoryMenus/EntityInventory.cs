@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
 
 public class EntityInventory : MonoBehaviour
 {
+    public string containerId;
+    
     public static int invSize = 40;  // TODO: lock certain "containers" to a set size 
 
     public InventoryData[] inventoryTypes = new InventoryData[invSize];
@@ -16,6 +19,22 @@ public class EntityInventory : MonoBehaviour
 
     public int money;
     public bool merchant;
+
+    public void LoadFromSaveData(EntityInventorySaveData saveData)
+    {
+        for (int j = 0; j < inventoryTypes.Length; j++)
+        {
+            inventoryTypes[j] = saveData.inventoryTypes[j] == "" ? null : Resources.Load<InventoryData>("Scriptables/" + saveData.inventoryTypes[j]);
+        }
+        Array.Copy(saveData.inventoryCounts, inventoryCounts, saveData.inventoryCounts.Length);
+        for (int j = 0; j < equipment.Length; j++)
+        {
+            equipment[j] = saveData.equipment[j] == "" ? null : Resources.Load<InventoryData>("Scriptables/" + saveData.equipment[j]);
+        }
+        hasEquip = saveData.hasEquip;
+        money = saveData.money;
+        merchant = saveData.merchant;
+    }
 
     public void SetInventory(int idx, InventoryData itemData, int count=1)
     {

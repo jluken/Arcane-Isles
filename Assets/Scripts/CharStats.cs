@@ -6,6 +6,10 @@ using Random = System.Random;
 
 public class CharStats : MonoBehaviour
 {
+    public Sprite charImage;
+    public string charName;
+
+
     public int xp;
 
     private int[] levelThresholds = { 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200};
@@ -72,9 +76,6 @@ public class CharStats : MonoBehaviour
 
     private Random rnd;
 
-    public Sprite charImage;
-    public string charName;
-
     //public delegate void StatEvent();
     //public event StatEvent updateStatEvent;
     public delegate void DeathEvent();
@@ -99,6 +100,30 @@ public class CharStats : MonoBehaviour
         //this.magick = GetCurrStat(StatVal.maxMagick);
     }
 
+    public void LoadFromSaveData(PartyData.CharStatData statData)
+    {
+        charName = statData.name;
+
+        charImage = Resources.Load<Sprite>("Sprites/" + statData.charImageName);
+        xp = statData.xp;
+        health = statData.health;
+        magick = statData.magick;
+        vigor = statData.vigor;
+        finesse = statData.psyche;
+        intimidation = statData.intimidation;
+        athletics = statData.athletics;
+        melee = statData.melee;
+        endurance = statData.endurance;
+        guile = statData.guile;
+        precision = statData.precision;
+        sleightOfHand = statData.sleightOfHand;
+        stealth = statData.stealth;
+        persuasion = statData.persuasion;
+        survival = statData.survival;
+        perception = statData.perception;
+        arcana = statData.arcana;
+    }
+
     public void setBaseStats(int vig, int fin, int wit)
     {
         this.vigor = vig;
@@ -114,7 +139,7 @@ public class CharStats : MonoBehaviour
             case StatVal.xp: premod = this.xp; break;
             case StatVal.level: premod = Array.FindIndex(levelThresholds, threshold => xp > threshold) + 1; break;
             case StatVal.health: premod = Math.Min(this.health, GetCurrStat(StatVal.maxHealth)); break;
-            case StatVal.maxHealth: premod = 10 + GetCurrStat(StatVal.level) + 2 * (GetCurrStat(StatVal.endurance)); break;
+            case StatVal.maxHealth: premod = 10 + GetCurrStat(StatVal.level) + 2 * (GetCurrStat(StatVal.endurance)); break;  // TODO: not all creatures will follow these rules for calculation
             case StatVal.magick: premod = Math.Min(this.magick, GetCurrStat(StatVal.maxMagick)); break;
             case StatVal.maxMagick: premod = GetCurrStat(StatVal.level) + 2 * (GetCurrStat(StatVal.arcana)); break;
             case StatVal.vigor: premod = this.vigor; break;
@@ -192,7 +217,7 @@ public class CharStats : MonoBehaviour
     public int currStatMods(StatVal stat)
     {
         var statMod = 0;
-        Debug.Log(charInventory);
+        //Debug.Log(charInventory);
         var equipStats = charInventory.GetEquipmentStatMods();
         if (equipStats.ContainsKey(stat)) statMod += equipStats[stat];
         foreach (var entry in modifiers)

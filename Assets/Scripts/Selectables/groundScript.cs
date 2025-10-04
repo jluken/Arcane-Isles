@@ -20,9 +20,6 @@ public class groundScript : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("ground point");
-                Debug.Log(hit.point);
-                Debug.Log(hit.transform.position);
                 SetTarget(hit.point);
             }
         }

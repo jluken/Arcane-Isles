@@ -68,7 +68,7 @@ public class Selectable : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject == PartyController.Instance.leaderObject && !IsActive() && selected)
+        if (other.gameObject == PartyController.Instance.leader.charObject && !IsActive() && selected)
         {
             RaycastHit hit;
             var rayDirection = other.gameObject.transform.position - transform.position;
@@ -77,7 +77,7 @@ public class Selectable : MonoBehaviour
                 if (hit.transform == other.gameObject.transform)
                 {  // Line of sight between player and target
                     Interact();
-                    PartyController.Instance.leaderObject.GetComponent<MoveToClick>().StopMoving();
+                    PartyController.Instance.leader.charObject.GetComponent<MoveToClick>().StopMoving();
                 }
 
             }

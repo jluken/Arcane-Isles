@@ -9,7 +9,7 @@ public class NPC : Selectable
     private CharStats charStats;
     private EntityInventory inventory;
 
-    public enum ActionName  //TODO: possibly apply this logic to other Selectables as well
+    public enum ActionName  // Used for optional actions
     {
         Talk,
         Trade,
@@ -60,6 +60,9 @@ public class NPC : Selectable
     {
         //inventoryManager.ActivateInventory(inventory);
         base.SetTarget();
-        base.SetInteractAction(() => { PartyController.Instance.AddCompanion(this.GetComponent<PartyMember>()); });
+        //base.SetInteractAction(() => { PartyController.Instance.AddCompanion(this.GetComponent<PartyMember>()); });
+        
+        // TODO: eventually will have smarter logic of what a companion's stats are upon recruitment
+        base.SetInteractAction(() => { PartyController.Instance.CreateCompanion(charStats, inventory, gameObject); });  
     }
 }

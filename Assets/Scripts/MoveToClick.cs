@@ -39,7 +39,7 @@ public class MoveToClick : MonoBehaviour
         //Debug.Log("fixed update");
         if (!agent.pathPending)
         {
-            if (!startedMoving && agent.velocity.sqrMagnitude > movingThreshold) { startedMoving = true; stopCount = 0; Debug.Log("Start moving"); }
+            if (!startedMoving && agent.velocity.sqrMagnitude > movingThreshold) { startedMoving = true; stopCount = 0; }
             if (agent.hasPath && agent.velocity.sqrMagnitude <= movingThreshold) //stuck
             {
                 //Debug.Log("stopped");
@@ -61,28 +61,6 @@ public class MoveToClick : MonoBehaviour
 
     void LateUpdate()
     {
-        //if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject(-1))  // TODO: as soon as controller updates the target (activated by controller?) - need consolidation of responsibilities
-        //{
-        //    RaycastHit hit;
-        //    // Ignore barriers (walls, unselectable furniture, etc. Layer 8 = )
-        //    LayerMask layerMask = LayerMask.GetMask("Barrier");
-        //    if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore))
-        //    {
-        //        startedMoving = false;
-        //        if (controller.targetSelectableObj != null)
-        //        {
-        //            agent.destination = controller.targetSelectableObj.transform.TransformPoint(controller.targetSelectableObj.GetComponent<Selectable>().standPoint);
-        //        }
-        //        else
-        //        {
-        //            SetDestination(hit.point);
-        //        }
-        //        //destMarker.SetActive(true);
-                
-        //        //destMarker.transform.position = new Vector3(agent.destination.x, agent.destination.y, agent.destination.z);
-        //        //destMarker.transform.
-        //    }
-        //}
 
     }
 
@@ -108,18 +86,21 @@ public class MoveToClick : MonoBehaviour
     {
         //agent.SetDestination(dest);
         //yield return new WaitForEndOfFrame();
-        Debug.Log("dest");
-        Debug.Log(dest);
+        //Debug.Log("dest");
+        //Debug.Log(dest);
         NavMeshPath path = new NavMeshPath();
         NavMeshHit hit;
         if (NavMesh.SamplePosition(dest, out hit, 5.0f, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path))
         {
-            Debug.Log("calculated");
+            //Debug.Log("calculated");
             agent.SetPath(path);
         }
         else
         {
             Debug.Log("calcfail");
+            Debug.Log(gameObject);
+            Debug.Log(gameObject.transform.position);
+            Debug.Log(agent.isOnNavMesh);
         }
         Destroy(destMarker);
         destMarker = Instantiate(destMarkerPrefab, agent.destination, destMarkerPrefab.transform.rotation);

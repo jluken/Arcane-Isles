@@ -38,12 +38,14 @@ public class DefaultUI : MenuScreen
         Debug.Log("Start UI");
         //charStats = player.GetComponent<CharStats>();
         //charStats.updateStatEvent += UpdateStats;
+        PartyController.Instance.updatePartyEvent += UpdateStats;
     }
 
-    public void UpdateStats()
+    public void UpdateStats() 
     {
-        Debug.Log("Update stat UI");
+        //Debug.Log("Update stat UI");
         var currentParty = PartyController.Instance.party;
+        if (!UIActive) return; // TODO: possibly handle this better by separating out the "default" UI
 
         foreach (var charIcon in charIcons) { 
             if (charIcon.charSlot > currentParty.Count - 1) charIcon.charPortrait.SetActive(false);
@@ -61,7 +63,7 @@ public class DefaultUI : MenuScreen
                 charIcon.healthBar.transform.localPosition = new Vector3(((fullWidth - newWidth) / -2.0f), 0, 0);
                 charIcon.Health.text = currHealth + "/" + maxHealth;
 
-                if (currentParty[charIcon.charSlot].gameObject == PartyController.Instance.leaderObject)
+                if (currentParty[charIcon.charSlot] == PartyController.Instance.leader)
                 {
                     // TODO: For UI stage: highlight selected party member
                 }
@@ -80,10 +82,10 @@ public class DefaultUI : MenuScreen
 
     public override void ActivateMenu()
     {
+        UIActive = true;
         UpdateStats();
         ButtonMenu.SetActive(true);
         //TextMenu.SetActive(true);
-        UIActive = true;
     }
 
     public override bool IsActive()

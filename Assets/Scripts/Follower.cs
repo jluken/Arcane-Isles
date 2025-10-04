@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PartyMember))]
+//[RequireComponent(typeof(PartyMember))]
 public class Follower : Selectable
 {
-    private UIController ui;
+    private PartyMember parentPartyMember;
     private CharStats charStats;
     private EntityInventory inventory;
 
-    public enum ActionName  //TODO: possibly apply this logic to other Selectables as well
+    public enum ActionName // Used for optional actions
     {
         Select,
         Talk,
@@ -27,9 +27,9 @@ public class Follower : Selectable
     private bool stayPut;
     public override void Start()
     {
-        ui = UIController.Instance;
-        charStats = gameObject.GetComponent<CharStats>();
-        inventory = gameObject.GetComponent<EntityInventory>();
+        parentPartyMember = transform.parent.GetComponent<PartyMember>();
+        charStats = parentPartyMember.GetComponent<CharStats>();
+        inventory = parentPartyMember.GetComponent<EntityInventory>();
         stayPut = false;
 
         actionMapping = new Dictionary<ActionName, Action> { 
@@ -54,7 +54,10 @@ public class Follower : Selectable
 
     public void Select()
     {
-        PartyController.Instance.SelectChar(gameObject.GetComponent<PartyMember>());
+        Debug.Log("Follower Select");
+        Debug.Log(gameObject);
+        Debug.Log(parentPartyMember);
+        PartyController.Instance.SelectChar(parentPartyMember);
     }
 
     public void Talk()
@@ -62,14 +65,14 @@ public class Follower : Selectable
         // TODO: will need to overhaul when introduce dialogue
         base.SetTarget();
         //Action act = () => { dialogueBox.ActivateChat(dialogue, charStats.charImage); };
-        base.SetInteractAction(() => { ui.ActivateDialog(dialogue, charStats.charImage); });
+        base.SetInteractAction(() => { UIController.Instance.ActivateDialog(dialogue, charStats.charImage); });
     }
 
     public void Trade()
     {
         //inventoryManager.ActivateInventory(inventory);
         base.SetTarget();
-        base.SetInteractAction(() => { ui.ActivateTradeScreen(inventory); });
+        base.SetInteractAction(() => { UIController.Instance.ActivateContainerScreen(inventory); });
     }
 
     public void Stay()
@@ -80,7 +83,7 @@ public class Follower : Selectable
     public void Follow()
     {
         stayPut = false;
-        // TODO: Immediately catch up with the leader
+        // TODO: Immediately catch up with the leader (when switch to more complex follow logic)
     }
 
     public bool CanFollow()

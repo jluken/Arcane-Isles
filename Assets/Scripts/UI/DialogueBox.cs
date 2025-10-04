@@ -10,7 +10,6 @@ public class DialogueBox : MenuScreen // TODO: handle more complex behavior like
     public GameObject chatBox;
     public TMP_Text textContent;
     public GameObject speakerImg;
-    private UIController ui;
 
     public List<string> textEntries;
 
@@ -30,7 +29,6 @@ public class DialogueBox : MenuScreen // TODO: handle more complex behavior like
 
     void Start()
     {
-        ui = UIController.Instance;
         //ActivateChat(new List<string>() { "Prime the textbox", "iterate"}, null);  // TODO: hopefully asset text system will fix textbox problem
         //ProgressChat(); ProgressChat();
         //DeactivateChat();
@@ -84,7 +82,7 @@ public class DialogueBox : MenuScreen // TODO: handle more complex behavior like
     {
         currDialogue++;
         Debug.Log("curr dialogue " + currDialogue);
-        if (currDialogue > dialogue.Count) ui.ActivateDefaultScreen();
+        if (currDialogue > dialogue.Count) UIController.Instance.ActivateDefaultScreen();
         else AddText(dialogue[currDialogue - 1]);
     }
     

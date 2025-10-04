@@ -88,7 +88,7 @@ public class TradingMenu : InventoryMenu
         Time.timeScale = 0;
 
         ClearInventorySlots();
-        var playerInventory = PartyController.Instance.leaderObject.GetComponent<EntityInventory>();
+        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
 
         PlayerInventorySlots.ToList().ForEach(slot => {
             var playerSlot = playerInventory.GetInventory(slot.slotID);
@@ -125,7 +125,7 @@ public class TradingMenu : InventoryMenu
 
     public void UpdateEntity()
     {
-        var playerInventory = PartyController.Instance.leaderObject.GetComponent<EntityInventory>();
+        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
         PlayerInventorySlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
         if (currentInventory != null)
             NPCInventorySlots.ToList().ForEach(slot => currentInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));

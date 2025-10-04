@@ -12,12 +12,10 @@ public class Speaker : Selectable
     private IEnumerator displayRoutine;
 
     public List<string> dialogue;
-    private UIController ui;
 
     public override void Start()
     {
         //textLogText = textLog.GetComponent<TextLog>();
-        ui = UIController.Instance;
         //itemPopUp.SetActive(false);
         var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
         //itemPopUp.transform.localPosition = new Vector3(0, (height/2) + 2, 0);
@@ -55,6 +53,6 @@ public class Speaker : Selectable
     public void Talk()
     {
         base.SetTarget();
-        base.SetInteractAction(() => { ui.ActivateDialog(dialogue, null); });
+        base.SetInteractAction(() => { UIController.Instance.ActivateDialog(dialogue, null); });
     }
 }

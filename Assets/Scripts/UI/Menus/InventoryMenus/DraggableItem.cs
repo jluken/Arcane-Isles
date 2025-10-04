@@ -25,7 +25,6 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void Start()
     {
-        uiController = UIController.Instance;
         //invMenu = uiController.CurrentInventory();
         draggable = true;
     }

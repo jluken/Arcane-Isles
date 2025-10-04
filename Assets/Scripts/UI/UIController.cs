@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+//using UnityEngine.Device;
 
 public class UIController : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class UIController : MonoBehaviour
     public TradingMenu tradeScreenScript;
     public ContainerInventoryMenu containerScreenScript;
     public ItemSelectMenu itemSelectScript;
+    public SettingsMenu settingsMenu;
+    //public MainMenu mainMenu;
 
     private List<MenuScreen> screens;
     //private List<MenuScreen> exitableScreens;
@@ -34,9 +37,13 @@ public class UIController : MonoBehaviour
 
     private Dictionary<KeyCode, MenuScreen> screenKeyCodes;
 
+    private bool menusAllowed;
+
     private void Awake()
     {
         Instance = this;
+        screens = new List<MenuScreen> { mapScript, buttonsScript, dialogScript, journalScript, pauseScreenScript, charScreenScript, containerScreenScript, tradeScreenScript, itemSelectScript, settingsMenu };// mainMenu };
+        menusAllowed = false;
     }
 
 
@@ -44,7 +51,7 @@ public class UIController : MonoBehaviour
     void Start()
     {
         //camScript = camScript.Instance;
-        screens = new List<MenuScreen>();
+        //screens = new List<MenuScreen>();
         //mapScript = map.GetComponent<MenuScreen>();
         //buttonsScript = buttons.GetComponent<MenuScreen>();
         //dialogScript = dialog.GetComponent<DialogueBox>();
@@ -52,7 +59,6 @@ public class UIController : MonoBehaviour
         //pauseScreenScript = pauseScreen.GetComponent<MenuScreen>();
         //charScreenScript = charScreen.GetComponent<InventoryManager>();
         //tradeScreenScript = tradeScreen.GetComponent<InventoryManager>();
-        screens = new List<MenuScreen> { mapScript, buttonsScript, dialogScript, journalScript, pauseScreenScript, charScreenScript, containerScreenScript, tradeScreenScript, itemSelectScript };
         //exitableScreens = new List<MenuScreen> { mapScript, journalScript, pauseScreenScript, charScreenScript, tradeScreenScript };
         //stickyScreens = new List<MenuScreen> { buttonsScript, dialogScript };
 
@@ -64,11 +70,18 @@ public class UIController : MonoBehaviour
             { KeyCode.C , charScreenScript}
         };
 
-        ActivateDefaultScreen();
+        //ActivateDefaultScreen();
+        DeactivateAllMenus();
+    }
+
+    public void AllowMenus(bool allow)
+    {
+        menusAllowed = allow;  //TODO: handle this more about whether "in game" behavior vs main menu
     }
 
     void Update()
     {
+        if (!menusAllowed) return;
         foreach (KeyCode screenKey in screenKeyCodes.Keys)
         {
             if(Input.GetKeyDown(screenKey) && !screenKeyCodes[screenKey].IsActive())
@@ -91,7 +104,13 @@ public class UIController : MonoBehaviour
         }
     }
 
-    void DeactivateAllMenus()
+    // Update is called once per frame
+    void LateUpdate()
+    {
+        
+    }
+
+    public void DeactivateAllMenus()
     {
         foreach (MenuScreen screen in screens)
         {
@@ -102,6 +121,7 @@ public class UIController : MonoBehaviour
     public void ActivateDefaultScreen()
     {
         DeactivateAllMenus();
+        Debug.Log("Default");
         Time.timeScale = 1; // Unpause
         buttonsScript.ActivateMenu();
         //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
@@ -113,6 +133,7 @@ public class UIController : MonoBehaviour
         {
             if (screen.overlay && screen.IsActive()) screen.DeactivateMenu();
         }
+        if (!screens.Any(scr => scr.IsActive())) ActivateDefaultScreen(); // TODO: this is a hack that should be handled better by manager by specifying which overlays "turn off" default screen
         Time.timeScale = 1; // Unpause
     }
 
@@ -193,4 +214,18 @@ public class UIController : MonoBehaviour
     {
         return buttonsScript.IsActive() && !OverlayOpen();
     }
+
+    public void ActivateSettings()
+    {
+        DeactivateAllMenus();
+        Time.timeScale = 0; // Pause
+        settingsMenu.ActivateMenu();
+    }
+
+    //public void ActivateMainMenu()
+    //{
+    //    DeactivateAllMenus();
+    //    Time.timeScale = 0; // Pause
+    //    mainMenu.ActivateMenu();
+    //}
 }

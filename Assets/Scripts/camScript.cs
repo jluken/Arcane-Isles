@@ -13,6 +13,9 @@ public class camScript : MonoBehaviour
    // private Camera iconCam; // Used to view icons
     private Transform ct;
 
+    private float xTilt = 37.5f;
+    private float yRot = 135f;
+
     private void Awake()
     {
         Instance = this;
@@ -26,6 +29,7 @@ public class camScript : MonoBehaviour
         //iconCam = GameObject.Find("IconCamera").GetComponent<Camera>();
         ct = cam.transform;
         Camera.main.orthographic = true;
+        ct.rotation = Quaternion.identity * Quaternion.Euler(xTilt, yRot, 0); ;
     }
 
     void Update()
@@ -36,34 +40,62 @@ public class camScript : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        // Move player based on vertical input.
-        float moveVertical = Input.GetAxis("Vertical");  // TODO: legacy code
-        float moveHorizontal = Input.GetAxis("Horizontal");
-
-        if (moveVertical==0 && Screen.height * 0.95 <= Input.mousePosition.y && Input.mousePosition.y <= Screen.height * 1.05) moveVertical = 1.0f;
-        else if (moveVertical == 0 && Input.mousePosition.y <= Screen.height * 0.05 && Input.mousePosition.y >= Screen.height * -0.05) moveVertical = -1.0f;
-        if (moveHorizontal == 0 && Input.mousePosition.x >= Screen.width * 0.95 && Input.mousePosition.x <= Screen.width * 1.05) moveHorizontal = 1.0f;
-        else if (moveHorizontal == 0 && Input.mousePosition.x <= Screen.width * 0.05 && Input.mousePosition.x >= Screen.width * -0.05) moveHorizontal = -1.0f;
-        //Debug.Log("Horz: " + moveHorizontal);
-        Vector3 screenUp = new Vector3(1.0f, 0.0f, -1.0f);
-        Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
-        Vector3 movement = ((screenUp * moveVertical) + (screenRight * moveHorizontal)) * scrollSpeed * cam.orthographicSize;
-
         if (UIController.Instance.DefaultUIOpen())
         {
-            ct.position += movement;
+            // Move player based on vertical input.
+            float moveVertical = Input.GetAxis("Vertical");  // TODO: legacy code
+            float moveHorizontal = Input.GetAxis("Horizontal");
 
-            cam.orthographicSize -= Input.mouseScrollDelta.y * zoomSpeed;
-            cam.orthographicSize = Math.Max(cam.orthographicSize, 2.0f);
-            cam.orthographicSize = Math.Min(cam.orthographicSize, 5.0f);
-            //iconCam.orthographicSize = cam.orthographicSize;
+            bool inBounds = Input.mousePosition.y >= 0 && Input.mousePosition.y <= Screen.height && Input.mousePosition.x >= 0 && Input.mousePosition.x <= Screen.width;
+            bool unmoving = moveHorizontal == 0 && moveVertical == 0;
+
+            if (inBounds && unmoving)
+            {
+                float upThreshold = Screen.height * 0.90f;
+                float downThreshold = Screen.height * 0.10f;
+                float rightThreshold = Screen.width * 0.90f;
+                float leftThreshold = Screen.width * 0.10f;
+                if (Input.mousePosition.y >= upThreshold) moveVertical = (Input.mousePosition.y - upThreshold) / (Screen.height - upThreshold);
+                else if (Input.mousePosition.y <= downThreshold) moveVertical = (Input.mousePosition.y - downThreshold) / (downThreshold);
+                if (Input.mousePosition.x >= rightThreshold) moveHorizontal = (Input.mousePosition.x - rightThreshold) / (Screen.width - rightThreshold);
+                else if (Input.mousePosition.x <= leftThreshold) moveHorizontal = (Input.mousePosition.x - leftThreshold) / (leftThreshold);
+
+                Vector3 screenUp = new Vector3(1.0f, 0.0f, -1.0f);
+                Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
+                Vector3 movement = ((screenUp * moveVertical) + (screenRight * moveHorizontal));
+
+                camScript.Instance.MoveCamera(movement, Input.mouseScrollDelta.y);
+            }
         }
     }
 
-    //private void FixedUpdate()
-    //{
-        
-    //    //ct.position += Input.mouseScrollDelta.y * transform.forward * 1.0f;
-    //    //cam.orthographicSize += Input.mouseScrollDelta.y;
-    //}
+    public void MoveCamera(Vector3 direction, float zoom)
+    {
+        //TODO: limit distance from player for scrolling (to avoid seeing unloaded content), or possibly load based on camera
+
+        Vector3 movement = direction * scrollSpeed * cam.orthographicSize;
+
+        ct.position += movement;
+
+        cam.orthographicSize -= zoom * zoomSpeed;
+        cam.orthographicSize = Math.Max(cam.orthographicSize, 2.0f);
+        cam.orthographicSize = Math.Min(cam.orthographicSize, 5.0f);
+        //iconCam.orthographicSize = cam.orthographicSize;
+    }
+
+    public void CenterCamera(Vector3 position)
+    {
+        var tiltDownRad = Math.PI * xTilt / 180.0;
+        var rotRad = Math.PI * yRot / 180.0;
+
+        float heightAbove = ct.position.y - position.y;
+
+        float xzHypotenuse = heightAbove / (float)Math.Tan(tiltDownRad);
+        float xpos = position.x - (xzHypotenuse * (float)Math.Sin(rotRad));
+        float zpos = position.z - (xzHypotenuse * (float)Math.Cos(rotRad));
+
+        ct.position = new Vector3(xpos, ct.position.y, zpos);
+    }
+
+    
 }

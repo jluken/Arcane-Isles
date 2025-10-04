@@ -60,7 +60,7 @@ public class MapScript : MenuScreen
         var worldHeight = 20;
         var mapWidth = Screen.width;
         var mapHeight = Screen.height;
-        var playerPos = PartyController.Instance.leaderObject.transform.position;
+        var playerPos = PartyController.Instance.leader.charObject.transform.position;
         localMarker.transform.localPosition = new Vector3(mapWidth * playerPos.x / worldWidth, mapHeight * playerPos.y / worldHeight);
     }
 

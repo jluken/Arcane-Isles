@@ -49,4 +49,24 @@ public class PauseMenuScript : MenuScreen
     {
         Application.Quit();
     }
+
+    public void MainMenu()
+    {
+        SceneLoader.Instance.ToMainMenu();
+    }
+
+    public void Settings()
+    {
+        UIController.Instance.ActivateSettings();
+    }
+
+    public void Save()
+    {
+        SaveSystem.SaveGame(PartyController.Instance, SceneLoader.Instance);
+    }
+
+    public void Load()
+    {
+        SceneLoader.Instance.LoadFromData(SaveSystem.LoadGame());
+    }
 }
