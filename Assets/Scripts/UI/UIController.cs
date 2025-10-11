@@ -50,17 +50,6 @@ public class UIController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //camScript = camScript.Instance;
-        //screens = new List<MenuScreen>();
-        //mapScript = map.GetComponent<MenuScreen>();
-        //buttonsScript = buttons.GetComponent<MenuScreen>();
-        //dialogScript = dialog.GetComponent<DialogueBox>();
-        //journalScript = journal.GetComponent<MenuScreen>();
-        //pauseScreenScript = pauseScreen.GetComponent<MenuScreen>();
-        //charScreenScript = charScreen.GetComponent<InventoryManager>();
-        //tradeScreenScript = tradeScreen.GetComponent<InventoryManager>();
-        //exitableScreens = new List<MenuScreen> { mapScript, journalScript, pauseScreenScript, charScreenScript, tradeScreenScript };
-        //stickyScreens = new List<MenuScreen> { buttonsScript, dialogScript };
 
         screenKeyCodes = new Dictionary<KeyCode, MenuScreen>
         {
@@ -79,7 +68,7 @@ public class UIController : MonoBehaviour
         menusAllowed = allow;  //TODO: handle this more about whether "in game" behavior vs main menu
     }
 
-    void Update()
+    void Update()  // TODO: possibly make UI a state machine?
     {
         if (!menusAllowed) return;
         foreach (KeyCode screenKey in screenKeyCodes.Keys)
