@@ -17,7 +17,7 @@ public class SceneLoader : MonoBehaviour
     private LevelManager levelManager;
 
 
-    public List<string> ActiveLevelScenes { get; private set; }
+    public List<string> ActiveLevelScenes { get; private set; }  // TODO: is this redundant with the keys of SceneObjectManagers (will just need to remove them when unloaded)? 
     private Dictionary<string, SceneSaveData> SceneData;
     public Dictionary<string, SceneObjectManager> SceneObjectManagers;
     private bool partyAndUILoaded;
@@ -62,7 +62,7 @@ public class SceneLoader : MonoBehaviour
         var oldLevel = levelManager;
         SetLoadingScreen();
         //PartyController.Instance.MoveParty(levelManager.GetSpawnPoints(spawnLoc), false);
-        StartCoroutine(ActivateLevel(levelName));
+        StartCoroutine(ActivateLevel(levelName, spawnLoc));
         if (oldLevel != null && levelName != oldLevel.LevelName) DeactivateLevel(oldLevel);
     }
 
@@ -176,6 +176,11 @@ public class SceneLoader : MonoBehaviour
             totalSceneData[activeScene].loaded = true;
         }
         return totalSceneData;
+    }
+
+    public Dictionary<string, SceneObjectManager> GetCurrentSceneManagers()
+    {
+        return ActiveLevelScenes.ToDictionary(scene => scene, scene => SceneObjectManagers[scene]);
     }
 
     public void LoadFromData(GameSaveData saveData)

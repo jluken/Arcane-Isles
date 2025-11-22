@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using System;
-using UnityEngine;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Random = System.Random;
 
 public class CharStats : MonoBehaviour
@@ -71,6 +71,7 @@ public class CharStats : MonoBehaviour
     };
 
     private Dictionary<int, (StatVal, int)> modifiers = new Dictionary<int, (StatVal, int)>(); // id: (stat, amount)
+    private Dictionary<int, float> modifierTimeouts = new Dictionary<int, float>(); // id: (stat, endTime)
 
     private EntityInventory charInventory;
 
@@ -98,6 +99,11 @@ public class CharStats : MonoBehaviour
         //setBaseStats(this.vigor, this.finesse, this.psyche);
         //this.health = GetCurrStat(StatVal.maxHealth);
         //this.magick = GetCurrStat(StatVal.maxMagick);
+    }
+
+    public void Update()
+    {
+        CheckForExpiration(GameData.Instance.gameTime);
     }
 
     public void LoadFromSaveData(PartyData.CharStatData statData)
@@ -170,8 +176,18 @@ public class CharStats : MonoBehaviour
         while (existingIDs.Contains(newId)) newId = rnd.Next();
         modifiers[newId] = (stat, amount);
         PartyController.Instance.UpdateParty();
-        // TODO: create event that removes modifier after duration seconds if not None
+        // TODO: eventually allow potions to add new actions, not just stat modifiers?
+        if(duration > 0) { modifierTimeouts[newId] = GameData.Instance.gameTime + duration; }
         return newId;
+    }
+
+    private void CheckForExpiration(float time)
+    {
+        var expired = modifierTimeouts.Where(pair => pair.Value >= time).Select(pair => pair.Key);
+        foreach (var modId in expired) { 
+            modifiers.Remove(modId);
+            modifierTimeouts.Remove(modId);
+        }
     }
 
     public void removeModifier(int id)
@@ -187,6 +203,7 @@ public class CharStats : MonoBehaviour
         if (this.health <= 0) { 
             this.health = 0;
             deathEvent?.Invoke();
+            Die();
         }
     }
 
@@ -198,21 +215,13 @@ public class CharStats : MonoBehaviour
         PartyController.Instance.UpdateParty();
     }
 
-
-    //public int currPsyche()
-    //{
-    //    return this.basePsyche + currStatMods(InventoryData.StatToChange.psyche);
-    //}
-
-    //public int currVigor()
-    //{
-    //    return this.baseVigor + currStatMods(InventoryData.StatToChange.vigor);
-    //}
-
-    //public int currFinesse()
-    //{
-    //    return this.baseFinesse + currStatMods(InventoryData.StatToChange.finesse);
-    //}
+    public void Die()  //TODO: find better place to put this. NPC?
+    {
+        //TODO: award xp, drop loot, etc
+        CombatManager.Instance.RemoveCombatant(gameObject.GetComponent<NPC>());
+        SceneLoader.Instance.SceneObjectManagers[gameObject.scene.name].RemoveNPC(gameObject);
+        // TODO: handle if player char and not NPC
+    }
 
     public int currStatMods(StatVal stat)
     {

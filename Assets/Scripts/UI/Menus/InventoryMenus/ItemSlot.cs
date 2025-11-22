@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     public int slotID;
-    public string slotGroup;
+    public string slotGroup;  // TODO: make enum
     public InventoryMenu parentMenu;
     
     public InventoryData itemData;
@@ -135,17 +135,19 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         if (itemSelected && this.itemData != null)
         {
             parentMenu.ActivateItem(this.itemData, slotGroup, slotID);
+            parentMenu.DeselectAllSlots();
         }
         else
         {
             parentMenu.SelectItem(this.itemData, slotGroup, slotID);
+            selectedShader.SetActive(true);
+            itemSelected = true;
         }
 
         Debug.Log("Left Click");
         Debug.Log(parentMenu);
         
-        selectedShader.SetActive(true);
-        itemSelected = true;
+        
     }
 
     public void OnRightClick()
@@ -155,8 +157,18 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
     public virtual void OnDrop(PointerEventData eventData) // TODO: is this used?
     {
         Debug.Log("DROP");
+        
         GameObject dropped = eventData.pointerDrag;
         DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
+        if (draggableItem.sourceSlotType != InventoryData.ItemType.misc && currentStack > 0) // Will be swapping with a restricted slot
+        {
+            if (draggableItem.inventoryData.itemType != draggableItem.sourceSlotType) return;
+            if(draggableItem.parentBeforeDrag.gameObject.GetComponent<EquipmentSlot>() != null) // Will equip this item
+            {
+                if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;
+                CombatManager.Instance.SpendActionPoints(itemData.APCost);
+            }
+        }
         draggableItem.parentAfterDrag = transform;
         draggableItem.invSlot = slotID;
     }

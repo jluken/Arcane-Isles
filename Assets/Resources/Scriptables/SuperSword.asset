@@ -15,9 +15,13 @@ MonoBehaviour:
   itemName: Super Sword
   description: Sharp and pointy
   sprite: {fileID: 21300000, guid: 663a7b233dbb09d4182b4b3e99419ad8, type: 3}
+  itemPrefab: {fileID: 0}
   price: 70
+  weight: 0
+  APCost: 3
+  abilities:
+  - {fileID: 11400000, guid: 0f795a0b64c409e40b3746b05bed83ec, type: 2}
   maxStackSize: 1
   itemType: 1
-  statsToChange: 03000000
-  statChanges:
-  - 3
+  equipStats: []
+  consumeStats: []

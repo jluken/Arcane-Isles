@@ -1,6 +1,8 @@
+using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -9,13 +11,10 @@ using UnityEngine.EventSystems;
 
 public class Selectable : MonoBehaviour
 {
-    private bool selected;
-    private bool isActive;
-    //private bool reached;
     public Vector3 standPoint;  // TODO: possibly reevaluate whether this is best practice. Old 2d games like BG1 use it, but not modern games like BG3
     //private SelectionController selectionController;
 
-    private Action interactAction;
+    protected Interaction interactAction;
 
     private ItemSelectMenu selectMenu;
 
@@ -27,73 +26,69 @@ public class Selectable : MonoBehaviour
 
     //private void Awake()
     //{
-        
+
     //}
 
     // Start is called before the first frame update
+    //public List<ActionName> actionNames;
+
+    //public enum ActionName // Used for optional actions
+    //{
+    //    Select,
+    //    Inspect,
+    //    Go_Here,
+    //    Talk,
+    //    Trade,
+    //    Recruit,
+    //    Stay,
+    //    Follow,
+    //    Move_To,
+    //    Open_Container,
+    //    Open_Door,
+    //    Go_To,
+    //    Attack
+    //};
+    public SelectionData inspectSelection;
+    public SelectionData goHere;
+    public SelectionData combatMovement;
+
+    //public Dictionary<ActionName, Action> actionMapping;
+
     public virtual void Start()
     {
-        isActive = false;
-        //selectionController = SelectionController.Instance;
-        SelectionController.Instance.selectEvent += Deselect;
+        SelectionController.Instance.deselectEvent += UnsetInteraction;
         itemPopUpPrefab = Resources.Load<GameObject>("Prefabs/ItemPopup");
         selectMenu = ItemSelectMenu.Instance;
         dialogueBox = DialogueBox.Instance;
 
-        //if (textLog != null) textLogText = textLog.GetComponent<TextLog>();
+        goHere = new SelectionData(this)
+        {
+            actionName = "Go Here",
+            setSelect = true
+        };
+        inspectSelection = new SelectionData(this)
+        {
+            actionName = "Inspect",
+            immediateAction = Inspect
+        };
+        combatMovement = new SelectionData(this)
+        {
+            actionName = "Go Here",
+            setSelect = true,
+            //immediateAction = CombatMove
+        };
+
+
         displayRoutine = DisplayText();
-        selected = false;
     }
 
-    // Update is called once per frame
-    void Update()
+    public virtual void Interact(PartyMember player)
     {
-        RaycastHit hit;
-        LayerMask layerMask = LayerMask.GetMask("Barrier");
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1) && hit.transform.gameObject == gameObject)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Actions()[0].Item2.Invoke();
-            }
-            else if (Input.GetMouseButtonDown(1))
-            {
-                Debug.Log("select menu: " + selectMenu);
-                UIController.Instance.ActivateItemSelect(Input.mousePosition, Actions());
-            }
-
-            HoverDisplay();
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject == PartyController.Instance.leader.charObject && !IsActive() && selected)
-        {
-            RaycastHit hit;
-            var rayDirection = other.gameObject.transform.position - transform.position;
-            if (Physics.Raycast(transform.position, rayDirection, out hit))
-            {
-                if (hit.transform == other.gameObject.transform)
-                {  // Line of sight between player and target
-                    Interact();
-                    PartyController.Instance.leader.charObject.GetComponent<MoveToClick>().StopMoving();
-                }
-
-            }
-        }
-    }
-
-    public virtual void Interact()
-    {
-        interactAction?.Invoke();
-        Deselect();
-        isActive = true;
-    }
-
-    public void Deactivate()
-    {
-        isActive = false;
+        Debug.Log("Interact: " + this.name + interactAction);
+        interactAction?.Interact(player, this);
+        SelectionController.Instance.Deselect();
+        UnsetInteraction();
+        //isActive = true;
     }
 
     public void HoverDisplay()
@@ -102,46 +97,50 @@ public class Selectable : MonoBehaviour
         //TODO: highlight object - possibly use asset if can't find way to "outline" in 3D
     }
 
-    public bool IsActive()
+    //public bool IsActive()  // TODO: redundant?
+    //{
+    //    return isActive;
+    //}
+
+    public void Select()
     {
-        return isActive;
+        SelectionController.Instance.Select(this);
     }
 
-    public void SetTarget()
-    {
-        SelectionController.Instance.NewSelection();
-        selected = true;
-        PartyController.Instance.SetPartyDestination(transform.position);  // TODO: if standpoint, set here with absolute values
-    }
-
-    public void SetInteractAction(Action activeAct)
+    public void SetInteractAction(Interaction activeAct)
     {
         interactAction = activeAct;
     }
 
-    public void Deselect()
+    public void UnsetInteraction()
     {
         interactAction = null;
-        selected = false;
-        Deactivate();
     }
 
-    public virtual List<(string, Action)> Actions()
+    public virtual List<SelectionData> Actions()
     {
-        var acts = new List<(string, Action)>();
-        acts.Add(("Go Here", SetTarget));
-        // Derived classes can have more options
-        
+        var acts = new List<SelectionData>() { goHere, inspectSelection};
         return acts;
+    }
+
+    public virtual List<SelectionData> CombatActions()
+    {
+        //Returns the actions accessible during combat
+        return Actions();
     }
 
     public void Inspect()
     {
-
         //dialogueBox.AddText(description); // TODO: what sort of dialogue box should be persistant, separate from talking box
         StopCoroutine(displayRoutine);
         displayRoutine = DisplayText();
         StartCoroutine(displayRoutine);
+    }
+
+    public void CombatMove()  // TODO: maybe combine with NPC for generic "use combat ability" in selectable?
+    {
+        PartyController.Instance.GoTo(gameObject.transform.position);
+        //CombatManager.Instance.UseCombatAbility(this, CombatManager.CombatActionType.Run);
     }
 
     IEnumerator DisplayText()
@@ -156,5 +155,9 @@ public class Selectable : MonoBehaviour
         yield return new WaitForSeconds(3);
         Destroy(itemPopUp);// TODO: fade out animation?
     }
+}
 
+public abstract class Interaction  // TODO: possibly have every interaction carry an AP cost?
+{
+    public abstract void Interact(PartyMember player, Selectable interactable);  // TODO: Eventually need to make generic actor class that PartyMember and Enemy share (Selectable?)
 }

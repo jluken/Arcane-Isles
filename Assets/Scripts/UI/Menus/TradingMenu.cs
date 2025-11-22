@@ -70,7 +70,7 @@ public class TradingMenu : InventoryMenu
 
     public override void DeactivateMenu()
     {
-        SelectionController.Instance.NewSelection();
+        SelectionController.Instance.Deselect();
         inventoryMenu.SetActive(false);
         currentInventory = null;
         UpdateEntity();

@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -54,7 +55,7 @@ public class PartyController : MonoBehaviour
 
             //partyMemberComp.charObject..transform.position = new Vector3(partyMemberData.pos[0], partyMemberData.pos[1], partyMemberData.pos[2]);
             partyMemberComp.charObject.GetComponent<NavMeshAgent>().Warp(new Vector3(partyMemberData.pos[0], partyMemberData.pos[1], partyMemberData.pos[2]));
-            partyMemberComp.charObject.transform.rotation = Quaternion.identity *  Quaternion.Euler(partyMemberData.rot[0], partyMemberData.rot[1], partyMemberData.rot[2]);
+            partyMemberComp.charObject.transform.rotation = Quaternion.identity * Quaternion.Euler(partyMemberData.rot[0], partyMemberData.rot[1], partyMemberData.rot[2]);
 
             var memberStats = partyMember.GetComponent<CharStats>();
             memberStats.LoadFromSaveData(partyMemberData.charStatData);
@@ -75,7 +76,9 @@ public class PartyController : MonoBehaviour
         party = party.Take(1).ToList();
     }
 
-    public PartyMember leader => selectedPartyMember;
+    public PartyMember leader => selectedPartyMember;  // TODO: combine with CombatManager active NPC after refactor
+
+    public NPC activeNPC => CombatManager.Instance.combatActive ? CombatManager.Instance.activeCombatant : leader.charObject.GetComponent<NPC>();  // TODO: put somewhere else
 
     public void MoveParty(List<Vector3> partyLocs, bool enable)
     {
@@ -83,7 +86,7 @@ public class PartyController : MonoBehaviour
         for (int i = 0; i < party.Count; i++)
         {
             Debug.Log("Moving party member " + i + " to " + partyLocs[i]);
-            party[i].MoveChar(partyLocs[i], enable);
+            party[i].TeleportChar(partyLocs[i], enable);
         }
     }
 
@@ -113,7 +116,7 @@ public class PartyController : MonoBehaviour
         return true;
     }
 
-    public void CreateCompanion(CharStats charStats, EntityInventory inv, GameObject recruitedNPCObj)  // Used for generating a new companion object
+    public void CreateCompanion(NPC npc, GameObject recruitedNPCObj)  // Used for generating a new companion object
     {
         Debug.Log("Create Companion");
         var companion = Instantiate(Resources.Load<GameObject>("Prefabs/PartyChar"), gameObject.transform);
@@ -124,8 +127,8 @@ public class PartyController : MonoBehaviour
         partyMember.charObject.GetComponent<NavMeshAgent>().Warp(recruitedNPCObj.transform.position);
         Debug.Log("New follower pos " + partyMember.charObject.transform.position);
         partyMember.charObject.transform.rotation = recruitedNPCObj.transform.rotation;
-        companion.GetComponent<CharStats>().LoadFromSaveData(PartyData.LoadCharStatData(charStats));
-        companion.GetComponent<EntityInventory>().LoadFromSaveData(new EntityInventorySaveData(inv));
+        companion.GetComponent<CharStats>().LoadFromSaveData(PartyData.LoadCharStatData(npc.charStats));
+        companion.GetComponent<EntityInventory>().LoadFromSaveData(new EntityInventorySaveData(npc.inventory));
         AddCompanion(partyMember);
     }
 
@@ -192,12 +195,22 @@ public class PartyController : MonoBehaviour
         UpdateParty();
     }
 
-    public void SetPartyDestination(Vector3 destination)  // TODO: for now this is just all in a single file line. Play with more complex configs later after it works
+    public void GoTo(Vector3 destination)
     {
+        if (CombatManager.Instance.combatActive) {
+            Selectable target;
+            if (SelectionController.Instance.selectedItem != null) target = SelectionController.Instance.selectedItem;
+            else target = CombatManager.Instance.activeCombatant.GetComponent<MoveToClick>().SetTempMarker(destination);
+            CombatManager.Instance.UseCombatAbility(target, CombatManager.CombatActionType.Run);
+        }
+        else SetPartyDestination(destination);
+    }
+
+    private void SetPartyDestination(Vector3 destination)  // TODO: for now this is just all in a single file line. Play with more complex configs later after it works
+    {
+        // TODO: Just make this a method that send the leader to the point and then calls some functions on the canFollow followers
         var marchLeader = selectedPartyMember.charObject.GetComponent<MoveToClick>();
         var startPoint = selectedPartyMember.charObject.transform.position - new Vector3(0, selectedPartyMember.transform.localScale.y, 0);
-        //Debug.Log("start");
-        //Debug.Log(startPoint);
         marchLeader.SetDestination(destination);
         //foreach (var corner in marchLeader.AgentPath().corners) { Debug.Log(corner); }
         Vector3[] leaderPathCorners = new Vector3[] { startPoint }.Concat(marchLeader.AgentPath().corners).ToArray();  // TODO: should this just be a list?
@@ -210,10 +223,6 @@ public class PartyController : MonoBehaviour
             for (int j = leaderPathCorners.Length - 1; j > 0; j--)
             {
                 var stretch = Vector3.Distance(leaderPathCorners[j], leaderPathCorners[j - 1]);
-                Debug.Log("stetch");
-                Debug.Log(leaderPathCorners[j]);
-                Debug.Log(leaderPathCorners[j - 1]);
-                Debug.Log(stretch);
                 if (stretch > moveBackDist)
                 {
                     var direction = (leaderPathCorners[j - 1] - leaderPathCorners[j]).normalized;

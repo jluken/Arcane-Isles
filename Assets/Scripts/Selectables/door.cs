@@ -7,38 +7,48 @@ public class doorway : Selectable
 {
 
     public bool open = false;
-    public GameObject door;  // TODO: with actual assets, door will be one "object" and can have separate invisible barrier tied to it
+    public GameObject doorObject;
 
-    private NavMeshSurface surface;
+    //private NavMeshSurface surface;
+    public SelectionData openDoor;
+    public SelectionData closeDoor;
 
     public override void Start()
     {
-        surface = GameObject.Find("Floor").GetComponent<NavMeshSurface>();
-        door.SetActive(!open);
+        //surface = GameObject.Find("Floor").GetComponent<NavMeshSurface>();
+        doorObject.SetActive(!open);
+        openDoor = new SelectionData(this)
+        {
+            actionName = "Open",
+            setSelect = true,
+            interaction = new OpenClose()
+        };
+        closeDoor = new SelectionData(this)
+        {
+            actionName = "Close",
+            setSelect = true,
+            interaction = new OpenClose()
+        };
         base.Start();
     }
 
-    public override List<(string, Action)> Actions()
+    public override List<SelectionData> Actions()
     {
-        var acts = new List<(string, Action)>();
-        if (open) acts.Add(("Close", DoorTarget));
-        else acts.Add(("Open", DoorTarget));
-        acts.Add(("Inspect", base.Inspect));
-
-        return acts;
+        if (open) return new List<SelectionData> { closeDoor };
+        else return new List<SelectionData> { openDoor, inspectSelection };
     }
+}
 
-    public void DoorTarget()
+public class OpenClose : Interaction
+{
+    public override void Interact(PartyMember player, Selectable interactable)
     {
-        Debug.Log("Door Target");
-        base.SetTarget();
-        base.SetInteractAction(() => { OpenClose();});
-    }
-
-    public void OpenClose()
-    {
-        Debug.Log("activate door");
-        open = !open;
-        door.SetActive(!open);
+        // TODO: with actual assets, door will be one "object" and can have separate invisible barrier tied to i
+        //Debug.Log("Door interact");
+        if (interactable.GetComponent<doorway>() == null) { Debug.LogError("Trying to open/close a non-door"); }
+        var door = interactable.GetComponent<doorway>();
+        door.open = !door.open;
+        Debug.Log(door.open);
+        door.doorObject.SetActive(!door.open);
     }
 }

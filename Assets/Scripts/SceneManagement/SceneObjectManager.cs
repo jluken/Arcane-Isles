@@ -64,4 +64,10 @@ public class SceneObjectManager : MonoBehaviour
         GroundObjects.Remove(obj);
         Destroy(obj);
     }
+
+    public void RemoveNPC(GameObject npc)
+    {
+        npcs.Remove(npc);
+        Destroy(npc);
+    }
 }

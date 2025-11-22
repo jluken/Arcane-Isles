@@ -4,65 +4,120 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class NPC : Selectable
+public class NPC : Selectable  // TODO: rename to "Character" or something since it includes player characters
 {
-    private CharStats charStats;
-    private EntityInventory inventory;
+    public CharStats charStats;
+    public EntityInventory inventory;
 
-    public enum ActionName  // Used for optional actions
-    {
-        Talk,
-        Trade,
-        Recruit
-    };
-    private Dictionary<ActionName, Action> actionMapping; 
-    public List<ActionName> actionNames;
+    public CapsuleCollider InteractRad;  // Todo: move this to NPC
+    public float reach = 1;
+
+    public SelectionData talk;
+    public SelectionData trade;
+    public SelectionData recruit;
+    public SelectionData startAttack;
+    public SelectionData attack;
 
     public List<string> dialogue;
     public override void Start()
     {
-        charStats = gameObject.GetComponent<CharStats>();
-        inventory = gameObject.GetComponent<EntityInventory>();
+        LoadNPCData();
+        InteractRad.radius = reach;
 
-        actionMapping = new Dictionary<ActionName, Action> {
-            { ActionName.Talk, Talk },
-            { ActionName.Trade, Trade },
-            { ActionName.Recruit, Recruit },
+        talk = new SelectionData(this)
+        {
+            actionName = "Talk",
+            setSelect = true,
+            interaction = new Talk()
         };
+        trade = new SelectionData(this)
+        {
+            actionName = "Trade",
+            setSelect = true,
+            interaction = new Trade()
+        };
+        recruit = new SelectionData(this)
+        {
+            actionName = "Recruit",
+            setSelect = true,
+            interaction = new Recruit()
+        };
+        startAttack = new SelectionData(this)
+        {
+            actionName = "Attack",
+            immediateAction = CombatManager.Instance.InitiateCombat
+        };
+        attack = new SelectionData(this)
+        {
+            actionName = "Attack",
+            immediateAction = TargetAttack
+        };
+
         base.Start();
     }
 
-    public override List<(string, Action)> Actions()
+    public virtual void LoadNPCData()
     {
-        var acts = new List<(string, Action)>();
-        foreach (var action in actionNames) { 
-            acts.Add((action.ToString(), actionMapping[action]));
-        }
+        charStats = gameObject.GetComponent<CharStats>();
+        inventory = gameObject.GetComponent<EntityInventory>();
+    }
+
+    public override List<SelectionData> Actions()
+    {
+        var acts = new List<SelectionData>() { talk, inspectSelection, trade, recruit, startAttack};
         return acts;
     }
 
-    public void Talk()
+    public override List<SelectionData> CombatActions()
     {
-        // TODO: will need to overhaul when introduce dialogue
-        base.SetTarget();
-        //Action act = () => { dialogueBox.ActivateChat(dialogue, charStats.charImage); };
-        base.SetInteractAction(() => { UIController.Instance.ActivateDialog(dialogue, charStats.charImage); });
+        var acts = new List<SelectionData>() { attack, inspectSelection }; //TODO: add combatMovement as an option when made generic
+        return acts;
     }
 
-    public void Trade()
+    public void TargetAttack()  // TODO: find better place to put attack methods (NPC?)
     {
-        //inventoryManager.ActivateInventory(inventory);
-        base.SetTarget();
-        base.SetInteractAction(() => { UIController.Instance.ActivateTradeScreen(inventory); });
+        CombatManager.Instance.UseCombatAbility(this, CombatManager.CombatActionType.Attack);
     }
 
-    public void Recruit()
+    public virtual void SetToCombat()
     {
-        //inventoryManager.ActivateInventory(inventory);
-        base.SetTarget();
-        //base.SetInteractAction(() => { PartyController.Instance.AddCompanion(this.GetComponent<PartyMember>()); });
-        
-        // TODO: eventually will have smarter logic of what a companion's stats are upon recruitment
-        base.SetInteractAction(() => { PartyController.Instance.CreateCompanion(charStats, inventory, gameObject); });  
+        //TODO: move states to here?
+    }
+
+    public virtual void EndCombat()
+    {
+        //TODO: move states to here?
     }
 }
+
+public class Talk : Interaction
+{
+    public override void Interact(PartyMember player, Selectable interactable)
+    {
+        if (interactable.GetComponent<NPC>() == null) { Debug.LogError("Can only talk to NPCs"); }
+        var npc = interactable.GetComponent<NPC>();
+        UIController.Instance.ActivateDialog(npc.dialogue, npc.charStats.charImage);
+    }
+}
+
+public class Trade : Interaction
+{
+    public override void Interact(PartyMember player, Selectable interactable)
+    {
+        if (interactable.GetComponent<NPC>() == null) { Debug.LogError("Can only trade with NPCs"); }
+        var npc = interactable.GetComponent<NPC>();
+        UIController.Instance.ActivateTradeScreen(npc.inventory);
+    }
+}
+
+public class Recruit : Interaction
+{
+    public override void Interact(PartyMember player, Selectable interactable)
+    {
+        if (interactable.GetComponent<NPC>() == null) { Debug.LogError("Can only recruit NPCs"); }
+        // TODO: Add restrictions to NPC recruiting when more specific follower details are created
+        var npc = interactable.GetComponent<NPC>();
+        PartyController.Instance.CreateCompanion(npc, npc.gameObject);
+    }
+}
+

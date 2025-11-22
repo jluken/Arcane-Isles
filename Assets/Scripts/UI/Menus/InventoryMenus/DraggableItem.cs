@@ -12,7 +12,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public InventoryData inventoryData;
     private UIController uiController;
     //private InventoryMenu invMenu;
-    
+    public InventoryData.ItemType sourceSlotType;
 
     public int stackSize;
 
@@ -42,6 +42,9 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         var startSlot = parentBeforeDrag.gameObject.GetComponent<ItemSlot>();
         stackSize = startSlot.currentStack;
         inventoryData = startSlot.ClearItem();
+        if (startSlot.GetComponent<EquipmentSlot>() != null) sourceSlotType = startSlot.GetComponent<EquipmentSlot>().equipType;
+        else sourceSlotType = InventoryData.ItemType.misc;
+
         //invMenu.UpdateEntity();
         //invMenu.DeselectAllSlots();
     }
@@ -67,6 +70,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         image.raycastTarget = true;
         var newSlot = parentAfterDrag.gameObject.GetComponent<ItemSlot>();
         int roomLeft = inventoryData.maxStackSize - newSlot.currentStack;
+
+        if (newSlot.GetComponent<EquipmentSlot>() != null || newSlot.GetComponent<EquipmentSlot>())
 
         Debug.Log("Max size: " + inventoryData.maxStackSize);
         Debug.Log("Stack at dest: " + newSlot.currentStack);

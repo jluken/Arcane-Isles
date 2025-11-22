@@ -56,10 +56,10 @@ public class PlayerInventoryMenu : InventoryMenu
             EquipSlots[i].parentMenu = this;
         }
 
-        equipTypes = new Dictionary<InventoryData.ItemType, int> { 
-            { InventoryData.ItemType.weapon, 0 },
-            { InventoryData.ItemType.armor, 1 },
-            { InventoryData.ItemType.headwear, 2 },
+        equipTypes = new Dictionary<InventoryData.ItemType, int> { //TODO: fix this to be hardcoded
+            { InventoryData.ItemType.headwear, 0 },
+            { InventoryData.ItemType.weapon, 1 },
+            { InventoryData.ItemType.armor, 2 },
             { InventoryData.ItemType.boots, 3 }
         }; // TODO: check if these are right; maybe make dynamic
     }
@@ -90,7 +90,7 @@ public class PlayerInventoryMenu : InventoryMenu
 
     public override void DeactivateMenu()
     {
-        SelectionController.Instance.NewSelection();
+        SelectionController.Instance.Deselect();
         inventoryMenu.SetActive(false);
         Time.timeScale = 1; // Unpause
         UpdateEntity();
@@ -142,6 +142,7 @@ public class PlayerInventoryMenu : InventoryMenu
     {
         if (itemData.itemType == InventoryData.ItemType.consumable)
         {
+            if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;
             foreach (var consumeData in itemData.consumeStats)
             {
                 if (consumeData.consumeStat == CharStats.StatVal.health) playerStats.updateHealth(consumeData.value);
@@ -151,43 +152,33 @@ public class PlayerInventoryMenu : InventoryMenu
                     playerStats.addModifier(consumeData.consumeStat, consumeData.value, consumeData.duration);
                 }
             }
+            CombatManager.Instance.SpendActionPoints(itemData.APCost);
             PlayerInventorySlots[slotId].RemoveItem(1, true);
         }
-        else if (equipTypes.ContainsKey(itemData.itemType))
+        else if (equipTypes.ContainsKey(itemData.itemType))  // TODO: hard-code equipment types and slots
         {
             var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
-            var equipSlot = equipTypes[itemData.itemType];
-            if (slotGroup == "inventory")
+            var equipSlot = equipTypes[itemData.itemType]; // TODO: hard-code equipment types and slots
+            Debug.Log("Setting equipment");
+            Debug.Log(itemData.itemType);
+            Debug.Log(equipSlot);
+            if (slotGroup == "inventory") // Equip the item from the inventory
             {
+                if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;
                 var oldEquip = playerInventory.GetEquipment(equipSlot);
                 playerInventory.SetEquipment(equipSlot, itemData);
                 playerInventory.SetInventory(slotId, oldEquip);
+                CombatManager.Instance.SpendActionPoints(itemData.APCost);
             }
             else
             {
+                Debug.Log("De-equip");
                 var leftover = playerInventory.AddNewItem(playerInventory.GetEquipment(equipSlot));
                 if (leftover == 0) playerInventory.SetEquipment(equipSlot, null);
             }
             ActivateMenu(); // Reactivate menu after resetting through entity data
         }
     }
-
-    //private ItemSlot GetItemSlot(int slotId)
-    //{
-    //    ItemSlot slot = Array.Find(PlayerInventorySlots, s => s.slotID == slotId);
-    //    var matching = PlayerInventorySlots.Where(s => s.slotID == slotId);
-    //    if (matching.Any()) return matching.First();
-    //    matching = EquipSlots.Where(s => s.slotID == slotId);
-    //    if (matching.Any()) return matching.First();
-    //    throw new Exception("No slot found matching id " + slotId.ToString());
-    //}
-
-    //public InventoryData RemoveItem(int slotID, int amount = 1, bool destroyDrag = false)
-    //{
-    //    playerInventory.SetInventory(slotID, null, 0);
-    //    DeselectAllSlots();
-    //    return ItemSlots[slotID].RemoveItem(amount, destroyDrag);
-    //}
 
     public void UpdateEntity()
     {
@@ -225,6 +216,7 @@ public class PlayerInventoryMenu : InventoryMenu
 
     public override void DeselectAllSlots()
     {
+        Debug.Log("Deselect");
         PlayerInventorySlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
         EquipSlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
         

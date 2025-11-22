@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TransportDoor : Selectable
+public class TransportDoor : doorway
 {
     public string toLevel;
     public int spawnPoint;
@@ -12,16 +12,25 @@ public class TransportDoor : Selectable
         base.Start();
     }
 
-    public override List<(string, Action)> Actions()
+    public override List<SelectionData> Actions()
     {
-        var acts = new List<(string, Action)>();
-        acts.Add(("Go To", GoToNewLevel));
+        var goToLevel = new SelectionData(this)
+        {
+            actionName = "Go To",
+            setSelect = true,
+            interaction = new NewLevel()
+        };
+        var acts = new List<SelectionData>() { goToLevel };  // TODO: will eventually merge more with real door when out of test mode
         return acts;
     }
+}
 
-    public void GoToNewLevel()
+public class NewLevel : Interaction
+{
+    public override void Interact(PartyMember player, Selectable interactable)
     {
-        base.SetTarget();
-        base.SetInteractAction(() => { SceneLoader.Instance.SetToLevelSpawn(toLevel, spawnPoint); });
+        if (interactable.GetComponent<TransportDoor>() == null) { Debug.LogError("Need transport door to travel to new level"); }
+        var door = interactable.GetComponent<TransportDoor>();
+        SceneLoader.Instance.SetToLevelSpawn(door.toLevel, door.spawnPoint);
     }
 }

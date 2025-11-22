@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
 
@@ -39,6 +38,7 @@ public class EntityInventory : MonoBehaviour
     public void SetInventory(int idx, InventoryData itemData, int count=1)
     {
         if (count == 0) itemData = null;
+        if (itemData == null) count = 0;
         inventoryTypes[idx] = itemData;
         inventoryCounts[idx] = count;
     }
@@ -72,6 +72,13 @@ public class EntityInventory : MonoBehaviour
         }
         return modifiers;
     }
+
+    public List<AbilityAction> GetWeaponAbilities()
+    {
+        AbilityAction defaultAttack = Resources.Load<AbilityAction>("Scriptables/Punch");  // TODO: handle this dynamically (called from NPC class containing "default" actions)
+        if (equipment[1]  == null) return new List<AbilityAction> { defaultAttack };
+        return equipment[1].abilities; // TODO: hard code different equipment slots
+    } 
 
     public void Deselect()
     {

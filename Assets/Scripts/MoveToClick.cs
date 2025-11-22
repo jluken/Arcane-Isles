@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using TMPro;
@@ -18,6 +19,8 @@ public class MoveToClick : MonoBehaviour
     public float activateDist = 1.0f;
     private GameObject destMarkerPrefab;
     private GameObject destMarker;
+    public bool useMarker = false;
+    public bool controlled = false;
 
     public float movingThreshold = 0.1f;
     private bool startedMoving;
@@ -32,6 +35,8 @@ public class MoveToClick : MonoBehaviour
         //selectionController = SelectionController.Instance;
         stopCount = 0;
         destMarkerPrefab = Resources.Load<GameObject>("Prefabs/Destination");
+
+        if (controlled) SelectionController.Instance.deselectEvent += StopMoving;
     }
 
     private void FixedUpdate()
@@ -64,46 +69,64 @@ public class MoveToClick : MonoBehaviour
 
     }
 
-    //private void OnTriggerStay(Collider other)
-    //{
-    //    if (other.gameObject == controller.targetSelectableObj && !other.gameObject.GetComponent<Selectable>().IsActive())
-    //    {
-    //        RaycastHit hit;
-    //        var rayDirection = other.gameObject.transform.position - transform.position;
-    //        if (Physics.Raycast(transform.position, rayDirection, out hit))
-    //        {
-    //            if (hit.transform == other.gameObject.transform)
-    //            {  // Line of sight between player and target
-    //                controller.targetSelectableObj.GetComponent<Selectable>().Interact();
-    //                StopMoving();
-    //            }
+    public NavMeshPath PathToPoint(Vector3 dest)
+    {
+        NavMeshPath path = new NavMeshPath();
+        NavMeshHit hit;
+        if(NavMesh.SamplePosition(dest, out hit, 5.0f, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path)) return path;
+        else return null;
+    }
 
-    //        }
-    //    }
-    //}
+    public static float PathDist(NavMeshPath path)
+    {
+        var corners = path.corners;
+        var fullDistance = 0f;
+        for (int i = 1; i < corners.Length; i++)
+        {
+            fullDistance += Vector3.Distance(corners[i - 1], corners[i]);
+        }
+        return fullDistance;
+    }
+
+    public static Vector3 PointAlongPath(NavMeshPath calcPath, float dist)
+    {
+        float remaining = dist;
+        var startNode = calcPath.corners[0];
+        int nextIdx = 1;
+        while (remaining > 0 && nextIdx < calcPath.corners.Length) {
+            var nextNode = calcPath.corners[nextIdx];
+            float p2p = Vector3.Distance(startNode, nextNode);
+            if (p2p > remaining)
+            {
+                var direction = (nextNode - startNode).normalized;
+                return startNode + direction * remaining;
+            }
+            remaining -= p2p;
+            startNode = nextNode;
+            nextIdx++;
+        }
+        return startNode;
+    }
+
+    public Selectable SetTempMarker(Vector3 dest)
+    {
+        destMarker = Instantiate(destMarkerPrefab, dest, destMarkerPrefab.transform.rotation);
+        return destMarker.GetComponent<Selectable>();
+    }
 
     public void SetDestination(Vector3 dest)
     {
-        //agent.SetDestination(dest);
-        //yield return new WaitForEndOfFrame();
-        //Debug.Log("dest");
-        //Debug.Log(dest);
-        NavMeshPath path = new NavMeshPath();
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(dest, out hit, 5.0f, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path))
-        {
-            //Debug.Log("calculated");
-            agent.SetPath(path);
-        }
-        else
-        {
-            Debug.Log("calcfail");
-            Debug.Log(gameObject);
-            Debug.Log(gameObject.transform.position);
-            Debug.Log(agent.isOnNavMesh);
-        }
+        var path = PathToPoint(dest);
+        if (path != null) agent.SetPath(path);
+        //else
+        //{
+        //    Debug.Log("calcfail");
+        //    Debug.Log(gameObject);
+        //    Debug.Log(gameObject.transform.position);
+        //    Debug.Log(agent.isOnNavMesh);
+        //}
         Destroy(destMarker);
-        destMarker = Instantiate(destMarkerPrefab, agent.destination, destMarkerPrefab.transform.rotation);
+        if (useMarker) destMarker = Instantiate(destMarkerPrefab, agent.destination, destMarkerPrefab.transform.rotation);  // TODO: don't set marker if going to selectable and not in combat (just have selectable glow)
     }
 
     public void StopMoving()
@@ -113,6 +136,11 @@ public class MoveToClick : MonoBehaviour
         startedMoving = false;
         Destroy(destMarker);
         stopCount = 0;
+    }
+
+    public bool IsMoving()
+    {
+        return startedMoving || agent.hasPath;
     }
 
     public NavMeshPath AgentPath()

@@ -15,7 +15,7 @@ public class UIController : MonoBehaviour
     //public GameObject map;
     public MenuScreen mapScript;
     //public GameObject buttons;
-    public MenuScreen buttonsScript;
+    public DefaultUI defaultUI;
     //public GameObject dialog;
     public DialogueBox dialogScript;
     //public GameObject journal;
@@ -29,6 +29,7 @@ public class UIController : MonoBehaviour
     public ContainerInventoryMenu containerScreenScript;
     public ItemSelectMenu itemSelectScript;
     public SettingsMenu settingsMenu;
+    public CombatUI combatUI;
     //public MainMenu mainMenu;
 
     private List<MenuScreen> screens;
@@ -42,7 +43,7 @@ public class UIController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        screens = new List<MenuScreen> { mapScript, buttonsScript, dialogScript, journalScript, pauseScreenScript, charScreenScript, containerScreenScript, tradeScreenScript, itemSelectScript, settingsMenu };// mainMenu };
+        screens = new List<MenuScreen> { mapScript, defaultUI, dialogScript, journalScript, pauseScreenScript, charScreenScript, containerScreenScript, tradeScreenScript, itemSelectScript, settingsMenu, combatUI };// mainMenu };
         menusAllowed = false;
     }
 
@@ -70,6 +71,7 @@ public class UIController : MonoBehaviour
 
     void Update()  // TODO: possibly make UI a state machine?
     {
+        //TODO: limit menus you can open if not playerUnderControl
         if (!menusAllowed) return;
         foreach (KeyCode screenKey in screenKeyCodes.Keys)
         {
@@ -112,7 +114,17 @@ public class UIController : MonoBehaviour
         DeactivateAllMenus();
         Debug.Log("Default");
         Time.timeScale = 1; // Unpause
-        buttonsScript.ActivateMenu();
+        defaultUI.ActivateMenu();
+        //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
+    }
+
+    public void ActivateCombatUI(List<AbilityAction> abilities, bool isEnemy)
+    {
+        Debug.Log("Combat UI");
+        DeactivateAllMenus();
+        Time.timeScale = 1; // Unpause
+        combatUI.UpdateActions(abilities, isEnemy);
+        combatUI.ActivateMenu();
         //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
     }
 
@@ -191,7 +203,7 @@ public class UIController : MonoBehaviour
         containerScreenScript.ActivateMenu();
     }
 
-    public void ActivateItemSelect(Vector3 pos, List<(string, Action)> actionList)
+    public void ActivateItemSelect(Vector3 pos, List<SelectionData> actionList)
     {
         //DeactivateAllMenus();
         //Time.timeScale = 0; // Pause
@@ -201,7 +213,7 @@ public class UIController : MonoBehaviour
 
     public bool DefaultUIOpen()
     {
-        return buttonsScript.IsActive() && !OverlayOpen();
+        return defaultUI.IsActive() && !OverlayOpen();
     }
 
     public void ActivateSettings()

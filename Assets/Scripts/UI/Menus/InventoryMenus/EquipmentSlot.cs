@@ -15,9 +15,15 @@ public class EquipmentSlot : ItemSlot
         Debug.Log("EQUIPMENT DROP");
         GameObject dropped = eventData.pointerDrag;
         DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
+        Debug.Log(equipType);
+        Debug.Log(draggableItem.inventoryData.itemType);
         if (draggableItem.inventoryData.itemType == equipType)
         {
             Debug.Log("Not full");
+            if (!CombatManager.Instance.CheckActionPoints(draggableItem.inventoryData.APCost)) return;
+            CombatManager.Instance.SpendActionPoints(draggableItem.inventoryData.APCost);
+            Debug.Log("Cleared AP");
+
             draggableItem.parentAfterDrag = transform;
             draggableItem.invSlot = -1;
         }

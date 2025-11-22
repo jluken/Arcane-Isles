@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,16 +21,36 @@ public class ItemScript : Selectable
     // Update is called once per frame
     //void Update()
     //{
-        
+
     //}
 
-    public override void Interact()
+    public override List<SelectionData> Actions()
     {
-        int leftOver = PartyController.Instance.leader.GetComponent<EntityInventory>().AddNewItem(itemData, stackSize);
-        stackSize = leftOver;
-        if (stackSize <= 0)
+        SelectionData pickup = new SelectionData(this)
         {
-            SceneLoader.Instance.SceneObjectManagers[gameObject.scene.name].RemoveDroppedObject(gameObject);
+            actionName = "Pick Up",
+            setSelect = true,
+            interaction = new PickUp()
+        };
+
+        var acts = new List<SelectionData>();
+        acts.Add(pickup);
+        acts.Add(inspectSelection);
+        return acts;
+    }
+
+    public class PickUp : Interaction
+    {
+        public override void Interact(PartyMember player, Selectable interactable)
+        {
+            if (interactable.GetComponent<ItemScript>() == null) { Debug.LogError("Can only Pick up droppable items"); }
+            var droppable = interactable.GetComponent<ItemScript>();
+            int leftOver = player.GetComponent<EntityInventory>().AddNewItem(droppable.itemData, droppable.stackSize);
+            droppable.stackSize = leftOver;
+            if (droppable.stackSize <= 0)
+            {
+                SceneLoader.Instance.SceneObjectManagers[droppable.gameObject.scene.name].RemoveDroppedObject(droppable.gameObject);
+            }
         }
     }
 }

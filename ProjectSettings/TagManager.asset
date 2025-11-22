@@ -42,7 +42,7 @@ TagManager:
   - 
   - 
   - Unselectable
-  - 
+  - EditorOnly
   m_SortingLayers:
   - name: Default
     uniqueID: 0

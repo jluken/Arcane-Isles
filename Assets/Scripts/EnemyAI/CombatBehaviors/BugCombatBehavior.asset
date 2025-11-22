@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 442db3c21e7ac534d8cbf5d08bce78e3, type: 3}
+  m_Name: BugCombatBehavior
+  m_EditorClassIdentifier: Assembly-CSharp::BugCombatBehavior
+  Bite: {fileID: 11400000, guid: a133457575700da4ab33e86223f3f208, type: 2}
+  MoveTo: {fileID: 11400000, guid: c299b8daca1ff954680bbfbd2c67c0a5, type: 2}
+  MoveTowards: {fileID: 11400000, guid: b3260e0c0a86b224a8261a32dbe22ca3, type: 2}

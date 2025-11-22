@@ -167,7 +167,7 @@ public class FieldOfView : MonoBehaviour
         Vector3 dir = DirFromAngle(angle);
         RaycastHit hit;
 
-        if(Physics.Raycast(transform.position, dir, out hit, fieldOfViewDistance, obstacleMask))
+        if(Physics.Raycast(transform.position, dir, out hit, fieldOfViewDistance, obstacleMask))  // TODO: reassess layers like Selectables (don't need to be separate for raycasting)
         {
             return new ViewCastInfo(true, hit.point, hit.distance, angle, dir);
         }

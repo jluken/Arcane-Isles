@@ -20,19 +20,19 @@ public class SceneTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {
-        if (other.gameObject.GetComponent<NavMeshAgent>() != null && !SceneLoader.Instance.ActiveLevelScenes.Contains(sceneName))
+        if (other.gameObject.GetComponent<Follower>() != null && !SceneLoader.Instance.ActiveLevelScenes.Contains(sceneName))
         {
             Debug.Log("Enter scene trigger " + sceneName);
             StartCoroutine(SceneLoader.Instance.ActivateSubscene(sceneName));
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)  // TODO: what if some players still in scene?
     {
-        if (other.gameObject.GetComponent<NavMeshAgent>() != null && SceneLoader.Instance.ActiveLevelScenes.Contains(sceneName))
+        if (other.gameObject.GetComponent<Follower>() != null && SceneLoader.Instance.ActiveLevelScenes.Contains(sceneName))
         {
             Debug.Log("Exit scene trigger " + sceneName);
-            Debug.Log("Active Scenes: "); 
+            Debug.Log("Agent: " + other.name); 
             SceneLoader.Instance.ActiveLevelScenes.ForEach(Console.WriteLine);
             StartCoroutine(SceneLoader.Instance.DeactivateSubscene(sceneName));
         }

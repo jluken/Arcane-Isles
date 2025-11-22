@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharStats))]
-public class PlayerChar : PartyMember
+public class PlayerChar : PartyMember  // TODO: how useful is this approach (instead of just including a flag)?
 {
     public static PlayerChar Instance;
 
@@ -13,6 +13,7 @@ public class PlayerChar : PartyMember
     public void Awake()
     {
         Instance = this;
+        base.Awake();
     }
 
 }

@@ -62,16 +62,16 @@ public class ItemSelectMenu : MenuScreen
         buttons = new List<GameObject>();
     }
 
-    public void SetItemSelection(Vector3 pos, List<(string, Action)> actionList)
+    public void SetItemSelection(Vector3 pos, List<SelectionData> actionList)
     {
         int i = 0;
         Debug.Log("action list: ");
-        foreach ((string, Action) entry in actionList)
+        foreach (SelectionData entry in actionList)
         {  // TODO: possibly make list of tuples to preserve order
-            Debug.Log(entry.Item1);
+            //Debug.Log(entry.actionName);
             buttons.Add(Instantiate(menuButtonPrefab, gameObject.transform));
-            buttons[i].GetComponent<ButtonScript>().buttonText.text = entry.Item1;
-            buttons[i].GetComponent<Button>().onClick.AddListener(() => entry.Item2.Invoke());
+            buttons[i].GetComponent<ButtonScript>().buttonText.text = entry.actionName;
+            buttons[i].GetComponent<Button>().onClick.AddListener(() => SelectionController.Instance.InitiateSelection(entry));
             buttons[i].GetComponent<Button>().onClick.AddListener(() => DeactivateMenu());
             buttons[i].transform.SetParent(menu.transform);
             i++;

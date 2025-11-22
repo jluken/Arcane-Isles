@@ -4,20 +4,18 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Speaker : Selectable
+public class Speaker : NPC  // Making a type of NPC for now
 {
     //public GameObject textLog;
     private TextLog textLogText;
     //public GameObject itemPopUp;
     private IEnumerator displayRoutine;
 
-    public List<string> dialogue;
-
     public override void Start()
     {
         //textLogText = textLog.GetComponent<TextLog>();
         //itemPopUp.SetActive(false);
-        var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
+        //var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
         //itemPopUp.transform.localPosition = new Vector3(0, (height/2) + 2, 0);
         //displayRoutine = DisplayText();
         base.Start();
@@ -41,18 +39,10 @@ public class Speaker : Selectable
     //    itemPopUp.SetActive(false); // TODO: fade out animation?
     //}
 
-    public override List<(string, Action)> Actions()
+    public override List<SelectionData> Actions()
     {
-        var acts = new List<(string, Action)>();
-        acts.Add(("Inspect", Inspect));
-        acts.Add(("Talk", Talk));
+        var acts = new List<SelectionData>() { inspectSelection, talk} ;
 
         return acts;
-    }
-
-    public void Talk()
-    {
-        base.SetTarget();
-        base.SetInteractAction(() => { UIController.Instance.ActivateDialog(dialogue, null); });
     }
 }
