@@ -65,7 +65,7 @@ public class SkillCheckItem : Selectable
 
 public class SkillCheckInteract : Interaction
 {
-    public override void Interact(PartyMember player, Selectable interactable)
+    public override void Interact(NPC npc, Selectable interactable)
     {
         if (interactable.GetComponent<SkillCheckItem>() == null) { Debug.LogError("Can only trade with NPCs"); }
         var skillCheckItem = interactable.GetComponent<SkillCheckItem>();

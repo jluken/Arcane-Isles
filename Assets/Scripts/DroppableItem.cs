@@ -41,11 +41,11 @@ public class ItemScript : Selectable
 
     public class PickUp : Interaction
     {
-        public override void Interact(PartyMember player, Selectable interactable)
+        public override void Interact(NPC npc, Selectable interactable)
         {
             if (interactable.GetComponent<ItemScript>() == null) { Debug.LogError("Can only Pick up droppable items"); }
             var droppable = interactable.GetComponent<ItemScript>();
-            int leftOver = player.GetComponent<EntityInventory>().AddNewItem(droppable.itemData, droppable.stackSize);
+            int leftOver = npc.inventory.AddNewItem(droppable.itemData, droppable.stackSize);
             droppable.stackSize = leftOver;
             if (droppable.stackSize <= 0)
             {

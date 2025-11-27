@@ -17,11 +17,11 @@ public class PartyController : MonoBehaviour
 
     private int maxParty = 4;
     public List<PartyMember> party;
+    public PartyMember playerChar;
 
     private PartyMember selectedPartyMember;
 
-    public delegate void UpdatePartyEvent(); // TODO: do I need multiple void delegates?
-    public event UpdatePartyEvent updatePartyEvent;
+    public event Action updatePartyEvent;
 
     private void Awake()
     {
@@ -32,7 +32,8 @@ public class PartyController : MonoBehaviour
     public void Start()
     {
         party = new List<PartyMember>();
-        selectedPartyMember = PlayerChar.Instance.gameObject.GetComponent<PartyMember>();
+        selectedPartyMember = playerChar;
+        Debug.Log("Main char: " + selectedPartyMember);
         AddCompanion(selectedPartyMember);
     }
 
@@ -40,29 +41,30 @@ public class PartyController : MonoBehaviour
     {
         if (partyData == null) { return; }
         selectedPartyMember = party[0];  // main char
+        selectedPartyMember.SetActiveNPC();
         var mainCharData = partyData.partyMembers[0];
         selectedPartyMember.gameObject.name = mainCharData.id;
-        selectedPartyMember.GetComponent<CharStats>().LoadFromSaveData(mainCharData.charStatData);
-        selectedPartyMember.GetComponent<EntityInventory>().LoadFromSaveData(mainCharData.inventory);
-        //selectedPartyMember.charObject.transform.position = new Vector3(mainCharData.pos[0], mainCharData.pos[1], mainCharData.pos[2]);
-        selectedPartyMember.charObject.GetComponent<NavMeshAgent>().Warp(new Vector3(mainCharData.pos[0], mainCharData.pos[1], mainCharData.pos[2]));
+        selectedPartyMember.charStats.LoadFromSaveData(mainCharData.charStatData);
+        selectedPartyMember.inventory.LoadFromSaveData(mainCharData.inventory);
+        selectedPartyMember.mover.agent.Warp(new Vector3(mainCharData.pos[0], mainCharData.pos[1], mainCharData.pos[2]));
         DestroyCompanions();
         foreach (PartyData.CharSaveData partyMemberData in partyData.partyMembers.Skip(1))
         {
-            var partyMember = Instantiate(Resources.Load<GameObject>("Prefabs/PartyChar"), gameObject.transform);
-            partyMember.name = partyMemberData.id;
-            var partyMemberComp = partyMember.GetComponent<PartyMember>();
+            var partyMemberObj = Instantiate(Resources.Load<GameObject>("Prefabs/PartyChar"), gameObject.transform);
+            Debug.Log("party member obj: " + partyMemberObj);
+            partyMemberObj.name = partyMemberData.id;
+            var partyMember = partyMemberObj.GetComponent<PartyMember>();
 
             //partyMemberComp.charObject..transform.position = new Vector3(partyMemberData.pos[0], partyMemberData.pos[1], partyMemberData.pos[2]);
-            partyMemberComp.charObject.GetComponent<NavMeshAgent>().Warp(new Vector3(partyMemberData.pos[0], partyMemberData.pos[1], partyMemberData.pos[2]));
-            partyMemberComp.charObject.transform.rotation = Quaternion.identity * Quaternion.Euler(partyMemberData.rot[0], partyMemberData.rot[1], partyMemberData.rot[2]);
+            partyMember.mover.agent.Warp(new Vector3(partyMemberData.pos[0], partyMemberData.pos[1], partyMemberData.pos[2]));
+            partyMember.transform.rotation = Quaternion.identity * Quaternion.Euler(partyMemberData.rot[0], partyMemberData.rot[1], partyMemberData.rot[2]);
 
-            var memberStats = partyMember.GetComponent<CharStats>();
+            var memberStats = partyMember.charStats;
             memberStats.LoadFromSaveData(partyMemberData.charStatData);
-            var memberInv = partyMember.GetComponent<EntityInventory>();
+            var memberInv = partyMember.inventory;
             memberInv.LoadFromSaveData(partyMemberData.inventory);
 
-            AddCompanion(partyMemberComp);
+            AddCompanion(partyMember);
         }
     }
 
@@ -70,15 +72,12 @@ public class PartyController : MonoBehaviour
     {
         foreach (var partyMember in party.Skip(1))
         {
-            GameObject.Destroy(partyMember.charObject);
-            GameObject.Destroy(partyMember.gameObject);
+            Destroy(partyMember.gameObject);
         }
         party = party.Take(1).ToList();
     }
 
-    public PartyMember leader => selectedPartyMember;  // TODO: combine with CombatManager active NPC after refactor
-
-    public NPC activeNPC => CombatManager.Instance.combatActive ? CombatManager.Instance.activeCombatant : leader.charObject.GetComponent<NPC>();  // TODO: put somewhere else
+    public PartyMember leader => selectedPartyMember;
 
     public void MoveParty(List<Vector3> partyLocs, bool enable)
     {
@@ -86,27 +85,30 @@ public class PartyController : MonoBehaviour
         for (int i = 0; i < party.Count; i++)
         {
             Debug.Log("Moving party member " + i + " to " + partyLocs[i]);
-            party[i].TeleportChar(partyLocs[i], enable);
+            party[i].gameObject.SetActive(enable);
+            var feetOffset = partyLocs[i].y - party[i].GetComponent<Renderer>().bounds.min.y;
+            party[i].GetComponent<NavMeshAgent>().Warp(partyLocs[i] + new Vector3(0, feetOffset, 0));
         }
     }
 
     public List<Vector3> GetPartyLoc()
     {
-        return party.Select(member => member.charObject.transform.position).ToList();
+        return party.Select(member => member.transform.position).ToList();
     }
 
     public void ActivateParty()
     {
         foreach(var player in party) { 
             //player.charObject.GetComponent<NavMeshAgent>().Warp(player.charObject.transform.position); 
-            player.charObject.SetActive(true); 
+            player.gameObject.SetActive(true); 
         }
-        camScript.Instance.CenterCamera(selectedPartyMember.charObject.transform.position);
+        selectedPartyMember.SetActiveNPC();
+        camScript.Instance.CenterCamera(selectedPartyMember.transform.position);
     }
 
     public void DeactivateParty()
     {
-        foreach (var player in party) { player.charObject.SetActive(false); }
+        foreach (var player in party) { player.gameObject.SetActive(false); }
     }
 
 
@@ -123,19 +125,19 @@ public class PartyController : MonoBehaviour
         var partyMember = companion.GetComponent<PartyMember>();
         Debug.Log("Old NPC pos " + recruitedNPCObj.transform.position);
         recruitedNPCObj.SetActive(false);
-        partyMember.charObject.SetActive(true);
-        partyMember.charObject.GetComponent<NavMeshAgent>().Warp(recruitedNPCObj.transform.position);
-        Debug.Log("New follower pos " + partyMember.charObject.transform.position);
-        partyMember.charObject.transform.rotation = recruitedNPCObj.transform.rotation;
-        companion.GetComponent<CharStats>().LoadFromSaveData(PartyData.LoadCharStatData(npc.charStats));
-        companion.GetComponent<EntityInventory>().LoadFromSaveData(new EntityInventorySaveData(npc.inventory));
+        partyMember.gameObject.SetActive(true);
+        partyMember.mover.agent.Warp(recruitedNPCObj.transform.position);
+        Debug.Log("New follower pos " + partyMember.transform.position);
+        partyMember.transform.rotation = recruitedNPCObj.transform.rotation;
+        partyMember.charStats.LoadFromSaveData(PartyData.LoadCharStatData(npc.charStats));
+        partyMember.inventory.LoadFromSaveData(new EntityInventorySaveData(npc.inventory));
         AddCompanion(partyMember);
     }
 
 
     public bool AddCompanion(PartyMember companion, int playerSlot = 4)
     {
-        Debug.Log("Add Companion");
+        Debug.Log("Add Companion " + companion);
         if (companion.mainChar && party.Count > 0) throw new Exception("There can only be one party leader");
         if (party.Count == maxParty) return false; // TODO: when this returned, create pop up
         playerSlot = Math.Min(playerSlot, party.Count);
@@ -159,17 +161,16 @@ public class PartyController : MonoBehaviour
 
     public void UpdateParty()
     {
-        int leaderPriority = 50;
         Debug.Log("Debug Update Party");
         Debug.Log(selectedPartyMember);
-        Debug.Log(selectedPartyMember.charObject);
-        Debug.Log(selectedPartyMember.charObject.GetComponent<NavMeshAgent>());
-        selectedPartyMember.charObject.GetComponent<NavMeshAgent>().avoidancePriority = leaderPriority;
+        Debug.Log(selectedPartyMember.mover);
+        Debug.Log(selectedPartyMember.mover.agent);
+        int leaderPriority = selectedPartyMember.mover.agent.avoidancePriority;
         int nextPriority = 1;
         foreach (PartyMember partyMember in party)
         {
             if (partyMember ==  selectedPartyMember) continue;
-            partyMember.charObject.GetComponent<NavMeshAgent>().avoidancePriority = leaderPriority + nextPriority;
+            partyMember.mover.agent.avoidancePriority = leaderPriority + nextPriority;
             nextPriority++;
         }
         updatePartyEvent?.Invoke();
@@ -189,7 +190,9 @@ public class PartyController : MonoBehaviour
         //foreach (PartyMember partyMember in party) partyMember.SetFollower();
         Debug.Log("Debug Select Char");
         Debug.Log(player);
+        selectedPartyMember.SetIdle();
         selectedPartyMember = player;
+        selectedPartyMember.SetActiveNPC();
         Debug.Log(selectedPartyMember);
         //player.SetLeader();
         UpdateParty();
@@ -209,16 +212,16 @@ public class PartyController : MonoBehaviour
     private void SetPartyDestination(Vector3 destination)  // TODO: for now this is just all in a single file line. Play with more complex configs later after it works
     {
         // TODO: Just make this a method that send the leader to the point and then calls some functions on the canFollow followers
-        var marchLeader = selectedPartyMember.charObject.GetComponent<MoveToClick>();
-        var startPoint = selectedPartyMember.charObject.transform.position - new Vector3(0, selectedPartyMember.transform.localScale.y, 0);
+        var marchLeader = selectedPartyMember.mover;
+        var startPoint = selectedPartyMember.transform.position - new Vector3(0, selectedPartyMember.transform.localScale.y, 0);
         marchLeader.SetDestination(destination);
         //foreach (var corner in marchLeader.AgentPath().corners) { Debug.Log(corner); }
         Vector3[] leaderPathCorners = new Vector3[] { startPoint }.Concat(marchLeader.AgentPath().corners).ToArray();  // TODO: should this just be a list?
         //foreach (var leaderPathCorner in leaderPathCorners) { Debug.Log(leaderPathCorner); }
         Vector3 inFront = destination;
         for (int i = 0; i < party.Count; i++) {
-            if (party[i] == selectedPartyMember || !party[i].charObject.GetComponent<Follower>().CanFollow()) continue;
-            var nextInLine = party[i].charObject.GetComponent<MoveToClick>();
+            if (party[i] == selectedPartyMember || !party[i].CanFollow()) continue;
+            var nextInLine = party[i].mover;
             var moveBackDist = 2f;
             for (int j = leaderPathCorners.Length - 1; j > 0; j--)
             {

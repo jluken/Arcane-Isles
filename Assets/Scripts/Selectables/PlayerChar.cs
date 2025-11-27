@@ -10,10 +10,15 @@ public class PlayerChar : PartyMember  // TODO: how useful is this approach (ins
 
     public override bool mainChar { get; } = true;
 
-    public void Awake()
+    public override void Awake()
     {
         Instance = this;
         base.Awake();
+    }
+
+    public override void EndCombat()
+    {
+        StateMachine.ChangeState(ActiveState);
     }
 
 }

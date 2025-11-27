@@ -8,16 +8,10 @@ public class AggroRad : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponent<Follower>() != null) { 
-            RaycastHit hit;
-            var rayDirection = other.gameObject.transform.position - transform.position;  // TODO: line of sight used a lot; should refactor and store somewhere
-            if (Physics.Raycast(transform.position, rayDirection, out hit))
+        if (other.gameObject.GetComponent<PartyMember>() != null) { 
+            if (Utils.LineOfSight(gameObject, other.gameObject))
             {
-                if (hit.transform == other.gameObject.transform)
-                {  // Line of sight between enemy and target
-                    enemy.isAggroed = true;
-                }
-
+                enemy.isAggroed = true;
             }
         }
     }

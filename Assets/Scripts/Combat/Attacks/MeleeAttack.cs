@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
 using static CharStats;
@@ -5,35 +6,28 @@ using static CharStats;
 [CreateAssetMenu(fileName = "MeleeAttack", menuName = "Scriptable Objects/MeleeAttack")]
 public class MeleeAttack : AbilityAction
 {
-    public int attckCost;
+    public int attackCost;
 
     public override bool CheckValidTarget(NPC actor, Selectable target)
     {
-        if(attckCost > CombatManager.Instance.ActionPoints) return false;  // TODO: should this be handled somewhere else?
+        if(attackCost > CombatManager.Instance.ActionPoints) return false;
         var dist = Vector3.Distance(actor.gameObject.transform.position, target.gameObject.transform.position);
         Debug.Log("attack dist: " + dist);
         if (target.GetComponent<NPC>() != null && dist < range)
         {
-            RaycastHit hit;
-            var rayDirection = target.gameObject.transform.position - actor.gameObject.transform.position;
-            if (Physics.Raycast(actor.gameObject.transform.position, rayDirection, out hit) && hit.transform == target.gameObject.transform)
-            {
-                if (hit.transform == target.gameObject.transform)
-                {  // Line of sight between player and target
-                    return true;
-                }
-
-            }
+            return Utils.LineOfSight(actor.gameObject, target.gameObject);
         }
         return false;
     }
 
-    public override int UseAbility(NPC actor, Selectable target)
+    public override IEnumerator UseAbility(NPC actor, Selectable target)
     {
         var victim = target.GetComponent<NPC>();
         var damage = actor.charStats.GetCurrStat(modifier) + Random.Range(1, damageDie);
-        victim.charStats.updateHealth(-1 * damage);  // TODO: null when enemy attacks?
+        victim.charStats.updateHealth(-1 * damage);
 
-        return attckCost;
+        CombatManager.Instance.SpendActionPoints(attackCost); // account for floating point and wiggle room
+        CombatManager.Instance.FinishAction();
+        yield break;
     }
 }

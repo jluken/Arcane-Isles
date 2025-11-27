@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using TMPro;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
@@ -11,7 +12,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public class MoveToClick : MonoBehaviour
 {
-    NavMeshAgent agent;
+    public NavMeshAgent agent => GetComponent<NavMeshAgent>();
 
     private string[] interactTags = { "object", "npc" };
     //private GameObject target;
@@ -21,6 +22,7 @@ public class MoveToClick : MonoBehaviour
     private GameObject destMarker;
     public bool useMarker = false;
     public bool controlled = false;
+    public bool pathLocked { private set; get; }
 
     public float movingThreshold = 0.1f;
     private bool startedMoving;
@@ -28,10 +30,16 @@ public class MoveToClick : MonoBehaviour
     private int stopCount;
     private int maxStopCount = 20;
 
+    public void Awake()
+    {
+        Debug.Log("Mover Awake");
+        //agent = GetComponent<NavMeshAgent>();
+    }
+
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
         startedMoving = false;
+        pathLocked = false;
         //selectionController = SelectionController.Instance;
         stopCount = 0;
         destMarkerPrefab = Resources.Load<GameObject>("Prefabs/Destination");
@@ -114,10 +122,13 @@ public class MoveToClick : MonoBehaviour
         return destMarker.GetComponent<Selectable>();
     }
 
-    public void SetDestination(Vector3 dest)
+    public void SetDestination(Vector3 dest, bool locked = false)
     {
+        Debug.Log("Check lock: " + pathLocked);
+        if (pathLocked) return;
         var path = PathToPoint(dest);
         if (path != null) agent.SetPath(path);
+        locked = pathLocked;
         //else
         //{
         //    Debug.Log("calcfail");
@@ -131,6 +142,8 @@ public class MoveToClick : MonoBehaviour
 
     public void StopMoving()
     {
+        Debug.Log("stop");
+        pathLocked = false;
         agent.isStopped = true;
         agent.ResetPath();
         startedMoving = false;

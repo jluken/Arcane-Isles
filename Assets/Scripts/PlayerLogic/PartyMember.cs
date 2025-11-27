@@ -1,95 +1,91 @@
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.UIElements;
 
-[RequireComponent(typeof(CharStats))]
-public class PartyMember : MonoBehaviour  // TODO: Do I even need this class? Shouldn't everything be stored in the Follower/NPC?
-{ 
+//[RequireComponent(typeof(PartyMember))]
+public class PartyMember : NPC
+{
     public virtual bool mainChar { get; } = false;
 
-    public GameObject charObject;
+    public SelectionData setPlayer;
+    public SelectionData stay;
+    public SelectionData follow;
 
-    public PlayerInteract InteractRad;
+    private bool stayPut;
 
-    public PlayerStateMachine StateMachine;
-    //public PartyLeaderState LeaderState;
-    public PartyFollowerState FollowerState;
-    public ActiveCombatState ActiveCombatState;
-    //public WaitCombatState WaitCombatState;
-
-    public void Awake()
+    public override void Start()
     {
-        StateMachine = new PlayerStateMachine();
+        stayPut = false;
 
-        //LeaderState = new PartyLeaderState(this, StateMachine);
-        FollowerState = new PartyFollowerState(this, StateMachine);
-        ActiveCombatState = new ActiveCombatState(this, StateMachine);
-        //WaitCombatState = new WaitCombatState(this, StateMachine);
+        setPlayer = new SelectionData(this)
+        {
+            actionName = "Select",
+            immediateAction = SetPlayer
+        };
+        stay = new SelectionData(this)
+        {
+            actionName = "Stay",
+            immediateAction = Stay
+        };
+        follow = new SelectionData(this)
+        {
+            actionName = "Follow",
+            immediateAction = Follow
+        };
 
-
-        if (mainChar) StateMachine.Initialize(FollowerState); else StateMachine.Initialize(FollowerState);
-        Debug.Log("Awoken");
-        //StateMachine.Initialize(PartyLeaderState) ? mainChar : StateMachine.Initialize(PartyFollowerState);
-
-            //TODO: add event listener to start combat and stop combat
-            //TODO: will need to be able to report whether close enough to keep combat going
-
+        base.Start();
     }
 
-    void Start()
+    public override List<SelectionData> Actions()
     {
-        InteractRad.npc = charObject.GetComponent<NPC>();
+        var acts = new List<SelectionData>() { setPlayer, talk, CanFollow() ? stay : follow};
+        return acts;
     }
 
-    public void TeleportChar(Vector3 position, bool active)
+    public override List<SelectionData> CombatActions()
     {
-        charObject.SetActive(active);
-        var feetOffset = position.y - charObject.GetComponent<Renderer>().bounds.min.y;
-        charObject.GetComponent<NavMeshAgent>().Warp(position + new Vector3(0, feetOffset, 0));
+        var acts = new List<SelectionData>() { startAttack, inspectSelection };
+        return acts;
     }
 
-    //private void AnimationTriggerEvent(AnimationTriggerType triggerType)
+    public void SetPlayer()
+    {
+        PartyController.Instance.SelectChar(this);
+    }
+
+    public void Stay()
+    {
+        stayPut = true;
+    }
+
+    public void Follow()
+    {
+        stayPut = false;
+        // TODO: Immediately catch up with the leader (when switch to more complex follow logic)
+    }
+
+    public bool CanFollow()
+    {
+        return !stayPut;
+    }
+
+    public override void SetIdle()
+    {
+        Follow();
+        base.SetIdle();
+    }
+
+    //public override void SetToCombat()
     //{
-    //    StateMachine.CurrentEnemyState.AnimationTriggerEvent(triggerType);
+    //    parentPartyMember.SetToCombat();
     //}
 
-    // Update is called once per frame
-    void Update()
-    {
-        StateMachine.CurrentPlayerState.FrameUpdate();
-    }
-
-    private void FixedUpdate()
-    {
-        StateMachine.CurrentPlayerState.PhysicsUpdate();
-    }
-
-    public void SetToCombat()
-    {
-        StateMachine.ChangeState(ActiveCombatState);
-    }
-
-    public void EndCombat()
-    {
-        if (mainChar) StateMachine.ChangeState(FollowerState); else StateMachine.ChangeState(FollowerState);
-    }
-
-    public void TravelToPoint(Vector3 point)
-    {
-        StateMachine.CurrentPlayerState.TravelToPoint(point);
-    }
-
-    public void TravelToItem(Selectable item)
-    {
-        StateMachine.CurrentPlayerState.TravelToItem(item);
-        //var initPath = gameObject.GetComponent<MoveToClick>().PathToPoint(item.transform.position);
-        //if (initPath != null)
-        //{
-
-        //}
-    }
+    //public override void EndCombat()
+    //{
+    //    parentPartyMember.EndCombat();
+    //}
 
 }

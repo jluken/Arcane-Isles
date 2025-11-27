@@ -8,8 +8,8 @@ using UnityEngine.UI;
 public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     public int slotID;
-    public string slotGroup;  // TODO: make enum
     public InventoryMenu parentMenu;
+    public List<ItemSlot> slotGroup;
     
     public InventoryData itemData;
     public int currentStack = 0;
@@ -27,9 +27,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 
     public virtual void Awake()
     {
-        dragPrefab = Resources.Load<GameObject>("Prefabs/dragObj"); // TODO: improve asset performance with Object Pool
-        Debug.Log("dragprefab");
-        Debug.Log(dragPrefab);
+        dragPrefab = Resources.Load<GameObject>("Prefabs/dragObj");
     }
 
     public virtual void Start()
@@ -37,13 +35,13 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         
     }
 
-    public virtual void AddItem(InventoryData itemData, int newStackSize = 1, bool createNewIcon = false)
+    public virtual void AddItem(InventoryData itemData, int newStackSize = 1)
     {
         Debug.Log("ADD " + itemData.itemName + " to slot " + slotID);
-        Debug.Log("dragg object: " + dragObject);
+        Debug.Log("drag object: " + dragObject);
         if (this.currentStack > 0 && itemData != this.itemData) throw new System.Exception("Cannot add item to a slot if different item is already there");
         if (this.currentStack >= itemData.maxStackSize && newStackSize > 0) throw new System.Exception("Item slot already at max stack size");
-        if (createNewIcon && dragObject == null)  // TODO: should you ever not create a dragObject if null?
+        if (dragObject == null)
         {
             Debug.Log("Create new draggable");
             CreateDraggable(itemData);
@@ -104,7 +102,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         itemText.text = null;
         itemText.enabled = false;
 
-        parentMenu.SelectItem(null, slotGroup, slotID);
+        if (parentMenu != null) parentMenu.SelectItem(null, slotGroup, slotID);
         return oldData;
     }
 
@@ -154,7 +152,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
     {
     }
 
-    public virtual void OnDrop(PointerEventData eventData) // TODO: is this used?
+    public virtual void OnDrop(PointerEventData eventData)
     {
         Debug.Log("DROP");
         
@@ -171,5 +169,6 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         }
         draggableItem.parentAfterDrag = transform;
         draggableItem.invSlot = slotID;
+        parentMenu.UpdateEntity();
     }
 }

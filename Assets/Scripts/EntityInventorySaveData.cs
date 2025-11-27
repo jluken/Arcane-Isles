@@ -1,20 +1,19 @@
 using System;
-using System.Reflection;
-using UnityEngine;
-using static PartyData;
+using System.Collections.Generic;
+using static EntityInventory;
+using static InventoryData;
 
 [System.Serializable]
 public class EntityInventorySaveData
 {
     public string containerId;
 
-    public static int invSize = 40;  // TODO: lock certain "containers" to a set size 
+    public int invSize;
 
-    public string[] inventoryTypes = new string[invSize];
-    public int[] inventoryCounts = new int[invSize];
+    public List<(string, int)> inventory = new List<(string, int)>();
 
     public bool hasEquip;
-    public string[] equipment = new string[4]; // hardcoded slot indices for now
+    public Dictionary<string, string> equipment = new Dictionary<string, string>();
 
     public int money;
     public bool merchant;
@@ -22,18 +21,17 @@ public class EntityInventorySaveData
     public EntityInventorySaveData(EntityInventory entInv)
     {
         containerId = entInv.containerId;
-        for (int j = 0; j < entInv.inventoryTypes.Length; j++)
+        inventory = new List<(string, int)>();
+        for (int j = 0; j < entInv.inventory.Count; j++)
         {
-            inventoryTypes[j] = entInv.inventoryTypes[j] == null ? "" : entInv.inventoryTypes[j].name;
-        }
-        Array.Copy(entInv.inventoryCounts, inventoryCounts, invSize);
-        equipment = new string[4];
-        for (int j = 0; j < entInv.equipment.Length; j++)
-        {
-            equipment[j] = entInv.equipment[j] == null ? "" : entInv.equipment[j].name;
+            inventory.Add(entInv.inventory[j].type == null ? ("", 0) : (entInv.GetInventory(j).type.name, entInv.GetInventory(j).count));
         }
 
         hasEquip = entInv.hasEquip;
+        foreach (KeyValuePair<ItemType, InventoryData> kvp in entInv.equipment)
+        {
+            equipment[kvp.Key.ToString()] = kvp.Value == null ? "" : kvp.Value.name;
+        }
         money = entInv.money;
         merchant = entInv.merchant;
     }

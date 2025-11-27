@@ -30,6 +30,7 @@ public class SceneSaveData
 
     public SceneSaveData(List<GameObject> gameNPCs, List<EntityInventory> gameContainers, List<GameObject> gameGroundObjs)
     {
+        Debug.Log("SceneSave");
         NPCs = new List<NPCData>();
         foreach (var gameNPC in gameNPCs) {
             var npcData = new NPCData();
@@ -39,12 +40,14 @@ public class SceneSaveData
             npcData.charData = PartyData.LoadCharData(gameNPC.name, gameNPC.transform.position, gameNPC.transform.rotation.eulerAngles, gameNPC.GetComponent<CharStats>(), gameNPC.GetComponent<EntityInventory>());
             NPCs.Add(npcData);
         }
+        Debug.Log("SceneSave2");
 
         Containers = new List<EntityInventorySaveData>();
         foreach (var gameContainer in gameContainers)
         {
             Containers.Add(new EntityInventorySaveData(gameContainer));
         }
+        Debug.Log("SceneSave3");
 
         groundObjs = new List<GroundObjData>();
         foreach (var gameGroundObj in gameGroundObjs)
@@ -56,6 +59,7 @@ public class SceneSaveData
             groundObjData.pos = new float[] { gameGroundObj.transform.position.x, gameGroundObj.transform.position.y, gameGroundObj.transform.position.z };
             groundObjs.Add(groundObjData);
         }
+        Debug.Log("SceneSave4");
     }
 
 }

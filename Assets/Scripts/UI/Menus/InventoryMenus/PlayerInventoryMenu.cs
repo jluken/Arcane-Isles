@@ -8,28 +8,24 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using static InventoryData;
 
 
 public class PlayerInventoryMenu : InventoryMenu
 {
     public GameObject inventoryMenu;
-    private CharStats playerStats;
 
-    //private SelectionController selectionController;
-    //public GameObject ui;
 
-    //private void Awake()
-    //{
-    //    playerInventory = player.GetComponent<EntityInventory>();
-    //    playerStats = player.GetComponent<CharStats>();
-    //    inventoryMenu.SetActive(false);
-    //    containerMenu.SetActive(false);
-    //}
+    public GameObject playerInventorySlots;
+    public GameObject slotPrefab;
 
-    public ItemSlot[] PlayerInventorySlots;
-    public EquipmentSlot[] EquipSlots;
+    public List<ItemSlot> PlayerInventorySlots;
+    public EquipmentSlot HeadSlot;
+    public EquipmentSlot ArmorSlot;
+    public EquipmentSlot WeaponSlot;
+    public EquipmentSlot BootSlot;
 
-    private Dictionary<InventoryData.ItemType, int> equipTypes;
+    private Dictionary<ItemType, EquipmentSlot> equipMapping;
 
     public Image itemDescriptionImage;
     public TMP_Text itemDescriptionNameText;
@@ -43,25 +39,26 @@ public class PlayerInventoryMenu : InventoryMenu
         //playerInventory = player.GetComponent<EntityInventory>();
         //playerStats = player.GetComponent<CharStats>();
         //Debug.Log("player inv awake: " + playerInventory);
-        for (int i = 0; i < PlayerInventorySlots.Length; i++)
+        //for (int i = 0; i < PlayerInventorySlots.Length; i++)
+        //{
+        //    PlayerInventorySlots[i].slotID = i;
+        //    PlayerInventorySlots[i].slotGroup = "inventory";
+        //    PlayerInventorySlots[i].parentMenu = this;
+        //}
+        //for (int i = 0; i < EquipSlots.Length; i++)
+        //{
+        //    EquipSlots[i].slotID = i;
+        //    EquipSlots[i].slotGroup = "equipment";
+        //    EquipSlots[i].parentMenu = this;
+        //}
+        PlayerInventorySlots = new List<ItemSlot>();
+        equipMapping = new Dictionary<ItemType, EquipmentSlot>()
         {
-            PlayerInventorySlots[i].slotID = i;
-            PlayerInventorySlots[i].slotGroup = "inventory";
-            PlayerInventorySlots[i].parentMenu = this;
-        }
-        for (int i = 0; i < EquipSlots.Length; i++)
-        {
-            EquipSlots[i].slotID = i;
-            EquipSlots[i].slotGroup = "equipment";
-            EquipSlots[i].parentMenu = this;
-        }
-
-        equipTypes = new Dictionary<InventoryData.ItemType, int> { //TODO: fix this to be hardcoded
-            { InventoryData.ItemType.headwear, 0 },
-            { InventoryData.ItemType.weapon, 1 },
-            { InventoryData.ItemType.armor, 2 },
-            { InventoryData.ItemType.boots, 3 }
-        }; // TODO: check if these are right; maybe make dynamic
+            { ItemType.headwear, HeadSlot },
+            { ItemType.armor, ArmorSlot },
+            { ItemType.weapon, WeaponSlot },
+            { ItemType.boots, BootSlot }
+        };
     }
 
     // Start is called before the first frame update
@@ -103,17 +100,26 @@ public class PlayerInventoryMenu : InventoryMenu
 
         ClearInventorySlots();
 
-        PlayerInventorySlots.ToList().ForEach(slot => {
-            var playerSlot = PartyController.Instance.leader.GetComponent<EntityInventory>().GetInventory(slot.slotID);
-            if (playerSlot.Item1 != null) { slot.AddItem(playerSlot.Item1, playerSlot.Item2, true); }
-        });
-        EquipSlots.ToList().ForEach(slot => {
-            var equipSlot = PartyController.Instance.leader.GetComponent<EntityInventory>().GetEquipment(slot.slotID);
-            if (equipSlot != null) { slot.AddItem(equipSlot, 1 , true); }
-        });
+        for(int i = 0; i < PartyController.Instance.leader.inventory.maxInv; i++)
+        {
+            var slotData = PartyController.Instance.leader.inventory.GetInventory(i);
+            var slotItem = Instantiate(slotPrefab, playerInventorySlots.transform);
+            PlayerInventorySlots.Add(slotItem.GetComponent<ItemSlot>());
+            PlayerInventorySlots[i].slotID = i;
+            PlayerInventorySlots[i].parentMenu = this;
+            PlayerInventorySlots[i].slotGroup = PlayerInventorySlots;
+            if (slotData.type != null) { PlayerInventorySlots[i].AddItem(slotData.type, slotData.count); }
+        }
+
+        foreach (KeyValuePair<ItemType, EquipmentSlot> kvp in equipMapping)
+        {
+            kvp.Value.parentMenu = this;
+            var equipSlot = PartyController.Instance.leader.inventory.GetEquipment(kvp.Key);
+            if (equipSlot != null) { kvp.Value.AddItem(equipSlot, 1); }
+        }
     }
 
-    public override void SelectItem(InventoryData itemData, string slotGroup, int slotID)
+    public override void SelectItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotID)
     {
         DeselectAllSlots();
         if (itemData != null)
@@ -134,91 +140,66 @@ public class PlayerInventoryMenu : InventoryMenu
 
     public override void ClearInventorySlots() {
         DeselectAllSlots();
-        PlayerInventorySlots.ToList().ForEach(slot => slot.ClearItem(true));
-        EquipSlots.ToList().ForEach(slot => slot.ClearItem(true));
+        PlayerInventorySlots.ToList().ForEach(slot => Destroy(slot.gameObject));
+        PlayerInventorySlots = new List<ItemSlot>();
+        foreach (KeyValuePair<ItemType, EquipmentSlot> kvp in equipMapping) kvp.Value.ClearItem(true);
     }
 
-    public override void ActivateItem(InventoryData itemData, string slotGroup, int slotId)
+    public override void ActivateItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotId)
     {
-        if (itemData.itemType == InventoryData.ItemType.consumable)
+        if (itemData.itemType == ItemType.consumable)
         {
             if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;
             foreach (var consumeData in itemData.consumeStats)
             {
-                if (consumeData.consumeStat == CharStats.StatVal.health) playerStats.updateHealth(consumeData.value);
-                else if (consumeData.consumeStat == CharStats.StatVal.magick) playerStats.updateMagick(consumeData.value);
+                if (consumeData.consumeStat == CharStats.StatVal.health) PartyController.Instance.leader.charStats.updateHealth(consumeData.value);
+                else if (consumeData.consumeStat == CharStats.StatVal.magick) PartyController.Instance.leader.charStats.updateMagick(consumeData.value);
                 else
                 {
-                    playerStats.addModifier(consumeData.consumeStat, consumeData.value, consumeData.duration);
+                    PartyController.Instance.leader.charStats.addModifier(consumeData.consumeStat, consumeData.value, consumeData.duration);
                 }
             }
             CombatManager.Instance.SpendActionPoints(itemData.APCost);
             PlayerInventorySlots[slotId].RemoveItem(1, true);
         }
-        else if (equipTypes.ContainsKey(itemData.itemType))  // TODO: hard-code equipment types and slots
+        else if (equipMapping.ContainsKey(itemData.itemType))
         {
-            var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
-            var equipSlot = equipTypes[itemData.itemType]; // TODO: hard-code equipment types and slots
+            var playerInventory = PartyController.Instance.leader.inventory;
+            var equipSlot = equipMapping[itemData.itemType];
             Debug.Log("Setting equipment");
             Debug.Log(itemData.itemType);
             Debug.Log(equipSlot);
-            if (slotGroup == "inventory") // Equip the item from the inventory
+            if (equipMapping.ContainsValue(equipSlot)) // Equip the item from the inventory
             {
                 if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;
-                var oldEquip = playerInventory.GetEquipment(equipSlot);
-                playerInventory.SetEquipment(equipSlot, itemData);
+                var oldEquip = playerInventory.GetEquipment(itemData.itemType);
+                playerInventory.SetEquipment(itemData.itemType, itemData);
                 playerInventory.SetInventory(slotId, oldEquip);
                 CombatManager.Instance.SpendActionPoints(itemData.APCost);
             }
             else
             {
                 Debug.Log("De-equip");
-                var leftover = playerInventory.AddNewItem(playerInventory.GetEquipment(equipSlot));
-                if (leftover == 0) playerInventory.SetEquipment(equipSlot, null);
+                var leftover = playerInventory.AddNewItem(playerInventory.GetEquipment(itemData.itemType));
+                if (leftover == 0) playerInventory.SetEquipment(itemData.itemType, null);
             }
             ActivateMenu(); // Reactivate menu after resetting through entity data
         }
     }
 
-    public void UpdateEntity()
+    public override void UpdateEntity()
     {
         Debug.Log("Update player entity");
-        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
+        var playerInventory = PartyController.Instance.leader.inventory;
         PlayerInventorySlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
-        EquipSlots.ToList().ForEach(slot => playerInventory.SetEquipment(slot.slotID, slot.itemData));
-
-        //currentMenu.PlayerSlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
-        //currentMenu.ContainerSlots.ToList().ForEach(slot => currentContainer.GetComponent<EntityInventory>().SetInventory(slot.slotID, slot.itemData, slot.currentStack));
-
-        //for (int i = 0; i < currentPlayerSlots.Length; i++)
-        //{
-        //    //Debug.Log("item slot data " + i + ": " + ItemSlots[i].itemData);
-        //    playerInventory.SetInventory(i, currentPlayerSlots[i].itemData, currentPlayerSlots[i].currentStack);
-        //}
-        //if (menuActivated == inventoryMenu)
-        //{
-        //    // Take updates to the UI and alters the player inv to adjust
-        //    for (int i = 0; i < ItemSlots.Length; i++)
-        //    {
-        //        //Debug.Log("item slot data " + i + ": " + ItemSlots[i].itemData);
-        //        playerInventory.SetInventory(i, ItemSlots[i].itemData, ItemSlots[i].currentStack);
-        //    }
-        //}
-        //else if (menuActivated == containerMenu)
-        //{
-        //    for (int i = 0; i < ItemSlots.Length; i++)
-        //    {
-        //        playerInventory.SetInventory(i, PlayerSlots[i].itemData, PlayerSlots[i].currentStack);
-        //        currentContainer.GetComponent<EntityInventory>().SetInventory(i, ContainerSlots[i].itemData, ContainerSlots[i].currentStack);
-        //    }
-        //}
+        equipMapping.ToList().ForEach(slotKVP => playerInventory.SetEquipment(slotKVP.Key, slotKVP.Value.itemData));
     }
 
     public override void DeselectAllSlots()
     {
         Debug.Log("Deselect");
         PlayerInventorySlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
-        EquipSlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
+        equipMapping.Values.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
         
         selectedSlotId = -1;
         itemDescriptionImage.sprite = emptySprite;

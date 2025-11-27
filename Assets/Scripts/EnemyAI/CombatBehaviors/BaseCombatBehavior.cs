@@ -6,10 +6,7 @@ using UnityEngine.AI;
 [CreateAssetMenu(fileName = "BaseCombatBehavior", menuName = "Scriptable Objects/BaseCombatBehavior")]
 public class BaseCombatBehavior : ScriptableObject
 {
-    // TODO: having a set amount of discrete "actions" should make this logic easier.
-
-
-    public virtual NPC ChooseTarget(NPC attacker)  // TODO: maybe just have one "root" method that gets called and then each enemy type script could have its own logic? Maybe have some shared methods as part of that, like finding nearest enemy.
+    public virtual NPC ChooseTarget(NPC attacker)
     {
         return null;
     }

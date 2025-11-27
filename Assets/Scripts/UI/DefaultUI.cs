@@ -52,7 +52,7 @@ public class DefaultUI : MenuScreen
             else
             {
                 charIcon.charPortrait.SetActive(true);
-                var partyMemberStats = currentParty[charIcon.charSlot].GetComponent<CharStats>();
+                var partyMemberStats = currentParty[charIcon.charSlot].charStats;
                 charIcon.charPortrait.GetComponent<Image>().sprite = partyMemberStats.charImage;
                 var maxHealth = partyMemberStats.GetCurrStat(CharStats.StatVal.maxHealth);
                 var currHealth = partyMemberStats.GetCurrStat(CharStats.StatVal.health);
@@ -63,9 +63,9 @@ public class DefaultUI : MenuScreen
                 charIcon.healthBar.transform.localPosition = new Vector3(((fullWidth - newWidth) / -2.0f), 0, 0);
                 charIcon.Health.text = currHealth + "/" + maxHealth;
 
-                if (currentParty[charIcon.charSlot] == PartyController.Instance.leader)
+                if (currentParty[charIcon.charSlot].IsActive)
                 {
-                    // TODO: For UI stage: highlight selected party member
+                    // TODO: For UI stage: highlight selected party member(s)
                 }
             }
 

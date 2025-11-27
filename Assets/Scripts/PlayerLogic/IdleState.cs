@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class PartyFollowerState: PlayerState
+public class IdleState: NPCState
 {
-    public PartyFollowerState(PartyMember player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
+    public IdleState(NPC npc, NPCStateMachine npcStateMachine) : base(npc, npcStateMachine)
     {
     }
 
@@ -13,6 +13,7 @@ public class PartyFollowerState: PlayerState
 
     public override void EnterState()
     {
+        npc.mover.agent.avoidancePriority = 40;
         base.EnterState();
     }
 
@@ -29,5 +30,9 @@ public class PartyFollowerState: PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+    }
+
+    public override void SetActiveNPC() { 
+        npcStateMachine.ChangeState(npc.ActiveState);
     }
 }

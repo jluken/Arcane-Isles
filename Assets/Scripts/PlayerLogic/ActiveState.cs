@@ -1,10 +1,12 @@
 using UnityEngine;
 
-public class PartyLeaderState : PlayerState
+public class ActiveState : NPCState
 {
-    public PartyLeaderState(PartyMember player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
+    public ActiveState(NPC npc, NPCStateMachine playerStateMachine) : base(npc, playerStateMachine)
     {
     }
+
+    public override bool isActive => true;
 
     public override void AnimationTriggerEvent(Enemy.AnimationTriggerType triggerType)
     {
@@ -13,6 +15,7 @@ public class PartyLeaderState : PlayerState
 
     public override void EnterState()
     {
+        npc.mover.agent.avoidancePriority = 50;
         base.EnterState();
     }
 
@@ -29,5 +32,10 @@ public class PartyLeaderState : PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+    }
+
+    public override void SetIdle()
+    {
+        npcStateMachine.ChangeState(npc.IdleState);
     }
 }

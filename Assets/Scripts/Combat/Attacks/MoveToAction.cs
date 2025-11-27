@@ -1,4 +1,5 @@
 using NUnit.Framework.Internal;
+using System.Collections;
 using System.IO;
 using UnityEngine;
 
@@ -6,9 +7,9 @@ using UnityEngine;
 public class MoveTo : AbilityAction
 {
 
-    private float PathDist(NPC actor, Selectable target)
+    protected float PathDist(NPC actor, Selectable target)
     {
-        var path = actor.GetComponent<MoveToClick>().PathToPoint(target.transform.position); // TODO: make sure that, when priority is adjusted, still going to center
+        var path = actor.mover.PathToPoint(target.transform.position);
 
         if (SelectionController.Instance.selectedItem == target && path != null) {  // Will stop prior to actually reaching the target object
             RaycastHit hit;
@@ -16,7 +17,7 @@ public class MoveTo : AbilityAction
             var rayDirection = path.corners[^1] - penultCorner;
             if (Physics.Raycast(penultCorner, rayDirection, out hit))
             {
-                path = actor.GetComponent<MoveToClick>().PathToPoint(hit.transform.position);
+                path = actor.mover.PathToPoint(hit.transform.position);
             }
             return MoveToClick.PathDist(path) - actor.reach;
         }
@@ -26,16 +27,24 @@ public class MoveTo : AbilityAction
 
     public override bool CheckValidTarget(NPC actor, Selectable target)
     {
-        var inRange = PathDist(actor, target) <= CombatManager.Instance.ActionPoints;  // TODO: meter conversion
-        return inRange;  // TODO: put in a check for special marker item
+        var inRange = Mathf.CeilToInt(PathDist(actor, target)) <= CombatManager.Instance.ActionPoints;  // TODO: meter conversion
+        Debug.Log("Check in range: " + inRange);
+        Debug.Log("locked: " + actor.mover.pathLocked);
+        return !actor.mover.pathLocked && inRange;
     }
 
-    public override int UseAbility(NPC actor, Selectable target)
+    public override IEnumerator UseAbility(NPC actor, Selectable target)
     {
-        //target.GetComponent<groundScript>().SetTarget();
+        var cost = PathDist(actor, target);
+        Debug.Log("Move to raw cost " + cost);
+        actor.mover.SetDestination(target.transform.position, true);
 
-        actor.GetComponent<MoveToClick>().SetDestination(target.transform.position);  // TODO: Always use this ability to move, but party vs individual will be based on NPC state
-
-        return Mathf.CeilToInt(PathDist(actor, target));
+        while (actor.mover.IsMoving())
+        {
+            yield return null; // Wait for the next frame
+        }
+        Debug.Log("Move to done");
+        CombatManager.Instance.SpendActionPoints(Mathf.CeilToInt(cost - 0.1f)); // account for floating point and wiggle room
+        CombatManager.Instance.FinishAction();
     }
 }

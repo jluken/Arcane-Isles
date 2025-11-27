@@ -11,6 +11,8 @@ using System.Linq;
 
 public class TradingMenu : InventoryMenu
 {
+    //TODO: deprecated formatting; will need to copy from Container inventory menu
+
     public GameObject inventoryMenu;
     EntityInventory currentInventory;
 
@@ -88,15 +90,15 @@ public class TradingMenu : InventoryMenu
         Time.timeScale = 0;
 
         ClearInventorySlots();
-        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
+        var playerInventory = PartyController.Instance.leader.inventory;
 
         PlayerInventorySlots.ToList().ForEach(slot => {
             var playerSlot = playerInventory.GetInventory(slot.slotID);
-            if (playerSlot.Item1 != null) { slot.AddItem(playerSlot.Item1, playerSlot.Item2, true); }
+            if (playerSlot.type != null) { slot.AddItem(playerSlot.type, playerSlot.count); }
         });
         NPCInventorySlots.ToList().ForEach(slot => {
             var npcSlot = currentInventory.GetInventory(slot.slotID);
-            if (npcSlot.Item1 != null) { slot.AddItem(npcSlot.Item1, npcSlot.Item2, true); }
+            if (npcSlot.type != null) { slot.AddItem(npcSlot.type, npcSlot.count); }
         });
     }
 
@@ -123,9 +125,9 @@ public class TradingMenu : InventoryMenu
     //    return ItemSlots[slotID].RemoveItem(amount, destroyDrag);
     //}
 
-    public void UpdateEntity()
+    public override void UpdateEntity()
     {
-        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
+        var playerInventory = PartyController.Instance.leader.inventory;
         PlayerInventorySlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
         if (currentInventory != null)
             NPCInventorySlots.ToList().ForEach(slot => currentInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
@@ -163,12 +165,12 @@ public class TradingMenu : InventoryMenu
         NPCInventorySlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
     }
 
-    public override void ActivateItem(InventoryData itemData, string slotGroup, int slotID)
+    public override void ActivateItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotID)
     {
         throw new NotImplementedException(); //TODO
     }
 
-    public override void SelectItem(InventoryData itemData, string slotGroup, int slotID)
+    public override void SelectItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotID)
     {
         throw new NotImplementedException(); //TODO
     }

@@ -573,9 +573,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   standPoint: {x: 0, y: 0, z: 0}
   description: 
-  charStats: {fileID: 0}
-  inventory: {fileID: 0}
-  InteractRad: {fileID: 1172947730}
+  interactRad: {fileID: 1172947731}
   reach: 1
   dialogue: []
   CombatBehavior: {fileID: 11400000, guid: c7642238240f56d46a5fefc7c55f6c1e, type: 2}

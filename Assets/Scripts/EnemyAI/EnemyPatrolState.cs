@@ -1,12 +1,14 @@
 using UnityEngine;
 
-public class EnemyPatrolState: EnemyState
+public class EnemyPatrolState: IdleState
 {
-    private MoveToClick mover;
+    //private MoveToClick mover;
     private int pathIndex = 0;
-    public EnemyPatrolState(Enemy enemy, EnemyStateMachine enemyStateMachine) : base(enemy, enemyStateMachine)
+    private Enemy enemy;
+    public EnemyPatrolState(Enemy npc, NPCStateMachine enemyStateMachine) : base(npc, enemyStateMachine)
     {
-        mover = enemy.GetComponent<MoveToClick>();
+        //mover = enemy.mover;
+        enemy = npc;
     }
 
     public override void AnimationTriggerEvent(Enemy.AnimationTriggerType triggerType)
@@ -27,12 +29,12 @@ public class EnemyPatrolState: EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        if (!mover.IsMoving() && enemy.PathMarkers.Count > 0) {
+        if (!enemy.mover.IsMoving() && enemy.PathMarkers.Count > 0) {
             //Debug.Log("Not moving");
             //Debug.Log(enemy.gameObject.name);
             pathIndex = (pathIndex + 1) % enemy.PathMarkers.Count;
             //Debug.Log(pathIndex);
-            mover.SetDestination(enemy.PathMarkers[pathIndex].transform.position);
+            enemy.mover.SetDestination(enemy.PathMarkers[pathIndex].transform.position);
         }
         //Debug.Log("Moving");
 
@@ -40,8 +42,6 @@ public class EnemyPatrolState: EnemyState
         if (enemy.isAggroed)
         {
             CombatManager.Instance.InitiateCombat();
-            //enemy.SetToCombat();
-            //enemy.StateMachine.ChangeState(enemy.TurnChaseState); // TODO: possible initial combat state of deciding what to do (vs chase/attack?)
         }
     }
 

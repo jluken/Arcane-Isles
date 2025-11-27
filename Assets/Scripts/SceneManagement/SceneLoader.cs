@@ -17,17 +17,15 @@ public class SceneLoader : MonoBehaviour
     private LevelManager levelManager;
 
 
-    public List<string> ActiveLevelScenes { get; private set; }  // TODO: is this redundant with the keys of SceneObjectManagers (will just need to remove them when unloaded)? 
+    //public List<string> ActiveLevelScenes { get; private set; }  // TODO: is this redundant with the keys of SceneObjectManagers (will just need to remove them when unloaded)? 
     private Dictionary<string, SceneSaveData> SceneData;
     public Dictionary<string, SceneObjectManager> SceneObjectManagers;
-    private bool partyAndUILoaded;
 
     private void Awake()
     {
         Instance = this;
-        ActiveLevelScenes = new List<string>();
+        //ActiveLevelScenes = new List<string>();
         SceneData = new Dictionary<string, SceneSaveData>();
-        partyAndUILoaded = false;
         levelManager = null;
         SceneObjectManagers = new Dictionary<string, SceneObjectManager>();
         mainMenu.ActivateMenu();
@@ -82,7 +80,7 @@ public class SceneLoader : MonoBehaviour
         var activateScenes = levelManager.sceneTriggers.Where(trigger => spawnPoints.Any(spawnPoint => trigger.GetComponent<Collider>().bounds.Contains(spawnPoint))).ToList();
         var activateSceneNames = activateScenes.Select(trigger => trigger.GetComponent<SceneTrigger>().sceneName).ToList();
         foreach (var name in activateSceneNames) Debug.Log("activate scene: " + name);
-        if (activateSceneNames.Any(activateScene => !ActiveLevelScenes.Contains(activateScene))) SetLoadingScreen();  // Will need to load new scenes before starting
+        if (activateSceneNames.Any(activateScene => !SceneObjectManagers.ContainsKey(activateScene))) SetLoadingScreen();  // Will need to load new scenes before starting
 
 
         List<AsyncOperation> asyncOps = new List<AsyncOperation>();
@@ -120,19 +118,28 @@ public class SceneLoader : MonoBehaviour
 
     public IEnumerator ActivateSubscene(string sceneName)
     {
-        ActiveLevelScenes.Add(sceneName);
+        //ActiveLevelScenes.Add(sceneName);
         SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
         yield return null;
     }
 
     public IEnumerator DeactivateSubscene(string sceneName)
     {
-        if (ActiveLevelScenes.Contains(sceneName)) {
+        Debug.Log("Deactivate Subscene " + sceneName);
+        if (SceneObjectManagers.ContainsKey(sceneName)) {
+            Debug.Log("Contains");
             var manager = SceneObjectManagers[sceneName];
+            Debug.Log("Contains2");
             SceneData[sceneName] = new SceneSaveData(manager.npcs, manager.containers, manager.GroundObjects);
+            Debug.Log("Contains3");
             SceneData[sceneName].loaded = false;
-            ActiveLevelScenes.Remove(sceneName);
+            Debug.Log("Unloaded");
+            //ActiveLevelScenes.Remove(sceneName);
+            SceneObjectManagers.Remove(sceneName);
+            Debug.Log("Removed");
             SceneManager.UnloadSceneAsync(sceneName);
+            Debug.Log("Async unloaded");
+
         }
         yield return null;
 
@@ -143,10 +150,10 @@ public class SceneLoader : MonoBehaviour
         List<AsyncOperation> asyncOps = new List<AsyncOperation>();
         foreach (string sceneName in levelScenes)
         {
-            if (!ActiveLevelScenes.Contains(sceneName))
+            if (!SceneObjectManagers.ContainsKey(sceneName))
             {
                 asyncOps.Add(SceneManager.LoadSceneAsync(sceneName.ToString(), LoadSceneMode.Additive));
-                ActiveLevelScenes.Add(sceneName);
+                //ActiveLevelScenes.Add(sceneName);
             }
         }
         return asyncOps;
@@ -169,7 +176,7 @@ public class SceneLoader : MonoBehaviour
     public Dictionary<string, SceneSaveData> GetAllSceneData()
     {
         var totalSceneData = SceneData.ToDictionary(entry => entry.Key, entry => entry.Value);
-        foreach (var activeScene in ActiveLevelScenes)
+        foreach (var activeScene in SceneObjectManagers.Keys)
         {
             var manager = SceneObjectManagers[activeScene];
             totalSceneData[activeScene] = new SceneSaveData(manager.npcs, manager.containers, manager.GroundObjects);
@@ -180,7 +187,8 @@ public class SceneLoader : MonoBehaviour
 
     public Dictionary<string, SceneObjectManager> GetCurrentSceneManagers()
     {
-        return ActiveLevelScenes.ToDictionary(scene => scene, scene => SceneObjectManagers[scene]);
+        //return ActiveLevelScenes.ToDictionary(scene => scene, scene => SceneObjectManagers[scene]);
+        return SceneObjectManagers;
     }
 
     public void LoadFromData(GameSaveData saveData)

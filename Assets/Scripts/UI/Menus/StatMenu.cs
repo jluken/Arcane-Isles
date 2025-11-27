@@ -22,7 +22,7 @@ public class StatMenu : MonoBehaviour  //TODO: used?
     // Update is called once per frame
     void UpdateStatData()
     {
-        var playerStats = PartyController.Instance.leader.GetComponent<CharStats>();
+        var playerStats = PartyController.Instance.leader.charStats;
         Debug.Log("Update stat text");
         Debug.Log("Vigor: " + playerStats.GetCurrStat(CharStats.StatVal.vigor));
         playerName.text = playerStats.charName;

@@ -7,6 +7,8 @@ public class camScript : MonoBehaviour
 {
     public static camScript Instance { get; private set; }
 
+    private GameObject trackedObj;
+
     public float scrollSpeed = 0.002f; // Set camera movement speed.
     public float zoomSpeed = 0.1f; // Set camera movement speed.
     private Camera cam; // Reference to camera.
@@ -34,13 +36,13 @@ public class camScript : MonoBehaviour
 
     void Update()
     {
-        
+        if (trackedObj != null) CenterCamera(trackedObj.transform.position);
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        if (UIController.Instance.DefaultUIOpen())
+        if (UIController.Instance.DefaultUIOpen()) // TODO: with UI update: better handling of when can move camera (allow in combat)
         {
             // Move player based on vertical input.
             float moveVertical = Input.GetAxis("Vertical");  // TODO: legacy code
@@ -72,7 +74,7 @@ public class camScript : MonoBehaviour
     public void MoveCamera(Vector3 direction, float zoom)
     {
         //TODO: limit distance from player for scrolling (to avoid seeing unloaded content), or possibly load based on camera
-
+        StopTracking();
         Vector3 movement = direction * scrollSpeed * cam.orthographicSize;
 
         ct.position += movement;
@@ -97,5 +99,14 @@ public class camScript : MonoBehaviour
         ct.position = new Vector3(xpos, ct.position.y, zpos);
     }
 
+    public void TrackObj(GameObject obj)
+    {
+        trackedObj = obj;
+    }
+
+    public void StopTracking()
+    {
+        trackedObj = null;
+    }
     
 }

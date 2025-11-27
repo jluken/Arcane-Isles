@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using static CharStats;
 
@@ -12,5 +13,5 @@ public abstract class AbilityAction : ScriptableObject
 
     public abstract bool CheckValidTarget(NPC actor, Selectable target);
 
-    public abstract int UseAbility(NPC actor, Selectable target);
+    public abstract IEnumerator UseAbility(NPC actor, Selectable target);
 }

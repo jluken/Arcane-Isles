@@ -48,35 +48,8 @@ public class PartyData
         partyMembers = new CharSaveData[partyController.party.Count];
         for (int i = 0; i < partyController.party.Count; i++) {
             PartyMember partyMember = partyController.party[i];
-            partyMembers[i] = LoadCharData(partyMember.gameObject.name, partyMember.charObject.transform.position, partyMember.charObject.transform.rotation.eulerAngles,
-                partyMember.GetComponent<CharStats>(), partyMember.GetComponent<EntityInventory>());
-            //partyMembers[i].id = partyMember.gameObject.name;
-            //partyMembers[i].pos = new float[] { partyMember.charObject.transform.position.x, partyMember.charObject.transform.position.y, partyMember.charObject.transform.position.z };
-            //partyMembers[i].rot = new float[] { partyMember.charObject.transform.rotation.eulerAngles.x, partyMember.charObject.transform.rotation.eulerAngles.y, partyMember.charObject.transform.rotation.eulerAngles.z };
-
-            //var memberStats = partyMember.GetComponent<CharStats>();
-            //partyMembers[i].name = memberStats.charName;
-            //partyMembers[i].charImageName = memberStats.charImage.name;
-            //partyMembers[i].xp = memberStats.xp;
-            //partyMembers[i].health = memberStats.health;
-            //partyMembers[i].magick = memberStats.magick;
-            //partyMembers[i].vigor = memberStats.vigor;
-            //partyMembers[i].finesse = memberStats.psyche;
-            //partyMembers[i].intimidation = memberStats.intimidation;
-            //partyMembers[i].athletics = memberStats.athletics;
-            //partyMembers[i].melee = memberStats.melee;
-            //partyMembers[i].endurance = memberStats.endurance;
-            //partyMembers[i].guile = memberStats.guile;
-            //partyMembers[i].precision = memberStats.precision;
-            //partyMembers[i].sleightOfHand = memberStats.sleightOfHand;
-            //partyMembers[i].stealth = memberStats.stealth;
-            //partyMembers[i].persuasion = memberStats.persuasion;
-            //partyMembers[i].survival = memberStats.survival;
-            //partyMembers[i].perception = memberStats.perception;
-            //partyMembers[i].arcana = memberStats.arcana;
-
-            //var memberInv = partyMember.GetComponent<EntityInventory>();
-            //partyMembers[i].inventory = new EntityInventorySaveData(memberInv);
+            partyMembers[i] = LoadCharData(partyMember.gameObject.name, partyMember.transform.position, partyMember.transform.rotation.eulerAngles,
+                partyMember.charStats, partyMember.inventory);
         }
     }
 

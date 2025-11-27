@@ -9,6 +9,7 @@ public class CharStats : MonoBehaviour
     public Sprite charImage;
     public string charName;
 
+    public NPC npc => gameObject.GetComponent<NPC>();
 
     public int xp;
 
@@ -73,20 +74,15 @@ public class CharStats : MonoBehaviour
     private Dictionary<int, (StatVal, int)> modifiers = new Dictionary<int, (StatVal, int)>(); // id: (stat, amount)
     private Dictionary<int, float> modifierTimeouts = new Dictionary<int, float>(); // id: (stat, endTime)
 
-    private EntityInventory charInventory;
-
     private Random rnd;
 
-    //public delegate void StatEvent();
-    //public event StatEvent updateStatEvent;
-    public delegate void DeathEvent();
+    public delegate void DeathEvent(NPC npc);
     public event DeathEvent deathEvent;  //TODO: change party AI if dead
 
 
     public void Awake()
     {
         rnd = new Random();
-        charInventory = gameObject.GetComponent<EntityInventory>();
         setBaseStats(this.vigor, this.finesse, this.psyche);
         this.health = GetCurrStat(StatVal.maxHealth);
         this.magick = GetCurrStat(StatVal.maxMagick);
@@ -202,8 +198,8 @@ public class CharStats : MonoBehaviour
         PartyController.Instance.UpdateParty();
         if (this.health <= 0) { 
             this.health = 0;
-            deathEvent?.Invoke();
-            Die();
+            deathEvent?.Invoke(npc);
+            npc.Die();
         }
     }
 
@@ -215,19 +211,11 @@ public class CharStats : MonoBehaviour
         PartyController.Instance.UpdateParty();
     }
 
-    public void Die()  //TODO: find better place to put this. NPC?
-    {
-        //TODO: award xp, drop loot, etc
-        CombatManager.Instance.RemoveCombatant(gameObject.GetComponent<NPC>());
-        SceneLoader.Instance.SceneObjectManagers[gameObject.scene.name].RemoveNPC(gameObject);
-        // TODO: handle if player char and not NPC
-    }
-
     public int currStatMods(StatVal stat)
     {
         var statMod = 0;
         //Debug.Log(charInventory);
-        var equipStats = charInventory.GetEquipmentStatMods();
+        var equipStats = npc.inventory.GetEquipmentStatMods();
         if (equipStats.ContainsKey(stat)) statMod += equipStats[stat];
         foreach (var entry in modifiers)
         {

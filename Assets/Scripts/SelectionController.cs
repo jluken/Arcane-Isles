@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -25,8 +22,7 @@ public class SelectionController : MonoBehaviour
 {
     public static SelectionController Instance { get; private set; }
 
-    public delegate void SelectEvent();
-    public event SelectEvent deselectEvent;
+    public event Action deselectEvent;
 
     public Selectable selectedItem;
     public Vector3 lastHitPoint { get; private set; }
@@ -40,7 +36,7 @@ public class SelectionController : MonoBehaviour
 
     void Update()
     {
-        if (!playerUnderControl) return;
+        if (!playerUnderControl || CombatManager.Instance.inAction) return;
         RaycastHit hit;
         LayerMask layerMask = LayerMask.GetMask("Barrier"); // TODO: maybe detect selectable specifically instead of ignoring barrier
         bool objectPoint = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1);
@@ -77,7 +73,11 @@ public class SelectionController : MonoBehaviour
         if (selectionData.immediateAction != null) selectionData.immediateAction.Invoke();
         if (selectionData.selectable != null)
         {
-            if (selectionData.setSelect) Select(selectionData.selectable);
+            if (selectionData.setSelect)
+            {
+                Select(selectionData.selectable); 
+                PartyController.Instance.GoTo(selectionData.selectable.transform.position);
+            }
             if (selectionData.interaction != null) selectionData.selectable.SetInteractAction(selectionData.interaction);
         }
     }
@@ -87,7 +87,7 @@ public class SelectionController : MonoBehaviour
         Deselect();
         selectedItem = selectable;
         Debug.Log("Select: " + selectable.name);
-        PartyController.Instance.GoTo(selectable.transform.position);  // TODO: if selectable standpoint, set here with absolute values
+        //PartyController.Instance.GoTo(selectable.transform.position);  // TODO: if selectable standpoint, set here with absolute values
     }
 
     public void Deselect()

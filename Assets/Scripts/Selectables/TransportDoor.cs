@@ -27,7 +27,7 @@ public class TransportDoor : doorway
 
 public class NewLevel : Interaction
 {
-    public override void Interact(PartyMember player, Selectable interactable)
+    public override void Interact(NPC npc, Selectable interactable)
     {
         if (interactable.GetComponent<TransportDoor>() == null) { Debug.LogError("Need transport door to travel to new level"); }
         var door = interactable.GetComponent<TransportDoor>();

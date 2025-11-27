@@ -41,7 +41,7 @@ public class doorway : Selectable
 
 public class OpenClose : Interaction
 {
-    public override void Interact(PartyMember player, Selectable interactable)
+    public override void Interact(NPC npc, Selectable interactable)
     {
         // TODO: with actual assets, door will be one "object" and can have separate invisible barrier tied to i
         //Debug.Log("Door interact");

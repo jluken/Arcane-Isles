@@ -71,21 +71,21 @@ public class Selectable : MonoBehaviour
             actionName = "Inspect",
             immediateAction = Inspect
         };
-        combatMovement = new SelectionData(this)
-        {
-            actionName = "Go Here",
-            setSelect = true,
-            //immediateAction = CombatMove
-        };
+        //combatMovement = new SelectionData(this)
+        //{
+        //    actionName = "Go Here",
+        //    setSelect = true,
+        //    //immediateAction = CombatMove
+        //};
 
 
         displayRoutine = DisplayText();
     }
 
-    public virtual void Interact(PartyMember player)
+    public virtual void Interact(NPC npc)
     {
         Debug.Log("Interact: " + this.name + interactAction);
-        interactAction?.Interact(player, this);
+        interactAction?.Interact(npc, this);
         SelectionController.Instance.Deselect();
         UnsetInteraction();
         //isActive = true;
@@ -96,11 +96,6 @@ public class Selectable : MonoBehaviour
         //Debug.Log("Hover over object " + gameObject.name);
         //TODO: highlight object - possibly use asset if can't find way to "outline" in 3D
     }
-
-    //public bool IsActive()  // TODO: redundant?
-    //{
-    //    return isActive;
-    //}
 
     public void Select()
     {
@@ -137,11 +132,11 @@ public class Selectable : MonoBehaviour
         StartCoroutine(displayRoutine);
     }
 
-    public void CombatMove()  // TODO: maybe combine with NPC for generic "use combat ability" in selectable?
-    {
-        PartyController.Instance.GoTo(gameObject.transform.position);
-        //CombatManager.Instance.UseCombatAbility(this, CombatManager.CombatActionType.Run);
-    }
+    //public void CombatMove()
+    //{
+    //    PartyController.Instance.GoTo(gameObject.transform.position);
+    //    //CombatManager.Instance.UseCombatAbility(this, CombatManager.CombatActionType.Run);
+    //}
 
     IEnumerator DisplayText()
     {
@@ -159,5 +154,5 @@ public class Selectable : MonoBehaviour
 
 public abstract class Interaction  // TODO: possibly have every interaction carry an AP cost?
 {
-    public abstract void Interact(PartyMember player, Selectable interactable);  // TODO: Eventually need to make generic actor class that PartyMember and Enemy share (Selectable?)
+    public abstract void Interact(NPC npc, Selectable interactable);
 }

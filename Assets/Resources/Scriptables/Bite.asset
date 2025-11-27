@@ -17,4 +17,4 @@ MonoBehaviour:
   damageDie: 4
   modifier: 11
   range: 2
-  attckCost: 4
+  attackCost: 5

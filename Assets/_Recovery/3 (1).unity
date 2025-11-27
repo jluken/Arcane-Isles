@@ -466,7 +466,7 @@ MonoBehaviour:
   health: 0
   magick: 0
   vigor: 3
-  finesse: 1
+  finesse: 3
   psyche: 2
   intimidation: 0
   athletics: 0

@@ -138,7 +138,7 @@ public class UIController : MonoBehaviour
         Time.timeScale = 1; // Unpause
     }
 
-    public bool OverlayOpen()
+    public bool OverlayOpen()  // TODO: make overlays still block whole screen from clicking, and section off where pausing/unpausing happens
     {
         return screens.Where(s => s.overlay && s.IsActive()).Any();
     }

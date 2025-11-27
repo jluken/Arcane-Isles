@@ -13,10 +13,10 @@ public class Enemy : NPC
 
     public List<GameObject> AwarePlayers = new List<GameObject>();
     
-    public EnemyStateMachine StateMachine;
-    public EnemyIdleState IdleState;
-    public EnemyPatrolState PatrolState;
-    public EnemyTurnChaseState TurnChaseState;
+    //public EnemyStateMachine StateMachine;
+    //public EnemyIdleState IdleState;
+    //public EnemyPatrolState PatrolState;
+    //public EnemyTurnChaseState TurnChaseState;
 
     public bool isAggroed = false;
     
@@ -27,23 +27,8 @@ public class Enemy : NPC
         PlayFootstepSound
     }
 
-    private void Awake()
-    {
-        StateMachine = new EnemyStateMachine();
-
-        IdleState = new EnemyIdleState(this, StateMachine);
-        PatrolState = new EnemyPatrolState(this, StateMachine);
-        TurnChaseState = new EnemyTurnChaseState(this, StateMachine);
-
-        StateMachine.Initialize(PatrolState);
-
-        //TODO: add event listener to start combat and stop combat
-        //TODO: will need to be able to report whether close enough to keep combat going
-
-    }
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public override void Start()
     {
         AggroRad.enemy = this;
         AwareRad.enemy = this;
@@ -62,31 +47,43 @@ public class Enemy : NPC
         return acts;
     }
 
-    private void AnimationTriggerEvent(AnimationTriggerType triggerType)
+    public override void SetStates()
     {
-        StateMachine.CurrentEnemyState.AnimationTriggerEvent(triggerType);
+        StateMachine = new NPCStateMachine();
+
+        ActiveState = new ActiveState(this, StateMachine);
+        IdleState = new EnemyPatrolState(this, StateMachine);
+        ActiveCombatState = new ActiveCombatState(this, StateMachine);
+        IdleCombatState = new IdleCombatState(this, StateMachine);
+
+        StateMachine.Initialize(IdleState);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        StateMachine.CurrentEnemyState.FrameUpdate();      
-    }
+    //private void AnimationTriggerEvent(AnimationTriggerType triggerType)
+    //{
+    //    StateMachine.CurrentEnemyState.AnimationTriggerEvent(triggerType);
+    //}
 
-    private void FixedUpdate()
-    {
-        StateMachine.CurrentEnemyState.PhysicsUpdate();
-    }
+    //// Update is called once per frame
+    //void Update()
+    //{
+    //    StateMachine.CurrentEnemyState.FrameUpdate();      
+    //}
 
-    public override void SetToCombat()
-    {
-        StateMachine.ChangeState(TurnChaseState);
-    }
+    //private void FixedUpdate()
+    //{
+    //    StateMachine.CurrentEnemyState.PhysicsUpdate();
+    //}
 
-    public override void EndCombat()
-    {
-        StateMachine.ChangeState(PatrolState);
-    }
+    //public override void SetToCombat()
+    //{
+    //    StateMachine.ChangeState(TurnChaseState);
+    //}
+
+    //public override void EndCombat()
+    //{
+    //    StateMachine.ChangeState(PatrolState);
+    //}
 
     public void TakeAction()
     {

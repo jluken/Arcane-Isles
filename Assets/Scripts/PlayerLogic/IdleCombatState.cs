@@ -1,8 +1,9 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-public class WaitCombatState: PlayerState
+public class IdleCombatState: NPCState
 {
-    public WaitCombatState(PartyMember player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
+    public IdleCombatState(NPC npc, NPCStateMachine playerStateMachine) : base(npc, playerStateMachine)
     {
     }
 
@@ -13,6 +14,8 @@ public class WaitCombatState: PlayerState
 
     public override void EnterState()
     {
+        npc.mover.StopMoving();
+        npc.mover.agent.avoidancePriority = 50;
         base.EnterState();
     }
 
@@ -29,6 +32,11 @@ public class WaitCombatState: PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+    }
+
+    public override void SetActiveNPC()
+    {
+        npcStateMachine.ChangeState(npc.ActiveCombatState);
     }
 
 }

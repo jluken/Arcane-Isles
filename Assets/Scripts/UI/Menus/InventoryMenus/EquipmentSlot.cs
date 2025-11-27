@@ -29,9 +29,9 @@ public class EquipmentSlot : ItemSlot
         }
     }
 
-    public override void AddItem(InventoryData itemData, int newStackSize = 1, bool createDrag = false)
+    public override void AddItem(InventoryData itemData, int newStackSize = 1)
     {
-        base.AddItem(itemData, newStackSize, createDrag);
+        base.AddItem(itemData, newStackSize);
     }
 
     public override InventoryData RemoveItem(int amount = 1, bool destroyDrag = false)

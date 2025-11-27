@@ -3,68 +3,109 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
+using static InventoryData;
 
 public class EntityInventory : MonoBehaviour
 {
     public string containerId;
     
-    public static int invSize = 40;  // TODO: lock certain "containers" to a set size 
+    public int maxInv = 40;
 
-    public InventoryData[] inventoryTypes = new InventoryData[invSize];
-    public int[] inventoryCounts = new int[invSize];
+    // For the purposes of setting initial inventory through editor
+    public List<InventoryData> initInv;
+    public List<int> initInvStacks;
+
+    public struct InventoryStack
+    {
+        public InventoryData type;
+        public int count;
+
+        public InventoryStack(InventoryData type, int count)
+        {
+            this.type = count > 0 ? type : null;
+            this.count = type != null ? count : 0;
+        }
+    }
+
+    public List<InventoryStack> inventory = new List<InventoryStack>();
 
     public bool hasEquip;
-    public InventoryData[] equipment = new InventoryData[4]; // hardcoded slot indices for now
+
+
+    public Dictionary<ItemType, InventoryData> equipment = new Dictionary<ItemType, InventoryData>() {
+        { ItemType.headwear, null},
+        { ItemType.armor, null},
+        { ItemType.weapon, null},
+        { ItemType.boots, null}
+    };
 
     public int money;
     public bool merchant;
 
+    public void Start()
+    {
+        if (initInv.Count > maxInv) Debug.LogError("Present inventory greater than maximum");
+        inventory = new List<InventoryStack>();
+        for (int i = 0; i < initInv.Count; i++) { 
+            int stack = i < initInvStacks.Count ? initInvStacks[i] : 1;
+            inventory.Add(new InventoryStack(initInv[i], stack));
+        }
+    }
+
     public void LoadFromSaveData(EntityInventorySaveData saveData)
     {
-        for (int j = 0; j < inventoryTypes.Length; j++)
+        inventory = new List<InventoryStack>();
+        for (int j = 0; j < saveData.inventory.Count; j++)
         {
-            inventoryTypes[j] = saveData.inventoryTypes[j] == "" ? null : Resources.Load<InventoryData>("Scriptables/" + saveData.inventoryTypes[j]);
+            inventory.Add(saveData.inventory[j].Item1 == "" ? new InventoryStack(null, 0) :
+                new InventoryStack(Resources.Load<InventoryData>("Scriptables/" + saveData.inventory[j].Item1), saveData.inventory[j].Item2));
         }
-        Array.Copy(saveData.inventoryCounts, inventoryCounts, saveData.inventoryCounts.Length);
-        for (int j = 0; j < equipment.Length; j++)
-        {
-            equipment[j] = saveData.equipment[j] == "" ? null : Resources.Load<InventoryData>("Scriptables/" + saveData.equipment[j]);
-        }
+
         hasEquip = saveData.hasEquip;
+        foreach (KeyValuePair<string, string> kvp in saveData.equipment)
+        {
+            if(!Enum.TryParse(kvp.Key, out ItemType equipType)) Debug.LogError("Invalid equipment type " + kvp.Key);
+            equipment[equipType] = kvp.Value == "" ? null : Resources.Load<InventoryData>("Scriptables/" + kvp.Value);
+        }
+
         money = saveData.money;
         merchant = saveData.merchant;
     }
 
     public void SetInventory(int idx, InventoryData itemData, int count=1)
     {
+        if (idx >= maxInv) Debug.LogError("Setting inventory outside of bounds");
         if (count == 0) itemData = null;
         if (itemData == null) count = 0;
-        inventoryTypes[idx] = itemData;
-        inventoryCounts[idx] = count;
+
+        while (inventory.Count <= idx) inventory.Add(new InventoryStack(null, 0));
+        inventory[idx] = new InventoryStack(itemData, count);
     }
 
-    public (InventoryData, int) GetInventory(int idx)
+    public InventoryStack GetInventory(int idx)
     {
-        return (inventoryTypes[idx], inventoryCounts[idx]);
+        if (idx >= maxInv) Debug.LogError("Getting inventory outside of bounds");
+        if (idx >= inventory.Count) return new InventoryStack(null, 0);
+        return inventory[idx];
     }
 
-    public void SetEquipment(int idx, InventoryData itemData)
+    public void SetEquipment(ItemType type, InventoryData itemData)
     {
-        equipment[idx] = itemData;
+        equipment[type] = itemData;
     }
 
-    public InventoryData GetEquipment(int idx)
+    public InventoryData GetEquipment(ItemType type)
     {
-        return equipment[idx];
+        return equipment[type];
     }
 
     public Dictionary<CharStats.StatVal, int> GetEquipmentStatMods()
     {
         var modifiers = new Dictionary<CharStats.StatVal, int>();
-        for (int i = 0; i < equipment.Length; i++)
+        foreach (ItemType type in equipment.Keys)
         {
-            if (equipment[i] == null) continue;
-            foreach (var equipStat in equipment[i].equipStats)
+            if (equipment[type] == null) continue;
+            foreach (var equipStat in equipment[type].equipStats)
             {
                 if (!modifiers.ContainsKey(equipStat.equipStat)) modifiers[equipStat.equipStat] = 0;
                 modifiers[equipStat.equipStat] += equipStat.value;
@@ -73,34 +114,22 @@ public class EntityInventory : MonoBehaviour
         return modifiers;
     }
 
-    public List<AbilityAction> GetWeaponAbilities()
-    {
-        AbilityAction defaultAttack = Resources.Load<AbilityAction>("Scriptables/Punch");  // TODO: handle this dynamically (called from NPC class containing "default" actions)
-        if (equipment[1]  == null) return new List<AbilityAction> { defaultAttack };
-        return equipment[1].abilities; // TODO: hard code different equipment slots
-    } 
-
-    public void Deselect()
-    {
-
-    }
-
     public int AddNewItem(InventoryData itemData, int newStackSize=1)
     {
-        for (int i = 0; i < EntityInventory.invSize; i++)
+        for (int i = 0; i < maxInv; i++)
         {
-            if (GetInventory(i).Item2 == 0)
+            if (GetInventory(i).count == 0)
             {
-                Debug.Log("empty stack " + i);
+                //Debug.Log("empty stack " + i);
                 int transferStack = Math.Min(itemData.maxStackSize, newStackSize);
                 //ItemSlots[i].AddItem(itemData, transferStack, true);
                 SetInventory(i, itemData, transferStack);
                 newStackSize -= transferStack;
             }
-            else if (GetInventory(i).Item1 == itemData)
+            else if (GetInventory(i).type == itemData)
             {
-                Debug.Log("Same data in " + i + " for " + itemData.itemName);
-                int currentStack = GetInventory(i).Item2;
+                //Debug.Log("Same data in " + i + " for " + itemData.itemName);
+                int currentStack = GetInventory(i).count;
                 int freeSpace = itemData.maxStackSize - currentStack;
                 int transferStack = Math.Min(freeSpace, newStackSize);
                 //ItemSlots[i].AddItem(itemData, transferStack);
@@ -116,8 +145,8 @@ public class EntityInventory : MonoBehaviour
 
     public float getEncumberance()
     {
-        var invWeight = Enumerable.Range(0, invSize).Where(i => inventoryCounts[i] > 0).Select(i => inventoryTypes[i].weight * inventoryCounts[i]).Sum();
-        var equippedWeight = Enumerable.Range(0, 4).Where(i => equipment[i] != null).Select(i => equipment[i].weight).Sum();
-        return invWeight + equippedWeight;
+        var invWeight = Enumerable.Range(0, inventory.Count).Where(i => GetInventory(i).count > 0).Select(i => GetInventory(i).type.weight * GetInventory(i).count).Sum();
+        foreach (ItemType type in equipment.Keys) if (GetEquipment(type) != null) invWeight += GetEquipment(type).weight;
+        return invWeight;
     }
 }

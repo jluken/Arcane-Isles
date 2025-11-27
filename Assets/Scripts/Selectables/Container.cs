@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Container : Selectable
 {
-    public EntityInventory inventory { get; private set; }
+    public EntityInventory inventory => gameObject.GetComponent<EntityInventory>();
 
     public SelectionData open;
 
@@ -17,7 +17,6 @@ public class Container : Selectable
             interaction = new Open()
         };
 
-        inventory = gameObject.GetComponent<EntityInventory>();
         base.Start();
     }
 
@@ -33,7 +32,7 @@ public class Container : Selectable
 
 public class Open : Interaction
 {
-    public override void Interact(PartyMember player, Selectable interactable)
+    public override void Interact(NPC npc, Selectable interactable)
     {
         if (interactable.GetComponent<Container>() == null) { Debug.LogError("Can only open containers"); }
         var container = interactable.GetComponent<Container>();

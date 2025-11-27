@@ -3,7 +3,7 @@ using System.Data;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class groundScript : MonoBehaviour  // TODO: maybe undo making the ground a "selectable". No highlighting + different behavior for travel. Can still use Ability Action and SelectionController
+public class groundScript : MonoBehaviour 
 {
 
     public bool accessible { get; private set; }  // TODO: will need to toggle on/off when area is "discovered"
@@ -23,7 +23,7 @@ public class groundScript : MonoBehaviour  // TODO: maybe undo making the ground
     
 
     //// Update is called once per frame
-    //void Update() // TODO: move this to Selection Controller?
+    //void Update() 
     //{
     //    RaycastHit hit;
     //    LayerMask layerMask = LayerMask.GetMask("Barrier");
