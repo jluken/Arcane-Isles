@@ -1,4 +1,5 @@
 using NUnit.Framework.Internal;
+using PixelCrushers.DialogueSystem;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -127,9 +128,10 @@ public class Selectable : MonoBehaviour
     public void Inspect()
     {
         //dialogueBox.AddText(description); // TODO: what sort of dialogue box should be persistant, separate from talking box
-        StopCoroutine(displayRoutine);
-        displayRoutine = DisplayText();
-        StartCoroutine(displayRoutine);
+        //StopCoroutine(displayRoutine);
+        //displayRoutine = DisplayText();
+        //StartCoroutine(displayRoutine);
+        DialogueInterface.Instance.DescriptionBark(this);
     }
 
     //public void CombatMove()

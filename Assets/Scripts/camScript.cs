@@ -1,3 +1,4 @@
+using PixelCrushers.DialogueSystem;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ public class camScript : MonoBehaviour
     private float xTilt = 37.5f;
     private float yRot = 135f;
 
+    private bool talking;
+
     private void Awake()
     {
         Instance = this;
@@ -31,7 +34,10 @@ public class camScript : MonoBehaviour
         //iconCam = GameObject.Find("IconCamera").GetComponent<Camera>();
         ct = cam.transform;
         Camera.main.orthographic = true;
-        ct.rotation = Quaternion.identity * Quaternion.Euler(xTilt, yRot, 0); ;
+        ct.rotation = Quaternion.identity * Quaternion.Euler(xTilt, yRot, 0);
+
+        DialogueManager.instance.conversationStarted += (sender) => { talking = true; };  // TODO: wrap this up in the controller for general UI
+        DialogueManager.instance.conversationEnded += (sender) => { talking = false; };
     }
 
     void Update()
@@ -42,7 +48,7 @@ public class camScript : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if (UIController.Instance.DefaultUIOpen()) // TODO: with UI update: better handling of when can move camera (allow in combat)
+        if (!talking && UIController.Instance.DefaultUIOpen()) // TODO: with UI update: better handling of when can move camera (allow in combat)
         {
             // Move player based on vertical input.
             float moveVertical = Input.GetAxis("Vertical");  // TODO: legacy code

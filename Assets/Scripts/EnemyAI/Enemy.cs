@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using PixelCrushers.DialogueSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -84,6 +85,12 @@ public class Enemy : NPC
     //{
     //    StateMachine.ChangeState(PatrolState);
     //}
+
+    public override void Die()
+    {
+        QuestLog.SetQuestEntryState("Kill the bug", 1, "success");  //TODO: temporary testing
+        base.Die();
+    }
 
     public void TakeAction()
     {

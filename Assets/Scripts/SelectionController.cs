@@ -1,3 +1,4 @@
+using PixelCrushers.DialogueSystem;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -28,15 +29,23 @@ public class SelectionController : MonoBehaviour
     public Vector3 lastHitPoint { get; private set; }
     public bool playerUnderControl;
 
+    private bool talking;
+
     private void Awake()
     {
         Instance = this;
         playerUnderControl = true;
     }
 
+    public void Start()
+    {
+        DialogueManager.instance.conversationStarted += (sender) => { talking = true; };  // TODO: wrap this up in the controller for general UI
+        DialogueManager.instance.conversationEnded += (sender) => { talking = false; };
+    }
+
     void Update()
     {
-        if (!playerUnderControl || CombatManager.Instance.inAction) return;
+        if (!playerUnderControl || CombatManager.Instance.inAction || talking) return;
         RaycastHit hit;
         LayerMask layerMask = LayerMask.GetMask("Barrier"); // TODO: maybe detect selectable specifically instead of ignoring barrier
         bool objectPoint = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1);

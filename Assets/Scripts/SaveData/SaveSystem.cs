@@ -1,3 +1,4 @@
+using PixelCrushers.DialogueSystem;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -17,6 +18,7 @@ public static class SaveSystem
         gameSaveData.partyData = partyData;
         gameSaveData.levelName = sceneLoader.GetLevel();
         gameSaveData.SceneData = sceneLoader.GetAllSceneData();
+        gameSaveData.dialogData = PersistentDataManager.GetSaveData();
 
         formatter.Serialize(stream, gameSaveData);
         stream.Close();
@@ -32,7 +34,7 @@ public static class SaveSystem
 
             GameSaveData data = formatter.Deserialize(stream) as GameSaveData;
             stream.Close();
-
+              
             return data;
         }
         else

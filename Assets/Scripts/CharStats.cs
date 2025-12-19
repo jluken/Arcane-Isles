@@ -211,6 +211,33 @@ public class CharStats : MonoBehaviour
         PartyController.Instance.UpdateParty();
     }
 
+    public void resetStat(StatVal stat, int val)
+    {
+        switch (stat)
+        {
+            case StatVal.xp: this.xp = val; break;
+            case StatVal.health: this.health = val; break;
+            case StatVal.magick: this.magick = val; break;
+            case StatVal.vigor: this.vigor = val; break;
+            //case StatVal.finesse: premod = this.finesse; break;
+            //case StatVal.psyche: premod = this.psyche; break;
+            //case StatVal.intimidation: premod = GetCurrStat(StatVal.vigor) + this.intimidation; break;
+            //case StatVal.athletics: premod = GetCurrStat(StatVal.vigor) + this.athletics; break;
+            //case StatVal.melee: premod = GetCurrStat(StatVal.vigor) + this.melee; break;
+            //case StatVal.endurance: premod = GetCurrStat(StatVal.vigor) + this.endurance; break;
+            //case StatVal.guile: premod = GetCurrStat(StatVal.finesse) + this.guile; break;
+            //case StatVal.precision: premod = GetCurrStat(StatVal.finesse) + this.precision; break;
+            //case StatVal.sleightOfHand: premod = GetCurrStat(StatVal.finesse) + this.sleightOfHand; break;
+            //case StatVal.stealth: premod = GetCurrStat(StatVal.finesse) + this.stealth; break;
+            //case StatVal.persuasion: premod = GetCurrStat(StatVal.psyche) + this.persuasion; break;
+            //case StatVal.perception: premod = GetCurrStat(StatVal.psyche) + this.perception; break;
+            //case StatVal.arcana: premod = GetCurrStat(StatVal.psyche) + this.arcana; break;
+            //case StatVal.survival: premod = GetCurrStat(StatVal.psyche) + this.survival; break;
+            //case StatVal.dodge: premod = GetCurrStat(StatVal.finesse) + this.survival; break;
+            //case StatVal.armor: premod = 0; break;
+        }
+    }
+
     public int currStatMods(StatVal stat)
     {
         var statMod = 0;

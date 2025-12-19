@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using PixelCrushers.DialogueSystem;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -138,7 +139,7 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
         StateMachine.CurrentPlayerState.SetIdle();
     }
 
-    public void Die()
+    public virtual void Die()
     {
         //TODO: award xp, drop loot, etc
         CombatManager.Instance.RemoveCombatant(this);
@@ -154,7 +155,9 @@ public class Talk : Interaction
     public override void Interact(NPC npc, Selectable interactable)
     {
         if (interactable.GetComponent<NPC>() == null) { Debug.LogError("Can only talk to NPCs"); }
-        UIController.Instance.ActivateDialog(npc.dialogue, npc.charStats.charImage);
+        //UIController.Instance.ActivateDialog(npc.dialogue, npc.charStats.charImage);
+        //DialogueManager.StartConversation("TestConvo1");
+        DialogueInterface.Instance.StartPlayerConversation("TestConvo1", npc, interactable.GetComponent<NPC>());
     }
 }
 

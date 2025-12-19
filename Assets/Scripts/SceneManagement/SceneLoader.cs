@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using PixelCrushers.DialogueSystem;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -191,12 +192,13 @@ public class SceneLoader : MonoBehaviour
         return SceneObjectManagers;
     }
 
-    public void LoadFromData(GameSaveData saveData)
+    public void LoadFromData(GameSaveData saveData)  //TODO: maybe goes better in SaveSystem
     {
         Debug.Log("Load from Data " + saveData.levelName);
         SceneData = saveData.SceneData;
         PartyController.Instance.InstantiateFromData(saveData.partyData);
         Debug.Log("Party Instantiated");
+        PersistentDataManager.ApplySaveData(saveData.dialogData);
         StartCoroutine(ActivateLevel(saveData.levelName));
     }
 }
