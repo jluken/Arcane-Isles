@@ -52,16 +52,12 @@ public class Selectable : MonoBehaviour
     public SelectionData inspectSelection;
     public SelectionData goHere;
     public SelectionData combatMovement;
+    public SelectionData openInventory;
 
     //public Dictionary<ActionName, Action> actionMapping;
 
-    public virtual void Start()
+    public virtual void Awake()
     {
-        SelectionController.Instance.deselectEvent += UnsetInteraction;
-        itemPopUpPrefab = Resources.Load<GameObject>("Prefabs/ItemPopup");
-        selectMenu = ItemSelectMenu.Instance;
-        dialogueBox = DialogueBox.Instance;
-
         goHere = new SelectionData(this)
         {
             actionName = "Go Here",
@@ -72,13 +68,26 @@ public class Selectable : MonoBehaviour
             actionName = "Inspect",
             immediateAction = Inspect
         };
-        //combatMovement = new SelectionData(this)
-        //{
-        //    actionName = "Go Here",
-        //    setSelect = true,
-        //    //immediateAction = CombatMove
-        //};
+        openInventory = new SelectionData(this)
+        {
+            actionName = "Open",
+            setSelect = true,
+            interaction = new Open()
+        };
+        combatMovement = new SelectionData(this)
+        {
+            actionName = "Go Here",
+            setSelect = true,
+            //immediateAction = CombatMove
+        };
+    }
 
+    public virtual void Start()
+    {
+        SelectionController.Instance.deselectEvent += UnsetInteraction;
+        itemPopUpPrefab = Resources.Load<GameObject>("Prefabs/ItemPopup");
+        selectMenu = ItemSelectMenu.Instance;
+        dialogueBox = DialogueBox.Instance;
 
         displayRoutine = DisplayText();
     }
@@ -119,11 +128,11 @@ public class Selectable : MonoBehaviour
         return acts;
     }
 
-    public virtual List<SelectionData> CombatActions()
-    {
-        //Returns the actions accessible during combat
-        return Actions();
-    }
+    //public virtual List<SelectionData> CombatActions()
+    //{
+    //    //Returns the actions accessible during combat
+    //    return Actions();
+    //}
 
     public void Inspect()
     {
@@ -157,4 +166,15 @@ public class Selectable : MonoBehaviour
 public abstract class Interaction  // TODO: possibly have every interaction carry an AP cost?
 {
     public abstract void Interact(NPC npc, Selectable interactable);
+}
+
+public class Open : Interaction
+{
+    public override void Interact(NPC npc, Selectable interactable)
+    {
+        if (interactable.GetComponent<Container>() == null  && interactable.GetComponent<NPC>() == null) { Debug.LogError("Can only open objects with inventories"); }
+        var container = interactable.GetComponent<Container>();
+        if (container == null) UIController.Instance.ActivateContainerScreen(interactable.GetComponent<NPC>().inventory);
+        else UIController.Instance.ActivateContainerScreen(container.inventory);
+    }
 }

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     public int slotID;
-    public InventoryMenu parentMenu;
+    public InventoryMenu parentMenu;  // TODO: reevaluate "parentMenu" and "slotGroup" approach
     public List<ItemSlot> slotGroup;
     
     public InventoryData itemData;
@@ -152,7 +152,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
     {
     }
 
-    public virtual void OnDrop(PointerEventData eventData)
+    public virtual void OnDrop(PointerEventData eventData)  // TODO: allow for toggle for list of allowable drag-to panels (after that becomes a class)
     {
         Debug.Log("DROP");
         

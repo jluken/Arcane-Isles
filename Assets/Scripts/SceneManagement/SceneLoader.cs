@@ -20,21 +20,34 @@ public class SceneLoader : MonoBehaviour
 
     //public List<string> ActiveLevelScenes { get; private set; }  // TODO: is this redundant with the keys of SceneObjectManagers (will just need to remove them when unloaded)? 
     private Dictionary<string, SceneSaveData> SceneData;
-    public Dictionary<string, SceneObjectManager> SceneObjectManagers;
+    public Dictionary<string, SceneObjectManager> SceneObjectManagers; // TODO: make private
+    private List<string> loadingScenes = new List<string>();
 
     private void Awake()
     {
         Instance = this;
         //ActiveLevelScenes = new List<string>();
+        
+    }
+
+    public void NewGame()
+    {
+        // TODO: Unload existing scenes, make sure players in right position
+        Debug.Log("New Game");
         SceneData = new Dictionary<string, SceneSaveData>();
+        foreach (var character in PartyController.Instance.party) { character.charStats.setInitStats(true); character.SetStates(); }  // TODO: handle more "default" save data
+        PartyController.Instance.DeactivateParty();
+        if (levelManager != null) DeactivateLevel(levelManager);
         levelManager = null;
         SceneObjectManagers = new Dictionary<string, SceneObjectManager>();
+        
         mainMenu.ActivateMenu();
     }
 
 
     void Start()
     {
+        NewGame();
     }
 
     public void SetLevel(LevelManager newManager)
@@ -42,18 +55,23 @@ public class SceneLoader : MonoBehaviour
         levelManager = newManager;
     }
 
-    public string GetLevel()
+    public string GetLevelName()
     {
         return levelManager.LevelName;
     }
 
-    public void ToMainMenu()
+    public LevelManager GetLevel()
+    {
+        return levelManager;
+    }
+
+    public void ToMainMenu() // TODO: put in UI update
     {
         mainMenu.ActivateMenu();
         UIController.Instance.DeactivateAllMenus();
         UIController.Instance.AllowMenus(false);
         PartyController.Instance.DeactivateParty();
-        StartCoroutine(DeactivateLevel(levelManager));
+        DeactivateLevel(levelManager);
     }
 
     public void SetToLevelSpawn(string levelName, int spawnLoc)
@@ -62,18 +80,23 @@ public class SceneLoader : MonoBehaviour
         SetLoadingScreen();
         //PartyController.Instance.MoveParty(levelManager.GetSpawnPoints(spawnLoc), false);
         StartCoroutine(ActivateLevel(levelName, spawnLoc));
-        if (oldLevel != null && levelName != oldLevel.LevelName) DeactivateLevel(oldLevel);
+        if (oldLevel != null && levelName != oldLevel.LevelName) StartCoroutine(DeactivateLevelCoroutine(oldLevel));
     }
 
     public IEnumerator ActivateLevel(string levelName, int spawnLoc = -1)
     {
+        Time.timeScale = 1;  // TODO: Handle time better somewhere, UI refactor
+        Debug.Log("Unpause Time");
         if (levelManager == null || levelManager.LevelName != levelName)
         {
             SetLoadingScreen();  // TODO: eventually refactor into UI manager
             var levelLoad = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
             while (!levelLoad.isDone) yield return null;
         }
-        if (spawnLoc >= 0) PartyController.Instance.MoveParty(levelManager.GetSpawnPoints(spawnLoc), false);
+
+        Debug.Log("About to move party");
+        if (spawnLoc >= 0) PartyController.Instance.MoveParty(levelManager.GetSpawnPoints(spawnLoc), true);
+        PartyController.Instance.ActivateParty();
         var spawnPoints = PartyController.Instance.GetPartyLoc();
 
         foreach (var point in spawnPoints) Debug.Log("Spawn point: " + point.ToString());
@@ -84,11 +107,14 @@ public class SceneLoader : MonoBehaviour
         if (activateSceneNames.Any(activateScene => !SceneObjectManagers.ContainsKey(activateScene))) SetLoadingScreen();  // Will need to load new scenes before starting
 
 
-        List<AsyncOperation> asyncOps = new List<AsyncOperation>();
-        ActivateLevelScenes(activateSceneNames).ForEach(op => asyncOps.Add(op));
-        while (asyncOps.Any(op => !op.isDone)) yield return null;
+        //List<AsyncOperation> asyncOps = new List<AsyncOperation>();
+        //ActivateLevelScenes(activateSceneNames).ForEach(op => asyncOps.Add(op));
+        Debug.Log("Ready to activate nearby scenes");
+        foreach(var sceneName in activateSceneNames) Debug.Log(sceneName);
+        while (activateSceneNames.Any(sceneName => !SceneObjectManagers.ContainsKey(sceneName))) yield return null;
+        Debug.Log("nearby scenes activated");
 
-        PartyController.Instance.ActivateParty();
+
         Time.timeScale = 1;  // TODO: find better way of handling stopping/starting time than relying on menus (currently getting stuck because the UI stopped for menu then never started)
         yield return new WaitForSeconds(0.5f);
         Debug.Log("wait over");
@@ -109,17 +135,23 @@ public class SceneLoader : MonoBehaviour
         UIController.Instance.AllowMenus(true);
     }
 
-    public IEnumerator DeactivateLevel(LevelManager level)
+    public IEnumerator DeactivateLevelCoroutine(LevelManager level)
+    {
+        DeactivateLevel(level);
+        yield return null;
+    }
+
+    public void DeactivateLevel(LevelManager level)
     {
         //PartyController.Instance.DeactivateParty();
+        Debug.Log("Deactivate Level: " + level.LevelName);
         foreach (string sceneName in level.levelScenes) { StartCoroutine(DeactivateSubscene(sceneName)); }
         SceneManager.UnloadSceneAsync(level.LevelName); ;
-        yield return null;
     }
 
     public IEnumerator ActivateSubscene(string sceneName)
     {
-        //ActiveLevelScenes.Add(sceneName);
+        if (!loadingScenes.Contains(sceneName)) loadingScenes.Add(sceneName);
         SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
         yield return null;
     }
@@ -171,7 +203,13 @@ public class SceneLoader : MonoBehaviour
 
     public void AddSceneManager(SceneObjectManager sceneManager)
     {
+        loadingScenes.Remove(sceneManager.sceneName);
         SceneObjectManagers[sceneManager.sceneName] = sceneManager;
+    }
+
+    public bool SceneLoaded(string sceneName)
+    {
+        return SceneObjectManagers.ContainsKey(sceneName) || loadingScenes.Contains(sceneName);
     }
 
     public Dictionary<string, SceneSaveData> GetAllSceneData()
@@ -186,19 +224,49 @@ public class SceneLoader : MonoBehaviour
         return totalSceneData;
     }
 
-    public Dictionary<string, SceneObjectManager> GetCurrentSceneManagers()
-    {
-        //return ActiveLevelScenes.ToDictionary(scene => scene, scene => SceneObjectManagers[scene]);
-        return SceneObjectManagers;
-    }
+    //public Dictionary<string, SceneObjectManager> GetCurrentSceneManagers()
+    //{
+    //    //return ActiveLevelScenes.ToDictionary(scene => scene, scene => SceneObjectManagers[scene]);
+    //    return SceneObjectManagers;
+    //}
 
     public void LoadFromData(GameSaveData saveData)  //TODO: maybe goes better in SaveSystem
     {
         Debug.Log("Load from Data " + saveData.levelName);
         SceneData = saveData.SceneData;
         PartyController.Instance.InstantiateFromData(saveData.partyData);
-        Debug.Log("Party Instantiated");
+        //Debug.Log("Party Instantiated");
         PersistentDataManager.ApplySaveData(saveData.dialogData);
         StartCoroutine(ActivateLevel(saveData.levelName));
+    }
+
+    public void SetActiveSceneNPCs(string sceneName, List<string> npcActiveNames, List<string> npcInactiveNames)
+    {
+        var sceneData = GetSceneData(sceneName);
+
+        if (SceneObjectManagers.ContainsKey(sceneName))  // currently active
+        {
+            foreach (var npc in npcActiveNames)
+            {
+                SceneObjectManagers[sceneName].EnableDisableNPC(npc, true);
+            }
+            foreach (var npc in npcInactiveNames)
+            {
+                SceneObjectManagers[sceneName].EnableDisableNPC(npc, false);
+            }
+        }
+        else if (sceneData != null) {  // Currently in loaded data
+            foreach (var npc in npcActiveNames) {
+                sceneData.NPCs.Where(npcdata => npcdata.id == npc).ToList().ForEach(npcdata => npcdata.active = true);
+            }
+            foreach (var npc in npcInactiveNames)
+            {
+                sceneData.NPCs.Where(npcdata => npcdata.id == npc).ToList().ForEach(npcdata => npcdata.active = false);
+            }
+        }
+        else // never been loaded yet
+        {
+            SceneData[sceneName] = new SceneSaveData(npcActiveNames, npcInactiveNames);  // TODO: maybe protect this better
+        }
     }
 }

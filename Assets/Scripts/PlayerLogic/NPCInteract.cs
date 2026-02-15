@@ -9,7 +9,7 @@ public class NPCInteract : MonoBehaviour
     {
         if (npc.IsActive && SelectionController.Instance.IsSelected(other.gameObject))
         {
-            Debug.Log(npc.name + " Found selected");
+            //Debug.Log(npc.name + " Found selected");
             if(Utils.LineOfSight(npc.gameObject, other.gameObject))
             {
                 npc.GetComponent<MoveToClick>().StopMoving();

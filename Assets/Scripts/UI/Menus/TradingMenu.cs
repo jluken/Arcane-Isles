@@ -1,24 +1,44 @@
 using NUnit.Framework.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using System;
-using UnityEditor;
 using System.ComponentModel;
 using System.Linq;
+using TMPro;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 
 public class TradingMenu : InventoryMenu
 {
-    //TODO: deprecated formatting; will need to copy from Container inventory menu
-
+    public static TradingMenu Instance { get; private set; }
     public GameObject inventoryMenu;
-    EntityInventory currentInventory;
+    EntityInventory merchantInventory;
 
-    // TODO: merchant trading menu to activate if container has merchant flag - only allow "buying" goods - will also need to add "price" to game object data
+    public GameObject playerInventorySlots; // TODO: standardize this as its own data type and use for different inventory menus
+    public TMP_Text playerName;
+    public TMP_Text playerGold;
+
+    public GameObject merchantInventorySlots;
+    public TMP_Text merchantName;
+    public TMP_Text merchantGold;
+
+    public static int barterSlotNum = 10;
+    public EntityInventory playerBarterInv;
+    public GameObject playerBarterSlots;
+    public EntityInventory merchantBarterInv;
+    public GameObject merchantBarterSlots;
+
+    public GameObject slotPrefab;
 
     //private SelectionController selectionController;
+
+    public Image itemDescriptionImage;
+    public TMP_Text itemDescriptionNameText;
+    public TMP_Text itemDescriptionText;
+    public Sprite emptySprite;
+    private int selectedSlotId;
     //public GameObject ui;
 
     //private void Awake()
@@ -29,21 +49,24 @@ public class TradingMenu : InventoryMenu
     //    containerMenu.SetActive(false);
     //}
 
-    public ItemSlot[] PlayerInventorySlots;
-    public ItemSlot[] NPCInventorySlots;
+    public List<ItemSlot> PlayerInventorySlots;  // TODO: rename and differentiate from panel object (for all inv menus)
+    public List<ItemSlot> MerchantInventorySlots;
+
+    public List<ItemSlot> PlayerBarterSlots;
+    public List<ItemSlot> MerchantBarterSlots;
+
+    public TMP_Text merchantBarterValueText;
+    public TMP_Text playerBarterValueText;
 
     private void Awake()
     {
-        for (int i = 0; i < PlayerInventorySlots.Length; i++)
-        {
-            PlayerInventorySlots[i].slotID = i;
-            PlayerInventorySlots[i].parentMenu = this;
-        }
-        for (int i = 0; i < NPCInventorySlots.Length; i++)
-        {
-            NPCInventorySlots[i].slotID = i;
-            NPCInventorySlots[i].parentMenu = this;
-        }
+        Instance = this;
+
+        PlayerInventorySlots = new List<ItemSlot>();
+        MerchantInventorySlots = new List<ItemSlot>();
+
+        PlayerBarterSlots = new List<ItemSlot>();
+        MerchantBarterSlots = new List<ItemSlot>();
     }
 
     // Start is called before the first frame update
@@ -73,33 +96,86 @@ public class TradingMenu : InventoryMenu
     public override void DeactivateMenu()
     {
         SelectionController.Instance.Deselect();
-        inventoryMenu.SetActive(false);
-        currentInventory = null;
+        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
+        for (int i = 0; i < playerBarterInv.maxInv; i++)
+        {
+            var slotData = playerBarterInv.GetInventory(i);
+            if (slotData.type != null) { playerInventory.AddNewItem(slotData.type, slotData.count); }
+            playerBarterInv.SetInventory(i, null, 0);
+        }
+        for (int i = 0; i < merchantBarterInv.maxInv; i++)
+        {
+            var slotData = merchantBarterInv.GetInventory(i);
+            if (slotData.type != null) { merchantInventory.AddNewItem(slotData.type, slotData.count); }
+            merchantBarterInv.SetInventory(i, null, 0);
+        }
         UpdateEntity();
-        Time.timeScale = 1; // Unpause
+        inventoryMenu.SetActive(false);
+        merchantInventory = null;
     }
 
     public void SetInventory(EntityInventory inventory = null)
     {
-        currentInventory = inventory;
+        merchantInventory = inventory;
     }
 
-    public override void ActivateMenu()
+    public override void ActivateMenu() // TODO: reevaluate constantly calling "ActivateMenu" for every update once panel object is defined
     {
         inventoryMenu.SetActive(true);
-        Time.timeScale = 0;
 
         ClearInventorySlots();
-        var playerInventory = PartyController.Instance.leader.inventory;
 
-        PlayerInventorySlots.ToList().ForEach(slot => {
-            var playerSlot = playerInventory.GetInventory(slot.slotID);
-            if (playerSlot.type != null) { slot.AddItem(playerSlot.type, playerSlot.count); }
-        });
-        NPCInventorySlots.ToList().ForEach(slot => {
-            var npcSlot = currentInventory.GetInventory(slot.slotID);
-            if (npcSlot.type != null) { slot.AddItem(npcSlot.type, npcSlot.count); }
-        });
+        var activePlayer = PartyController.Instance.leader;
+        for (int i = 0; i < activePlayer.inventory.maxInv; i++)  // TODO: this initialization also gets moved to Inventory panel type
+        {
+            var slotData = activePlayer.inventory.GetInventory(i);
+            var slotItem = Instantiate(slotPrefab, playerInventorySlots.transform);
+            PlayerInventorySlots.Add(slotItem.GetComponent<ItemSlot>());
+            PlayerInventorySlots[i].slotID = i;
+            PlayerInventorySlots[i].parentMenu = this;
+            PlayerInventorySlots[i].slotGroup = PlayerInventorySlots;
+
+            if (slotData.type != null) { PlayerInventorySlots[i].AddItem(slotData.type, slotData.count); }
+        }
+        playerName.text = activePlayer.charStats.charName;
+        playerGold.text = activePlayer.inventory.money.ToString();
+
+        for (int i = 0; i < merchantInventory.maxInv; i++)
+        {
+            var slotData = merchantInventory.GetInventory(i);
+            var slotItem = Instantiate(slotPrefab, merchantInventorySlots.transform);
+            MerchantInventorySlots.Add(slotItem.GetComponent<ItemSlot>());
+            MerchantInventorySlots[i].slotID = i;
+            MerchantInventorySlots[i].parentMenu = this;
+            MerchantInventorySlots[i].slotGroup = MerchantInventorySlots;
+            if (slotData.type != null) { MerchantInventorySlots[i].AddItem(slotData.type, slotData.count); }
+        }
+        merchantName.text = ""; // TODO: display merchant char data?
+        Debug.Log("Merchant gold for " + merchantInventory + ": " + merchantInventory.money);
+        merchantGold.text = merchantInventory.money.ToString();
+
+        for (int i = 0; i < playerBarterInv.maxInv; i++)
+        {
+            var slotData = playerBarterInv.GetInventory(i);
+            var slotItem = Instantiate(slotPrefab, playerBarterSlots.transform);
+            PlayerBarterSlots.Add(slotItem.GetComponent<ItemSlot>());
+            PlayerBarterSlots[i].slotID = i;
+            PlayerBarterSlots[i].parentMenu = this;
+            PlayerBarterSlots[i].slotGroup = PlayerBarterSlots;
+            if (slotData.type != null) { PlayerBarterSlots[i].AddItem(slotData.type, slotData.count); }
+        }
+        playerBarterValueText.text = playerBarterInv.getTotalValue().ToString();  // TODO: adjust sale price based on reputation, barter, etc?
+        for (int i = 0; i < merchantBarterInv.maxInv; i++)
+        {
+            var slotData = merchantBarterInv.GetInventory(i);
+            var slotItem = Instantiate(slotPrefab, merchantBarterSlots.transform);
+            MerchantBarterSlots.Add(slotItem.GetComponent<ItemSlot>());
+            MerchantBarterSlots[i].slotID = i;
+            MerchantBarterSlots[i].parentMenu = this;
+            MerchantBarterSlots[i].slotGroup = MerchantBarterSlots;
+            if (slotData.type != null) { MerchantBarterSlots[i].AddItem(slotData.type, slotData.count); }
+        }
+        merchantBarterValueText.text = merchantBarterInv.getTotalValue().ToString();
     }
 
 
@@ -111,11 +187,85 @@ public class TradingMenu : InventoryMenu
 
     public override bool overlay => true;
 
-    public override void ClearInventorySlots()
+    public override void ClearInventorySlots()  // TODO: combine duplicate code of inventory menus
     {
         DeselectAllSlots();
-        PlayerInventorySlots.ToList().ForEach(slot => slot.ClearItem(true));
-        NPCInventorySlots.ToList().ForEach(slot => slot.ClearItem(true));
+        PlayerInventorySlots.ToList().ForEach(slot => Destroy(slot.gameObject));
+        PlayerInventorySlots = new List<ItemSlot>();
+        MerchantInventorySlots.ToList().ForEach(slot => Destroy(slot.gameObject));
+        MerchantInventorySlots = new List<ItemSlot>();
+        MerchantBarterSlots.ToList().ForEach(slot => Destroy(slot.gameObject));
+        MerchantBarterSlots = new List<ItemSlot>();
+        PlayerBarterSlots.ToList().ForEach(slot => Destroy(slot.gameObject));
+        PlayerBarterSlots = new List<ItemSlot>();
+    }
+
+    public override void ActivateItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotId)
+    {
+        var playerInventory = PartyController.Instance.leader.inventory;
+        if (slotGroup == PlayerInventorySlots)
+        {
+            var grabbedInv = playerInventory.GetInventory(slotId);
+            var leftover = playerBarterInv.AddNewItem(itemData, grabbedInv.count);
+            playerInventory.SetInventory(slotId, itemData, leftover);
+        }
+        else if (slotGroup == PlayerBarterSlots)
+        {
+            var grabbedInv = playerBarterInv.GetInventory(slotId);
+            var leftover = playerInventory.AddNewItem(itemData, grabbedInv.count);
+            playerBarterInv.SetInventory(slotId, itemData, leftover);
+        }
+        else if (slotGroup == MerchantInventorySlots)
+        {
+            var grabbedInv = merchantInventory.GetInventory(slotId);
+            var leftover = merchantBarterInv.AddNewItem(itemData, grabbedInv.count);
+            merchantInventory.SetInventory(slotId, itemData, leftover);
+        }
+        else if (slotGroup == MerchantBarterSlots)
+        {
+            var grabbedInv = merchantBarterInv.GetInventory(slotId);
+            var leftover = merchantInventory.AddNewItem(itemData, grabbedInv.count);
+            merchantBarterInv.SetInventory(slotId, itemData, leftover);
+        }
+        ActivateMenu(); // Reactivate menu after resetting through entity data
+    }
+
+    public override void SelectItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotID)
+    {
+        DeselectAllSlots();
+        if (itemData != null)
+        {
+            itemDescriptionImage.sprite = itemData.sprite;
+            itemDescriptionNameText.text = itemData.itemName;
+            itemDescriptionText.text = itemData.description;
+        }
+        selectedSlotId = slotID;
+    }
+
+    public void Trade() // TODO: what if not enough space?
+    {
+        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
+
+        int playerCost = merchantBarterInv.getTotalValue() - playerBarterInv.getTotalValue();
+
+        if ((playerCost >= 0 && playerCost <= playerInventory.money) ||
+            (playerCost < 0 && playerCost <= merchantInventory.money)) {
+            for (int i = 0; i < playerBarterInv.maxInv; i++)
+            {
+                var slotData = playerBarterInv.GetInventory(i); // TODO: create container function to transfer all contents to another container
+                if (slotData.type != null) { merchantInventory.AddNewItem(slotData.type, slotData.count); }
+                playerBarterInv.SetInventory(i, null, 0);
+            }
+            for (int i = 0; i < merchantBarterInv.maxInv; i++)
+            {
+                var slotData = merchantBarterInv.GetInventory(i);
+                if (slotData.type != null) { playerInventory.AddNewItem(slotData.type, slotData.count); }
+                merchantBarterInv.SetInventory(i, null, 0);
+            }
+            playerInventory.money -= playerCost;
+            merchantInventory.money += playerCost;
+        }  
+        ActivateMenu();
     }
 
     //public InventoryData RemoveItem(int slotID, int amount = 1, bool destroyDrag = false)
@@ -127,51 +277,26 @@ public class TradingMenu : InventoryMenu
 
     public override void UpdateEntity()
     {
-        var playerInventory = PartyController.Instance.leader.inventory;
+        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
         PlayerInventorySlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
-        if (currentInventory != null)
-            NPCInventorySlots.ToList().ForEach(slot => currentInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
 
-        //currentMenu.PlayerSlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
-        //currentMenu.ContainerSlots.ToList().ForEach(slot => currentContainer.GetComponent<EntityInventory>().SetInventory(slot.slotID, slot.itemData, slot.currentStack));
+        if (merchantInventory != null)
+            MerchantInventorySlots.ToList().ForEach(slot => merchantInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
 
-        //for (int i = 0; i < currentPlayerSlots.Length; i++)
-        //{
-        //    //Debug.Log("item slot data " + i + ": " + ItemSlots[i].itemData);
-        //    playerInventory.SetInventory(i, currentPlayerSlots[i].itemData, currentPlayerSlots[i].currentStack);
-        //}
-        //if (menuActivated == inventoryMenu)
-        //{
-        //    // Take updates to the UI and alters the player inv to adjust
-        //    for (int i = 0; i < ItemSlots.Length; i++)
-        //    {
-        //        //Debug.Log("item slot data " + i + ": " + ItemSlots[i].itemData);
-        //        playerInventory.SetInventory(i, ItemSlots[i].itemData, ItemSlots[i].currentStack);
-        //    }
-        //}
-        //else if (menuActivated == containerMenu)
-        //{
-        //    for (int i = 0; i < ItemSlots.Length; i++)
-        //    {
-        //        playerInventory.SetInventory(i, PlayerSlots[i].itemData, PlayerSlots[i].currentStack);
-        //        currentContainer.GetComponent<EntityInventory>().SetInventory(i, ContainerSlots[i].itemData, ContainerSlots[i].currentStack);
-        //    }
-        //}
+        PlayerBarterSlots.ToList().ForEach(slot => playerBarterInv.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
+        MerchantBarterSlots.ToList().ForEach(slot => merchantBarterInv.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
     }
 
     public override void DeselectAllSlots()
     {
         PlayerInventorySlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
-        NPCInventorySlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
-    }
+        MerchantInventorySlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
+        PlayerBarterSlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
+        MerchantBarterSlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
 
-    public override void ActivateItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotID)
-    {
-        throw new NotImplementedException(); //TODO
-    }
-
-    public override void SelectItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotID)
-    {
-        throw new NotImplementedException(); //TODO
+        selectedSlotId = -1;
+        itemDescriptionImage.sprite = emptySprite;
+        itemDescriptionNameText.text = "";
+        itemDescriptionText.text = "";
     }
 }

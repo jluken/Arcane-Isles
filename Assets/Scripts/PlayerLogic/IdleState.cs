@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class IdleState: NPCState
 {
-    public IdleState(NPC npc, NPCStateMachine npcStateMachine) : base(npc, npcStateMachine)
+    public IdleState(NPC npc, NPCStateMachine npcStateMachine, List<SelectionData> actions) : base(npc, npcStateMachine, actions)
     {
     }
 

@@ -62,4 +62,23 @@ public class SceneSaveData
         Debug.Log("SceneSave4");
     }
 
+    public SceneSaveData(List<string> activeNPCs, List<string> inactiveNPCs)
+    {
+        NPCs = new List<NPCData>();
+        foreach (var gameNPC in activeNPCs)
+        {
+            var npcData = new NPCData();
+            npcData.id = gameNPC;
+            npcData.active = true;
+            NPCs.Add(npcData);
+        }
+        foreach (var gameNPC in inactiveNPCs)
+        {
+            var npcData = new NPCData();
+            npcData.id = gameNPC;
+            npcData.active = false;
+            NPCs.Add(npcData);
+        }
+    }
+
 }

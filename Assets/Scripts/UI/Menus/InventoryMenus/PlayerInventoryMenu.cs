@@ -97,6 +97,7 @@ public class PlayerInventoryMenu : InventoryMenu
     {
         inventoryMenu.SetActive(true);
         Time.timeScale = 0;
+        Debug.Log("Pause Time");
 
         ClearInventorySlots();
 

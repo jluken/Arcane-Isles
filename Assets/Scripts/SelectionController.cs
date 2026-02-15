@@ -60,7 +60,9 @@ public class SelectionController : MonoBehaviour
         else if (objectPoint && hit.transform.gameObject.GetComponent<Selectable>() != null)
         {
             var pointedSelectable = hit.transform.gameObject.GetComponent<Selectable>();
-            var actions = CombatManager.Instance.combatActive ? pointedSelectable.CombatActions() : pointedSelectable.Actions();
+            //Debug.Log("pointed selectable: " + pointedSelectable);
+            var actions = pointedSelectable.Actions();
+            //Debug.Log("actions: " + actions);
             if (Input.GetMouseButtonDown(0))
             {
                 lastHitPoint = hit.point; // TODO: used anymore?
@@ -70,6 +72,8 @@ public class SelectionController : MonoBehaviour
             {
                 if (CombatManager.Instance.combatActive) CombatManager.Instance.UnsetAction();
                 lastHitPoint = hit.point;
+                Debug.Log("Input mouse: " + Input.mousePosition);
+                Debug.Log("UIController: " + UIController.Instance);
                 UIController.Instance.ActivateItemSelect(Input.mousePosition, actions);
             }
 

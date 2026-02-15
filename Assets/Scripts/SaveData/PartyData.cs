@@ -9,7 +9,7 @@ public class PartyData
     {
         public string charImageName;
         public string name;
-        public int xp;
+        public int level;
         public int health;
         public int magick;
         public int vigor;
@@ -43,8 +43,11 @@ public class PartyData
 
     public CharSaveData[] partyMembers;
 
+    public int xp;
+
     public PartyData(PartyController partyController)
     {
+        xp = partyController.xp;
         partyMembers = new CharSaveData[partyController.party.Count];
         for (int i = 0; i < partyController.party.Count; i++) {
             PartyMember partyMember = partyController.party[i];
@@ -72,24 +75,24 @@ public class PartyData
     {
         CharStatData charStatData = new CharStatData();
         charStatData.name = charStats.charName;
-        charStatData.charImageName = charStats.charImage.name;
-        charStatData.xp = charStats.xp;
-        charStatData.health = charStats.health;
-        charStatData.magick = charStats.magick;
-        charStatData.vigor = charStats.vigor;
-        charStatData.finesse = charStats.psyche;
-        charStatData.intimidation = charStats.intimidation;
-        charStatData.athletics = charStats.athletics;
-        charStatData.melee = charStats.melee;
-        charStatData.endurance = charStats.endurance;
-        charStatData.guile = charStats.guile;
-        charStatData.precision = charStats.precision;
-        charStatData.sleightOfHand = charStats.sleightOfHand;
-        charStatData.stealth = charStats.stealth;
-        charStatData.persuasion = charStats.persuasion;
-        charStatData.survival = charStats.survival;
-        charStatData.perception = charStats.perception;
-        charStatData.arcana = charStats.arcana;
+        charStatData.charImageName = charStats.charImage != null ? charStats.charImage.name : "";  // TODO: placeholder until better system; assume always there? Default sprite?
+        charStatData.level = charStats.GetCurrStat(CharStats.StatVal.level, false);
+        charStatData.health = charStats.GetCurrStat(CharStats.StatVal.health, false);
+        charStatData.magick = charStats.GetCurrStat(CharStats.StatVal.magick, false);
+        charStatData.vigor = charStats.GetCurrStat(CharStats.StatVal.vigor, false);
+        charStatData.finesse = charStats.GetCurrStat(CharStats.StatVal.finesse, false);
+        charStatData.intimidation = charStats.GetCurrStat(CharStats.StatVal.intimidation, false);
+        charStatData.athletics = charStats.GetCurrStat(CharStats.StatVal.athletics, false);
+        charStatData.melee = charStats.GetCurrStat(CharStats.StatVal.melee, false);
+        charStatData.endurance = charStats.GetCurrStat(CharStats.StatVal.endurance, false);
+        charStatData.guile = charStats.GetCurrStat(CharStats.StatVal.guile, false);
+        charStatData.precision = charStats.GetCurrStat(CharStats.StatVal.precision, false);
+        charStatData.sleightOfHand = charStats.GetCurrStat(CharStats.StatVal.sleightOfHand, false);
+        charStatData.stealth = charStats.GetCurrStat(CharStats.StatVal.stealth, false);
+        charStatData.persuasion = charStats.GetCurrStat(CharStats.StatVal.persuasion, false);
+        charStatData.survival = charStats.GetCurrStat(CharStats.StatVal.survival, false);
+        charStatData.perception = charStats.GetCurrStat(CharStats.StatVal.perception, false);
+        charStatData.arcana = charStats.GetCurrStat(CharStats.StatVal.arcana, false);
 
         return charStatData;
     }

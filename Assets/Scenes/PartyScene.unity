@@ -165,9 +165,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   charImage: {fileID: 21300000, guid: 263bc6d95bec8b245b8b6e603febc9a9, type: 3}
   charName: Dread Pirate Roberts
-  xp: 1000
-  health: 0
-  magick: 0
+  gender: 
+  level: 1
   vigor: 3
   finesse: 3
   psyche: 2
@@ -215,6 +214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   party: []
   playerChar: {fileID: 9053108686238225118}
+  xp: 250
 --- !u!4 &1280171167
 Transform:
   m_ObjectHideFlags: 0
@@ -282,7 +282,7 @@ MonoBehaviour:
   initInv: []
   initInvStacks: 
   hasEquip: 1
-  money: 0
+  money: 10
   merchant: 0
 --- !u!114 &1218544883228958307
 MonoBehaviour:
@@ -476,16 +476,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   charImage: {fileID: 21300000, guid: 263bc6d95bec8b245b8b6e603febc9a9, type: 3}
   charName: Dread Pirate Roberts
-  xp: 1000
-  health: 0
-  magick: 0
+  gender: M
+  level: 1
   vigor: 3
   finesse: 1
   psyche: 2
   intimidation: 0
   athletics: 0
   melee: 0
-  endurance: 0
+  endurance: 1
   guile: 0
   precision: 0
   sleightOfHand: 0
@@ -945,6 +944,7 @@ MonoBehaviour:
   dialogue: []
   defaultAttacks:
   - {fileID: 11400000, guid: d5faf3d8bffe252418b31ff386c31de9, type: 2}
+  combatantType: 3
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

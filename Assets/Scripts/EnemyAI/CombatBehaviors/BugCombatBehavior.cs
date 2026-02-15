@@ -24,6 +24,7 @@ public class BugCombatBehavior : BaseCombatBehavior
         {
             Debug.Log("new target");
             target = ChooseTarget(attacker);
+            if (target == null) break;  // TODO: handle better when death is settled
             target.Select();
             //yield return StartCoroutine(HandleNextTarget(attacker, target));
 
@@ -46,7 +47,7 @@ public class BugCombatBehavior : BaseCombatBehavior
                 while (CombatManager.Instance.inAction && ctr < 100)//CombatManager.Instance.inAction)
                 {
                     //ctr++;
-                    Debug.Log("waiting...");
+                    //Debug.Log("waiting...");
                     yield return null;
                 }
                 Debug.Log("Done moving, AP left: " + CombatManager.Instance.ActionPoints);

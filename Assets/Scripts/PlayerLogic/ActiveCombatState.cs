@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ActiveCombatState: NPCState
 {
-    public ActiveCombatState(NPC npc, NPCStateMachine npcStateMachine) : base(npc, npcStateMachine)
+    public ActiveCombatState(NPC npc, NPCStateMachine npcStateMachine, List<SelectionData> actions) : base(npc, npcStateMachine, actions)
     {
     }
 
@@ -15,7 +16,7 @@ public class ActiveCombatState: NPCState
 
     public override void EnterState()
     {
-        npc.mover.agent.avoidancePriority = 100;
+        npc.mover.agent.avoidancePriority = 80; // TODO: store these priorities somewhere
         base.EnterState();
     }
 
@@ -37,5 +38,13 @@ public class ActiveCombatState: NPCState
     public override void SetIdle()
     {
         npcStateMachine.ChangeState(npc.IdleCombatState);
+    }
+
+    public override void MoveTo(Vector3 destination)
+    {
+        Selectable target;
+        if (SelectionController.Instance.selectedItem != null) target = SelectionController.Instance.selectedItem;
+        else target = CombatManager.Instance.activeCombatant.GetComponent<MoveToClick>().SetTempMarker(destination); // TODO: make into an agnostic event with no move destination hack
+        CombatManager.Instance.UseCombatAbility(target, CombatManager.CombatActionType.Run);
     }
 }

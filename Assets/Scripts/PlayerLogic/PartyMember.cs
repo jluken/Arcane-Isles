@@ -16,10 +16,8 @@ public class PartyMember : NPC
 
     private bool stayPut;
 
-    public override void Start()
+    public override void Awake()
     {
-        stayPut = false;
-
         setPlayer = new SelectionData(this)
         {
             actionName = "Select",
@@ -35,20 +33,38 @@ public class PartyMember : NPC
             actionName = "Follow",
             immediateAction = Follow
         };
+        base.Awake();
+    }
 
+    public override void Start()
+    {
+        stayPut = false;
+
+        
+
+        combatantType = CombatManager.CombatantType.Party;
         base.Start();
     }
 
-    public override List<SelectionData> Actions()
-    {
-        var acts = new List<SelectionData>() { setPlayer, talk, CanFollow() ? stay : follow};
-        return acts;
-    }
+    //public override List<SelectionData> Actions()
+    //{
+    //    var acts = new List<SelectionData>() { setPlayer, talk, CanFollow() ? stay : follow};
+    //    return acts;
+    //}
 
-    public override List<SelectionData> CombatActions()
+    public override void SetStates()
     {
-        var acts = new List<SelectionData>() { startAttack, inspectSelection };
-        return acts;
+        base.SetStates();
+
+        var acts = new List<SelectionData>() { setPlayer, talk, CanFollow() ? stay : follow };
+        var combatActs = new List<SelectionData>() { inspectSelection };
+
+        ActiveState = new ActiveState(this, StateMachine, acts);
+        IdleState = new IdleState(this, StateMachine, acts);
+        ActiveCombatState = new ActiveCombatState(this, StateMachine, combatActs);
+        IdleCombatState = new IdleCombatState(this, StateMachine, combatActs);
+
+        StateMachine.Initialize(IdleState);
     }
 
     public void SetPlayer()
@@ -76,6 +92,19 @@ public class PartyMember : NPC
     {
         Follow();
         base.SetIdle();
+    }
+
+    public virtual void MoveCommand(Vector3 destination)
+    {
+        StateMachine.CurrentPlayerState.MoveTo(destination);
+    }
+
+    public override void Die()
+    {
+        CombatManager.Instance.RemoveCombatant(this);
+        PartyController.Instance.RemoveCompanion(this);  // TODO: allow for only mostly dead (still in party, but disabled and can be rezzed)
+        StateMachine.ChangeState(DeadState);
+        EventHandler.Instance.TriggerDeathEvent(this);
     }
 
     //public override void SetToCombat()

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttack
   attackName: Bite
   icon: {fileID: 0}
-  damageDie: 4
+  damageDie: 1
   modifier: 11
   range: 2
   attackCost: 5

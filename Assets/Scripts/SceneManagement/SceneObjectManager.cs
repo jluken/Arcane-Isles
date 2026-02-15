@@ -31,9 +31,16 @@ public class SceneObjectManager : MonoBehaviour
         foreach (GameObject npc in npcs)
         {
             if (sceneData.NPCs.Any(saveNpc => saveNpc.id == npc.name)){
-                SceneSaveData.NPCData npcData = sceneData.NPCs.First(saveNpc => saveNpc.id == npc.name);
-                npc.SetActive(npcData.active);
-                npc.transform.position = new Vector3(npcData.pos[0], npcData.pos[1], npcData.pos[2]);
+                SceneSaveData.NPCData npcSceneData = sceneData.NPCs.First(saveNpc => saveNpc.id == npc.name);
+
+                if (!String.IsNullOrEmpty(npcSceneData.charData.id))  // Character data has been initialized from initial load
+                {
+                    var npcData = npc.GetComponent<NPC>();
+                    npcData.charStats.LoadFromSaveData(npcSceneData.charData.charStatData);
+                    npcData.inventory.LoadFromSaveData(npcSceneData.charData.inventory);
+                    npcData.mover.agent.Warp(new Vector3(npcSceneData.charData.pos[0], npcSceneData.charData.pos[1], npcSceneData.charData.pos[2]));
+                }
+                npc.SetActive(npcSceneData.active);  // Can be turned on/off prior to loading, otherwise leave as default
             }
         }
 
@@ -54,20 +61,36 @@ public class SceneObjectManager : MonoBehaviour
         }
     }
 
+    public void Start()
+    {
+        EventHandler.Instance.deathEvent += RemoveNPC;
+    }
+
     public void AddDroppedObject(string itemName)
     {
         var newItem = Instantiate(Resources.Load<GameObject>("Prefabs/" + itemName), gameObject.transform);
         GroundObjects.Add(newItem);
     }
 
-    public void RemoveDroppedObject(GameObject obj) { 
+    public void DeleteDroppedObject(GameObject obj) { 
         GroundObjects.Remove(obj);
         Destroy(obj);
     }
 
-    public void RemoveNPC(GameObject npc)
+    public void RemoveNPC(NPC npc)
     {
-        npcs.Remove(npc);
-        Destroy(npc);
+        if(npcs.Contains(npc.gameObject)) npcs.Remove(npc.gameObject);
+        //Destroy(npc);
+    }
+
+    public void DisableNPC(GameObject npc)
+    {
+        npc.SetActive(false);
+    }
+
+    public void EnableDisableNPC(string npcName, bool enable)
+    {
+        var npcObj =  npcs.First(npc => npc.name == npc.name);  //TODO: log error if not present
+        npcObj.SetActive(enable);
     }
 }

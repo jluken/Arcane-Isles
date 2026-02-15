@@ -124,7 +124,7 @@ public class MoveToClick : MonoBehaviour
 
     public void SetDestination(Vector3 dest, bool locked = false)
     {
-        Debug.Log("Check lock: " + pathLocked);
+        //Debug.Log("Check lock: " + pathLocked);
         if (pathLocked) return;
         var path = PathToPoint(dest);
         if (path != null) agent.SetPath(path);
@@ -142,7 +142,7 @@ public class MoveToClick : MonoBehaviour
 
     public void StopMoving()
     {
-        Debug.Log("stop");
+        //Debug.Log("stop");
         pathLocked = false;
         agent.isStopped = true;
         agent.ResetPath();

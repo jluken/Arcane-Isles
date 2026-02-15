@@ -16,7 +16,7 @@ public static class SaveSystem
         PartyData partyData = new PartyData(partyController);
         GameSaveData gameSaveData = new GameSaveData();
         gameSaveData.partyData = partyData;
-        gameSaveData.levelName = sceneLoader.GetLevel();
+        gameSaveData.levelName = sceneLoader.GetLevelName();
         gameSaveData.SceneData = sceneLoader.GetAllSceneData();
         gameSaveData.dialogData = PersistentDataManager.GetSaveData();
 

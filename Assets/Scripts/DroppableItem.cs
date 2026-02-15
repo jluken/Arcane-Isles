@@ -49,7 +49,7 @@ public class ItemScript : Selectable
             droppable.stackSize = leftOver;
             if (droppable.stackSize <= 0)
             {
-                SceneLoader.Instance.SceneObjectManagers[droppable.gameObject.scene.name].RemoveDroppedObject(droppable.gameObject);
+                SceneLoader.Instance.SceneObjectManagers[droppable.gameObject.scene.name].DeleteDroppedObject(droppable.gameObject);
             }
         }
     }

@@ -13,7 +13,7 @@ public class UIController : MonoBehaviour
     //private camScript camScript;
 
     //public GameObject map;
-    public MenuScreen mapScript;
+    public MenuScreen mapScript;  //TODO: if all these are instances, any need to declare them?
     //public GameObject buttons;
     public DefaultUI defaultUI;
     //public GameObject dialog;
@@ -23,14 +23,16 @@ public class UIController : MonoBehaviour
     //public GameObject pauseScreen;
     public MenuScreen pauseScreenScript;
     //public GameObject charScreen;
-    public PlayerInventoryMenu charScreenScript;
+    public PlayerInventoryMenu charInventoryScript;
     //public GameObject tradeScreen;
     public TradingMenu tradeScreenScript;
     public ContainerInventoryMenu containerScreenScript;
     public ItemSelectMenu itemSelectScript;
     public SettingsMenu settingsMenu;
-    public CombatUI combatUI;
     //public MainMenu mainMenu;
+    public CharacterMenu characterMenu;
+
+    public GameOverScreen gameOverScreen;
 
     private List<MenuScreen> screens;
     //private List<MenuScreen> exitableScreens;
@@ -43,7 +45,8 @@ public class UIController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        screens = new List<MenuScreen> { mapScript, defaultUI, dialogScript, journalScript, pauseScreenScript, charScreenScript, containerScreenScript, tradeScreenScript, itemSelectScript, settingsMenu, combatUI };// mainMenu };
+        // TODO: break this list up into list types
+        screens = new List<MenuScreen> { mapScript, defaultUI, dialogScript, journalScript, pauseScreenScript, charInventoryScript, containerScreenScript, tradeScreenScript, itemSelectScript, settingsMenu, characterMenu, gameOverScreen };// mainMenu };
         menusAllowed = false;
     }
 
@@ -56,8 +59,8 @@ public class UIController : MonoBehaviour
         {
             { KeyCode.M, mapScript },
             { KeyCode.J, journalScript },
-            { KeyCode.I , charScreenScript},
-            { KeyCode.C , charScreenScript}
+            { KeyCode.I , charInventoryScript},
+            { KeyCode.C , characterMenu}
         };
 
         //ActivateDefaultScreen();
@@ -79,10 +82,12 @@ public class UIController : MonoBehaviour
             {
                 CloseOverlays();
                 Time.timeScale = 0; // Pause
+                Debug.Log("Pause Time");
                 screenKeyCodes[screenKey].ActivateMenu();
             }
             else if (screenKeyCodes[screenKey].IsActive() && Input.GetKeyDown(screenKey))
             {
+                Debug.Log("Close open screen");
                 //screenKeyCodes[screenKey].DeactivateMenu();
                 CloseOverlays();
                 Time.timeScale = 1; // Unpause
@@ -112,19 +117,25 @@ public class UIController : MonoBehaviour
     public void ActivateDefaultScreen()
     {
         DeactivateAllMenus();
-        Debug.Log("Default");
+        //Debug.Log("Default");
         Time.timeScale = 1; // Unpause
         defaultUI.ActivateMenu();
         //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
     }
 
-    public void ActivateCombatUI(List<AbilityAction> abilities, bool isEnemy)
+    public void ActivateGameOver()
     {
-        Debug.Log("Combat UI");
+        DeactivateAllMenus();
+        Time.timeScale = 0;
+        Debug.Log("Pause Time");
+        gameOverScreen.ActivateMenu();
+    }
+
+    public void ActivateCombatUI()
+    {
         DeactivateAllMenus();
         Time.timeScale = 1; // Unpause
-        combatUI.UpdateActions(abilities, isEnemy);
-        combatUI.ActivateMenu();
+        defaultUI.ActivateCombat();
         //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
     }
 
@@ -147,6 +158,7 @@ public class UIController : MonoBehaviour
     {
         DeactivateAllMenus();
         Time.timeScale = 0; // Pause
+        Debug.Log("Pause Time");
         mapScript.ActivateMenu();
     }
 
@@ -154,6 +166,7 @@ public class UIController : MonoBehaviour
     {
         DeactivateAllMenus();
         Time.timeScale = 0; // Pause
+        Debug.Log("Pause Time");
         journalScript.ActivateMenu();
     }
 
@@ -162,6 +175,7 @@ public class UIController : MonoBehaviour
         DeactivateAllMenus();
         //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
         Time.timeScale = 0; // Pause
+        Debug.Log("Pause Time");
         dialogScript.SetSpeaker(newDialogue, speakerPic);
         dialogScript.ActivateMenu();
     }
@@ -169,28 +183,39 @@ public class UIController : MonoBehaviour
     public void ActivatePauseScreen()
     {
         Time.timeScale = 0; // Pause
+        Debug.Log("Pause Time");
         pauseScreenScript.ActivateMenu();
     }
 
     public InventoryMenu CurrentInventory()
     {
-        if (charScreenScript.IsActive()) return charScreenScript;
+        if (charInventoryScript.IsActive()) return charInventoryScript;
         else if (containerScreenScript.IsActive()) return containerScreenScript;
         else if (tradeScreenScript.IsActive()) return tradeScreenScript;
         else return null;
+    }
+
+    public void ActivateCharInventoryScreen()
+    {
+        DeactivateAllMenus();
+        Time.timeScale = 0; // Pause
+        Debug.Log("Pause Time");
+        charInventoryScript.ActivateMenu();
     }
 
     public void ActivateCharScreen()
     {
         DeactivateAllMenus();
         Time.timeScale = 0; // Pause
-        charScreenScript.ActivateMenu();
+        Debug.Log("Pause Time");
+        characterMenu.ActivateMenu();
     }
 
     public void ActivateTradeScreen(EntityInventory inventory)
     {
         DeactivateAllMenus();
         Time.timeScale = 0; // Pause
+        Debug.Log("Pause Time");
         tradeScreenScript.SetInventory(inventory);
         tradeScreenScript.ActivateMenu();
     }
@@ -199,6 +224,7 @@ public class UIController : MonoBehaviour
     {
         DeactivateAllMenus();
         Time.timeScale = 0; // Pause
+        Debug.Log("Pause Time");
         containerScreenScript.SetInventory(inventory);
         containerScreenScript.ActivateMenu();
     }
@@ -220,6 +246,7 @@ public class UIController : MonoBehaviour
     {
         DeactivateAllMenus();
         Time.timeScale = 0; // Pause
+        Debug.Log("Pause Time");
         settingsMenu.ActivateMenu();
     }
 

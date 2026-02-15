@@ -68,7 +68,6 @@ public class ItemSelectMenu : MenuScreen
         Debug.Log("action list: ");
         foreach (SelectionData entry in actionList)
         {  // TODO: possibly make list of tuples to preserve order
-            //Debug.Log(entry.actionName);
             buttons.Add(Instantiate(menuButtonPrefab, gameObject.transform));
             buttons[i].GetComponent<ButtonScript>().buttonText.text = entry.actionName;
             buttons[i].GetComponent<Button>().onClick.AddListener(() => SelectionController.Instance.InitiateSelection(entry));

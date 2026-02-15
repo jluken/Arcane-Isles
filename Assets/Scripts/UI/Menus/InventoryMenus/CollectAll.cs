@@ -21,7 +21,7 @@ public class CollectAll : MonoBehaviour
         
     }
 
-    public void CollectClick()
+    public void CollectClick() // TODO: does this need to be its own class and not just part of the menu file?
     {
         ContainerInventoryMenu.Instance.CollectAll();
     }

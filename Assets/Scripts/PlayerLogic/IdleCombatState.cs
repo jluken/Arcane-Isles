@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class IdleCombatState: NPCState
 {
-    public IdleCombatState(NPC npc, NPCStateMachine playerStateMachine) : base(npc, playerStateMachine)
+    public IdleCombatState(NPC npc, NPCStateMachine playerStateMachine, List<SelectionData> actions) : base(npc, playerStateMachine, actions)
     {
     }
 

@@ -8,7 +8,9 @@ public class AggroRad : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponent<PartyMember>() != null) { 
+        if (other.gameObject.GetComponent<PartyMember>() != null && 
+            other.gameObject.GetComponent<PartyMember>().StateMachine.CurrentPlayerState != other.gameObject.GetComponent<PartyMember>().DeadState) { // TODO: handle better
+            Debug.Log("Current State: " + other.gameObject.GetComponent<PartyMember>().StateMachine.CurrentPlayerState);
             if (Utils.LineOfSight(gameObject, other.gameObject))
             {
                 enemy.isAggroed = true;

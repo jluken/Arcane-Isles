@@ -20,16 +20,26 @@ public class SceneTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {
-        if (other.gameObject.GetComponent<PartyMember>() != null && !SceneLoader.Instance.SceneObjectManagers.ContainsKey(sceneName))
+        //Debug.Log("Test enter scene trigger ");
+        if (other.gameObject.GetComponent<PartyMember>() != null && !SceneLoader.Instance.SceneLoaded(sceneName))
         {
             Debug.Log("Enter scene trigger " + sceneName);
             StartCoroutine(SceneLoader.Instance.ActivateSubscene(sceneName));
         }
     }
 
+    //private void OnTriggerStay(Collider other)
+    //{
+    //    if (other.gameObject.GetComponent<PartyMember>() != null && !SceneLoader.Instance.SceneLoaded(sceneName))
+    //    {
+    //        Debug.Log("Inside scene trigger " + sceneName);
+    //    }
+    //}
+
     private void OnTriggerExit(Collider other)  // TODO: what if some players still in scene?
-    {
-        if (other.gameObject.GetComponent<PartyMember>() != null && SceneLoader.Instance.SceneObjectManagers.ContainsKey(sceneName))
+    {  // TODO: not triggered if movement happens during "pause"
+        Debug.Log("TEst Exit scene trigger " + sceneName);
+        if (other.gameObject.GetComponent<PartyMember>() != null && SceneLoader.Instance.SceneLoaded(sceneName))
         {
             Debug.Log("Exit scene trigger " + sceneName);
             Debug.Log("Agent: " + other.name); 

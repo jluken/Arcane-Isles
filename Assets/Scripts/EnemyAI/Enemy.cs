@@ -33,63 +33,46 @@ public class Enemy : NPC
     {
         AggroRad.enemy = this;
         AwareRad.enemy = this;
+
+        combatantType = CombatManager.CombatantType.Enemy;
         base.Start();
     }
 
-    public override List<SelectionData> Actions()
-    {
-        var acts = new List<SelectionData>() { inspectSelection, goHere, startAttack };
-        return acts;
-    }
+    //public override List<SelectionData> Actions()
+    //{
+    //    var acts = new List<SelectionData>() { inspectSelection, goHere, startAttack };
+    //    return acts;
+    //}
 
-    public override List<SelectionData> CombatActions()
-    {
-        var acts = new List<SelectionData>() { attack, inspectSelection, combatMovement };
-        return acts;
-    }
+    //public override List<SelectionData> CombatActions()
+    //{
+    //    var acts = new List<SelectionData>() { attack, inspectSelection, combatMovement };
+    //    return acts;
+    //}
 
     public override void SetStates()
     {
-        StateMachine = new NPCStateMachine();
+        base.SetStates();
 
-        ActiveState = new ActiveState(this, StateMachine);
-        IdleState = new EnemyPatrolState(this, StateMachine);
-        ActiveCombatState = new ActiveCombatState(this, StateMachine);
-        IdleCombatState = new IdleCombatState(this, StateMachine);
+        var acts = new List<SelectionData>() { inspectSelection, goHere, startAttack };
 
+        ActiveState = new ActiveState(this, StateMachine, acts);
+        IdleState = new EnemyPatrolState(this, StateMachine, acts);
+
+        Debug.Log("Enemy init to idle");
         StateMachine.Initialize(IdleState);
     }
 
-    //private void AnimationTriggerEvent(AnimationTriggerType triggerType)
-    //{
-    //    StateMachine.CurrentEnemyState.AnimationTriggerEvent(triggerType);
-    //}
-
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //    StateMachine.CurrentEnemyState.FrameUpdate();      
-    //}
-
-    //private void FixedUpdate()
-    //{
-    //    StateMachine.CurrentEnemyState.PhysicsUpdate();
-    //}
-
-    //public override void SetToCombat()
-    //{
-    //    StateMachine.ChangeState(TurnChaseState);
-    //}
-
-    //public override void EndCombat()
-    //{
-    //    StateMachine.ChangeState(PatrolState);
-    //}
-
     public override void Die()
     {
+        Debug.Log("Enemy Die");
         QuestLog.SetQuestEntryState("Kill the bug", 1, "success");  //TODO: temporary testing
         base.Die();
+    }
+
+    public override void EndCombat()
+    {
+        SetIdle();
     }
 
     public void TakeAction()

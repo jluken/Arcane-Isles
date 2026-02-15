@@ -7,6 +7,6 @@ public class GameSaveData
     public PartyData partyData;
     public string levelName;
     public Dictionary<string, SceneSaveData> SceneData;
-
+    public string dialogData;
 
 }

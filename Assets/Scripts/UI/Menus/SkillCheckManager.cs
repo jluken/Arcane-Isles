@@ -67,6 +67,7 @@ public class SkillCheckManager : MonoBehaviour
         // Find a wau to make it so that, as a dialog chunk option, it can call a specified script (maybe script object? Unity events and subscribe?)
         Debug.Log("Activate check");
         Time.timeScale = 0; // Pauses time
+        Debug.Log("Pause Time");
         moddedDC = dc - modifiers.Select(x => x.Item2).Sum();
         var percent = 100f;
         if (0 <= moddedDC && moddedDC < 13) { percent = rollProbs[moddedDC]; }

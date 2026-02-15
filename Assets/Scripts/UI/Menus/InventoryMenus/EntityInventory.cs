@@ -94,6 +94,18 @@ public class EntityInventory : MonoBehaviour
         equipment[type] = itemData;
     }
 
+    public InventoryData Dequip(ItemType equipSlot)
+    {
+        InventoryData leftover = null;
+        if (equipment.ContainsKey(equipSlot) && equipment[equipSlot] != null)
+        {
+            int extra = AddNewItem(equipment[equipSlot]);
+            if (extra > 0) leftover = equipment[equipSlot];
+            equipment[equipSlot] = null;
+        }
+        return leftover;  // TODO: drop leftover equipment on the ground if no room
+    }
+
     public InventoryData GetEquipment(ItemType type)
     {
         return equipment[type];
@@ -143,10 +155,18 @@ public class EntityInventory : MonoBehaviour
         return newStackSize;
     }
 
-    public float getEncumberance()
+    public float getTotalWeight()
     {
         var invWeight = Enumerable.Range(0, inventory.Count).Where(i => GetInventory(i).count > 0).Select(i => GetInventory(i).type.weight * GetInventory(i).count).Sum();
         foreach (ItemType type in equipment.Keys) if (GetEquipment(type) != null) invWeight += GetEquipment(type).weight;
         return invWeight;
+    }
+
+    public int getTotalValue()
+    {
+        var invVal = Enumerable.Range(0, inventory.Count).Where(i => GetInventory(i).count > 0).Select(i => GetInventory(i).type.price * GetInventory(i).count).Sum();
+        foreach (ItemType type in equipment.Keys) if (GetEquipment(type) != null) invVal += GetEquipment(type).price;
+        Debug.Log("Total value for " + this + ": " + invVal + money);
+        return invVal + money;
     }
 }

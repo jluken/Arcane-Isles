@@ -91,8 +91,9 @@ public class camScript : MonoBehaviour
         //iconCam.orthographicSize = cam.orthographicSize;
     }
 
-    public void CenterCamera(Vector3 position)
+    public void CenterCamera(Vector3 position)  // TODO: make private? Only call Track Obj?
     {
+        //Debug.Log("Center Camera: " + position);
         var tiltDownRad = Math.PI * xTilt / 180.0;
         var rotRad = Math.PI * yRot / 180.0;
 

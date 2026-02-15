@@ -10,6 +10,10 @@ public class LevelManager : MonoBehaviour
 
     public string LevelName;
 
+    public int[] worldCoords = new int[2];
+    public int[] levelDims = new int[2];
+    public Sprite levelMap;
+
     public List<string> levelScenes;
 
     public List<GameObject> sceneTriggers;

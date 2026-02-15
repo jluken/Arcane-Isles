@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyPatrolState: IdleState
@@ -5,7 +7,7 @@ public class EnemyPatrolState: IdleState
     //private MoveToClick mover;
     private int pathIndex = 0;
     private Enemy enemy;
-    public EnemyPatrolState(Enemy npc, NPCStateMachine enemyStateMachine) : base(npc, enemyStateMachine)
+    public EnemyPatrolState(Enemy npc, NPCStateMachine enemyStateMachine, List<SelectionData> actions) : base(npc, enemyStateMachine, actions)
     {
         //mover = enemy.mover;
         enemy = npc;
@@ -18,6 +20,7 @@ public class EnemyPatrolState: IdleState
 
     public override void EnterState()
     {
+        enemy.isAggroed = false;
         base.EnterState();
     }
 

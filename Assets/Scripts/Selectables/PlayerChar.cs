@@ -21,4 +21,14 @@ public class PlayerChar : PartyMember  // TODO: how useful is this approach (ins
         StateMachine.ChangeState(ActiveState);
     }
 
+    public override void Die()
+    {
+        Debug.Log("Player die");
+        StateMachine.ChangeState(DeadState);
+        EventHandler.Instance.TriggerDeathEvent(this);
+        //CombatManager.Instance.EndCombat();
+        Debug.Log("bout to activate game over");
+        UIController.Instance.ActivateGameOver();  // TODO: make into an event?
+    }
+
 }
