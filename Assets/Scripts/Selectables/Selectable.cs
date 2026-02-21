@@ -23,7 +23,6 @@ public class Selectable : MonoBehaviour
     private IEnumerator displayRoutine;
     private GameObject itemPopUpPrefab;
     private GameObject itemPopUp;
-    private DialogueBox dialogueBox;
 
     //private void Awake()
     //{
@@ -87,7 +86,6 @@ public class Selectable : MonoBehaviour
         SelectionController.Instance.deselectEvent += UnsetInteraction;
         itemPopUpPrefab = Resources.Load<GameObject>("Prefabs/ItemPopup");
         selectMenu = ItemSelectMenu.Instance;
-        dialogueBox = DialogueBox.Instance;
 
         displayRoutine = DisplayText();
     }

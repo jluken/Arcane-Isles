@@ -7,6 +7,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static DialogueInterface;
 
 public class JournalScript : MenuScreen
 {
@@ -28,7 +29,7 @@ public class JournalScript : MenuScreen
 
     public UnityEngine.UI.Toggle hideClosedQuestToggle;
 
-    private List<(string, string, float, QuestState)> currentQuests;  // TODO: make this a data structure
+    private List<QuestData> currentQuests;
     private int pageNum;
 
     private bool journalOpen;
@@ -40,7 +41,7 @@ public class JournalScript : MenuScreen
 
     void Start()
     {
-        currentQuests = new List<(string, string, float, QuestState)> ();
+        currentQuests = new List<QuestData> ();
     }
 
     public override void DeactivateMenu()
@@ -54,9 +55,7 @@ public class JournalScript : MenuScreen
         journal.SetActive(true);
         journalOpen = true;
 
-        // TODO: retrieve all quests from the interface, then take the active ones and create text/button prefabs that will add 10 to a page (buttons active if valid), then do same for completed/failed
-        // Font will be handled as a template which can be swapped out based on settings
-        currentQuests = DialogueInterface.Instance.GetQuests().Where(q => q.Item3 > 0).OrderBy(q => q.Item3).ToList();
+        currentQuests = DialogueInterface.Instance.GetQuests().Where(q => q.startTime > 0).OrderBy(q => q.startTime).ToList();
         Debug.Log("All quest count: " + currentQuests.Count);
         pageNum = 0;
         PopulateQuests(pageNum);
@@ -65,15 +64,15 @@ public class JournalScript : MenuScreen
     public void PopulateQuests(int pageNum)
     {
         int pageFirstQuest = pageNum * 10;
-        var displayQuests = hideClosedQuestToggle ? currentQuests.Where(q => q.Item4 == QuestState.Active).ToList() : currentQuests;
+        var displayQuests = hideClosedQuestToggle ? currentQuests.Where(q => q.state == QuestState.Active).ToList() : currentQuests;
         int questsOnPage = Math.Min(10, displayQuests.Count - pageFirstQuest);
         for (int q = pageFirstQuest; q < pageFirstQuest + questsOnPage; q++)
         {
             var quest = displayQuests[q];
-            var qPrefab = quest.Item4 == QuestState.Active ? QuestPrefab : ClosedQuestPrefab;
+            var qPrefab = quest.state == QuestState.Active ? QuestPrefab : ClosedQuestPrefab;
             var journalQuest = Instantiate(qPrefab, questList.transform);
-            journalQuest.GetComponent<TextMeshProUGUI>().text = quest.Item2 + "........" + (q + 1);
-            journalQuest.GetComponent<QuestEntry>().questName = quest.Item1;
+            journalQuest.GetComponent<TextMeshProUGUI>().text = quest.entry + "........" + (q + 1);
+            journalQuest.GetComponent<QuestEntry>().questName = quest.entry;
         }
 
         prevQuestPage.interactable = pageNum > 0;
@@ -83,25 +82,23 @@ public class JournalScript : MenuScreen
     public void OpenQuest(string questName)
     {
         Debug.Log("Open quest: " + questName);
-        var entries = DialogueInterface.Instance.GetQuestEntries(questName).Where(qe => qe.Item3 > 0).OrderBy(e => e.Item3).ToList();
+        var entries = DialogueInterface.Instance.GetQuestEntries(questName).Where(qe => qe.startTime > 0).OrderBy(e => e.startTime).ToList();
 
         foreach (var qe in entries)
         {
             Debug.Log("qe: " + qe);
-            var qPrefab = qe.Item4 == QuestState.Active ? QuestEntryPrefab : ClosedQuestEntryPrefab;
+            var qPrefab = qe.state == QuestState.Active ? QuestEntryPrefab : ClosedQuestEntryPrefab;
             var journalQuestEntry = Instantiate(qPrefab, questEntryList.transform);
-            journalQuestEntry.GetComponent<TextMeshProUGUI>().text = qe.Item3 + "\n" + qe.Item2; // TODO: possibly split up date entry and journal text into separate objects
+            journalQuestEntry.GetComponent<TextMeshProUGUI>().text = qe.startTime + "\n" + qe.entry; // TODO: visuals- possibly split up date entry and journal text into separate objects
         }
 
 
-        var activeEntries = entries.Where(e => e.Item4 == QuestState.Active);
-        var closedEntries = entries.Where(e => e.Item4 == QuestState.Success || e.Item4 == QuestState.Abandoned);
+        var activeEntries = entries.Where(e => e.state == QuestState.Active);
+        var closedEntries = entries.Where(e => e.state == QuestState.Success || e.state == QuestState.Abandoned);
     }
 
     public override bool IsActive()
     {
         return journalOpen;
     }
-
-    public override bool overlay => true;
 }

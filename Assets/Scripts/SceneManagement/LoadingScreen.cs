@@ -3,8 +3,14 @@ using UnityEngine;
 public class LoadingScreen : MenuScreen
 {
     public GameObject loadingScreen;
+    public static LoadingScreen Instance;
 
     private bool active;
+
+    public void Awake()
+    {
+        Instance = this;
+    }
     public override void ActivateMenu()
     {
         loadingScreen.SetActive(true);
@@ -21,6 +27,4 @@ public class LoadingScreen : MenuScreen
     {
         return active;
     }
-
-    public override bool overlay => false;
 }

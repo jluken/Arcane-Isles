@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Multiplayer.Center.Common;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class DialogueInterface : MonoBehaviour
 {
@@ -145,7 +146,7 @@ public class DialogueInterface : MonoBehaviour
         QuestLog.SetQuestState(questName, QuestState.Active);
         DialogueLua.SetQuestField(questName, "StartTime", GameData.Instance.gameTime);
         if(initEntryNum > 0) ActivateQuestEntry(questName, initEntryNum);
-        //TODO: pop up notification
+        //TODO: pop up notification?
     }
 
     public void ActivateQuestEntry(string questName, double entryNumd)
@@ -166,37 +167,44 @@ public class DialogueInterface : MonoBehaviour
             }
         }
         PartyController.Instance.xp += totalXp;
-        //TODO: pop up notification
+        //TODO: pop up notification?
     }
 
-    public List<(string, string, float, QuestState)> GetQuests()
+    public struct QuestData
     {
-        // Return list of (questId, quest name, quest start time, status)
-        Debug.Log("get quests");
-        List<(string, string, float, QuestState)> quests = new List<(string, string, float, QuestState)>();
+        public string entry;
+        public double startTime;
+        public QuestState state;
+    }
+
+    public List<QuestData> GetQuests()
+    {
+        List<QuestData> quests = new List<QuestData>();
         
         Debug.Log(QuestLog.GetAllQuests(QuestState.Success | QuestState.Failure | QuestState.Active).Length);
         Debug.Log(QuestLog.GetAllQuests(QuestState.Unassigned).Length);
         foreach (string quest in QuestLog.GetAllQuests(QuestState.Success | QuestState.Failure | QuestState.Active)){
-            Debug.Log("quest: " + quest);
-            quests.Add((quest, DialogueLua.GetQuestField(quest, "Name").AsString, 
-                DialogueLua.GetQuestField(quest, "StartTime").asFloat, 
-                QuestLog.GetQuestState(quest)));
+            quests.Add(
+                new QuestData() { entry=quest, 
+                    startTime=DialogueLua.GetQuestField(quest, "StartTime").asFloat, 
+                    state= QuestLog.GetQuestState(quest) });
         }
         return quests;
     }
 
-    public List<(int, string, float, QuestState)> GetQuestEntries(string quest)
+    public List<QuestData> GetQuestEntries(string quest)
     {
         // Return list of (entryNum, entry JournalDesc, entry start time, status)
-        List<(int, string, float, QuestState)> questEntries = new List<(int, string, float, QuestState)>();
+        List<QuestData> questEntries = new List<QuestData>();
         for (int e = 1; e <= QuestLog.GetQuestEntryCount(quest); e++)
         {
-            questEntries.Add((e, DialogueLua.GetQuestField(quest, QuestEntryField(e, "JournalDesc")).AsString, 
-                DialogueLua.GetQuestField(quest, QuestEntryField(e, "StartTime")).asFloat, 
-                QuestLog.GetQuestEntryState(quest, e)));
+            questEntries.Add(new QuestData()
+            {
+                entry = DialogueLua.GetQuestField(quest, QuestEntryField(e, "JournalDesc")).AsString,
+                startTime = DialogueLua.GetQuestField(quest, QuestEntryField(e, "StartTime")).asFloat,
+                state = QuestLog.GetQuestEntryState(quest, e)
+            });
         }
-        Debug.Log("return entries: " + questEntries.Count);
         return questEntries;
     }
 }

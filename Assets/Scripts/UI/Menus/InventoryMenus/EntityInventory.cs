@@ -72,10 +72,16 @@ public class EntityInventory : MonoBehaviour
         merchant = saveData.merchant;
     }
 
+    public void UpdateInvStack(int idx, int change)
+    {
+        var currStack = GetInventory(idx);
+        SetInventory(idx, currStack.type, currStack.count + change);
+    }
+
     public void SetInventory(int idx, InventoryData itemData, int count=1)
     {
         if (idx >= maxInv) Debug.LogError("Setting inventory outside of bounds");
-        if (count == 0) itemData = null;
+        if (count <= 0) itemData = null;
         if (itemData == null) count = 0;
 
         while (inventory.Count <= idx) inventory.Add(new InventoryStack(null, 0));
@@ -91,6 +97,7 @@ public class EntityInventory : MonoBehaviour
 
     public void SetEquipment(ItemType type, InventoryData itemData)
     {
+        Debug.Log("Set Equipment type " + type + " to " + itemData);
         equipment[type] = itemData;
     }
 
@@ -153,6 +160,20 @@ public class EntityInventory : MonoBehaviour
         }
         //if (menuActivated != null) { ActivateInventory(currentContainer); } // Update menu if currently open
         return newStackSize;
+    }
+
+    public void ConsumeInventory(EntityInventory newInventory)
+    {
+        // Empty everything from inventory into this inventory
+        if (newInventory == null) Debug.LogError("This should never be null in the collect all method");
+        for (int i = 0; i < newInventory.inventory.Count; i++)
+        {
+            var invItem = newInventory.GetInventory(i);
+            if (invItem.type == null) continue;
+
+            int leftover = AddNewItem(invItem.type, invItem.count);
+            newInventory.SetInventory(i, invItem.type, leftover);
+        }
     }
 
     public float getTotalWeight()

@@ -2,8 +2,10 @@ using PixelCrushers.DialogueSystem;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class SelectionData
 {
@@ -26,10 +28,10 @@ public class SelectionController : MonoBehaviour
     public event Action deselectEvent;
 
     public Selectable selectedItem;
-    public Vector3 lastHitPoint { get; private set; }
     public bool playerUnderControl;
 
-    private bool talking;
+    private GameObject pointedObject;
+    private Vector3 pointSpot;
 
     private void Awake()
     {
@@ -39,47 +41,52 @@ public class SelectionController : MonoBehaviour
 
     public void Start()
     {
-        DialogueManager.instance.conversationStarted += (sender) => { talking = true; };  // TODO: wrap this up in the controller for general UI
-        DialogueManager.instance.conversationEnded += (sender) => { talking = false; };
+        InputActionMap uiActions = InputSystem.actions.FindActionMap("UI");
+        uiActions.FindAction("Click").performed += (sender) => HandleClick(true);
+        uiActions.FindAction("RightClick").performed += (sender) => HandleClick(false);
     }
 
     void Update()
     {
-        if (!playerUnderControl || CombatManager.Instance.inAction || talking) return;
+        if (!playerUnderControl || CombatManager.Instance.inAction || UIController.Instance.PauseTime()) return;
         RaycastHit hit;
         LayerMask layerMask = LayerMask.GetMask("Barrier"); // TODO: maybe detect selectable specifically instead of ignoring barrier
-        bool objectPoint = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1);
-        if (objectPoint && hit.transform.gameObject.GetComponent<groundScript>() != null)
+
+        bool objectPoint = Physics.Raycast(Camera.main.ScreenPointToRay(MousePosition()), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1);
+        pointedObject = objectPoint ? hit.transform.gameObject : null;
+        pointSpot = hit.point;
+        pointedObject?.GetComponent<Selectable>()?.HoverDisplay();
+    }
+
+    private void HandleClick(bool leftClick)
+    {
+        if (pointedObject?.GetComponent<groundScript>() != null)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (leftClick)
             {
                 Deselect();
-                PartyController.Instance.GoTo(hit.point);
+                PartyController.Instance.GoTo(pointSpot);
             }
         }
-        else if (objectPoint && hit.transform.gameObject.GetComponent<Selectable>() != null)
+        else if (pointedObject?.GetComponent<Selectable>() != null)
         {
-            var pointedSelectable = hit.transform.gameObject.GetComponent<Selectable>();
-            //Debug.Log("pointed selectable: " + pointedSelectable);
+            var pointedSelectable = pointedObject.GetComponent<Selectable>();
             var actions = pointedSelectable.Actions();
-            //Debug.Log("actions: " + actions);
-            if (Input.GetMouseButtonDown(0))
+            if (leftClick)
             {
-                lastHitPoint = hit.point; // TODO: used anymore?
                 InitiateSelection(actions[0]);
             }
-            else if (Input.GetMouseButtonDown(1))
+            else
             {
                 if (CombatManager.Instance.combatActive) CombatManager.Instance.UnsetAction();
-                lastHitPoint = hit.point;
-                Debug.Log("Input mouse: " + Input.mousePosition);
-                Debug.Log("UIController: " + UIController.Instance);
-                UIController.Instance.ActivateItemSelect(Input.mousePosition, actions);
+                UIController.Instance.ActivateItemSelect(MousePosition(), actions);
             }
-
-            pointedSelectable.HoverDisplay();
         }
     }
+
+    public Vector2 MousePosition() => Mouse.current is not null ? Mouse.current.position.value : new Vector2(Screen.width / 2, Screen.height / 2);
+
+    public Vector2 MouseScroll() => Mouse.current is not null ? Mouse.current.scroll.value : new Vector2();
 
     public void InitiateSelection(SelectionData selectionData)
     {

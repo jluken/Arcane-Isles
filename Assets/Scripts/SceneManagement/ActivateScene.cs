@@ -18,15 +18,8 @@ public class ActivateScene : MonoBehaviour
         //btn.onClick.AddListener(CollectClick);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public void ActivateSceneClick(string levelName)
     {
-        SceneLoader.Instance.mainMenu.DeactivateMenu(); // TODO: move this somewhere else (UI update)
         SceneLoader.Instance.SetToLevelSpawn(levelName, spawnLoc:0);
     }
 }

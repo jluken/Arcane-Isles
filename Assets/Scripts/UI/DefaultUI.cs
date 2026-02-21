@@ -11,16 +11,6 @@ public class DefaultUI : MenuScreen
 {
     public static DefaultUI Instance { get; private set; }
 
-    //[Serializable]
-    //public class CharIconData
-    //{
-    //    public int charSlot;
-    //    public GameObject charPortrait;
-    //    public Image healthBarBackground;
-    //    public Image healthBar;
-    //    public TMP_Text Health;
-    //}
-
     public GameObject UIBar;
 
     public GameObject ActionMenu;
@@ -36,14 +26,14 @@ public class DefaultUI : MenuScreen
     public GameObject ActionPointBar;
     private List<GameObject> ActionPointPips;
     public GameObject pipPrefab;
+    public Sprite fullPip;
 
     public GameObject chatWindowScroll;
     public GameObject chatWindowContent;
 
-    public charIcon[] charIcons = new charIcon[PartyController.maxParty];  // TODO: put these on a panel
+    public GameObject portraitPanel;
+    public charIcon[] charIcons = new charIcon[PartyController.maxParty];
 
-    //public GameObject ButtonMenu;
-    //public GameObject TextMenu;
     public bool UIActive;
 
     //private CharStats charStats;
@@ -74,9 +64,8 @@ public class DefaultUI : MenuScreen
 
     public void UpdateStats() 
     {
-        //Debug.Log("Update stat UI");
         var currentParty = PartyController.Instance.party;
-        if (!UIActive) return; // TODO: possibly handle this better by separating out the "default" UI
+        if (!UIActive) return;
 
         for (int i = 0; i < charIcons.Length; i++) { 
             charIcon charIcon = charIcons[i];
@@ -113,7 +102,6 @@ public class DefaultUI : MenuScreen
             var actions = activeNPC.GetActions();
             ActionMenu.SetActive(true);
             NextTurnButton.enabled = CombatManager.Instance.combatActive;
-            Debug.Log("Set actions: " + actions.Count);
             foreach (AbilityAction action in actions)
             {
                 actionButtons.Add(Instantiate(ActionButtonPrefab, ActionMenu.transform));
@@ -154,10 +142,7 @@ public class DefaultUI : MenuScreen
         for(int i = 0; i < activeNPC.charStats.GetCurrStat(CharStats.StatVal.actionPoints); i++)
         {
             ActionPointPips.Add(Instantiate(pipPrefab, ActionPointBar.transform));
-            //Debug.Log(ActionPointPips.LastOrDefault());
-            //Debug.Log(ActionPointPips.LastOrDefault().GetComponent<Image>());
-            //Debug.Log(ActionPointPips.LastOrDefault().GetComponent<Image>().sprite);
-            if (i < currentAP) ActionPointPips.LastOrDefault().GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/fullPip"); // TODO: possibly handle differently
+            if (i < currentAP) ActionPointPips.LastOrDefault().GetComponent<Image>().sprite = fullPip;
         }
     }
 
@@ -168,7 +153,7 @@ public class DefaultUI : MenuScreen
 
     public override void DeactivateMenu()
     {
-        foreach (var charIcon in charIcons) { charIcon.gameObject.SetActive(false); }
+        portraitPanel.SetActive(false);
         UIBar.SetActive(false);
         initiativeBar.SetActive(false);
         //TextMenu.SetActive(false);
@@ -179,10 +164,11 @@ public class DefaultUI : MenuScreen
     {
         //Debug.Log("Activate Default");
         UIActive = true;
-        UpdateStats();
+        portraitPanel.SetActive(true);
         UIBar.SetActive(true);
         NextTurnButton.gameObject.SetActive(false);
         initiativeBar.SetActive(false);
+        UpdateStats();
         //TextMenu.SetActive(true);
     }
 
@@ -190,6 +176,4 @@ public class DefaultUI : MenuScreen
     {
         return UIActive;
     }
-
-    public override bool overlay => false;
 }

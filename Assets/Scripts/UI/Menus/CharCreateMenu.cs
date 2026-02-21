@@ -7,6 +7,7 @@ using static CharStats;
 public class CharCreateMenu : MenuScreen
 {
     public GameObject charCreateMenu;
+    public static CharCreateMenu Instance;
 
     private bool active;
 
@@ -27,10 +28,13 @@ public class CharCreateMenu : MenuScreen
     public TMP_Text finesseTxt;
     public TMP_Text psycheTxt;
 
-    //TODO: add character avatar creation (choose between M/F model and array of portraits)
+    //TODO: Vis - add character avatar creation (choose between M/F model and array of portraits)
+    public void Awake()
+    {
+        Instance = this;
+    }
 
-
-    public override void ActivateMenu() // TODO: maybe make MenuScreen a virtual class to avoid copy/paste default functions
+    public override void ActivateMenu()
     {
         charCreateMenu.SetActive(true);
         active = true;
@@ -46,8 +50,6 @@ public class CharCreateMenu : MenuScreen
     {
         return active;
     }
-
-    public override bool overlay => false;
 
     private void UpdateText()
     {
@@ -83,7 +85,7 @@ public class CharCreateMenu : MenuScreen
         PartyController.Instance.playerChar.charStats.SetStat(StatVal.psyche, attrPoints["psyche"]);
         PartyController.Instance.playerChar.charStats.charName = nameField.text;
         string gender = genderField.options[genderField.value].text;
-        if (gender == "M") { // TODO: maybe save the player gender for char sheet?
+        if (gender == "M") {
             DialogueLua.SetVariable("PlayerThey", "he");
             DialogueLua.SetVariable("PlayerThem", "him");
             DialogueLua.SetVariable("PlayerTheir", "his");
@@ -103,9 +105,9 @@ public class CharCreateMenu : MenuScreen
             DialogueLua.SetVariable("PlayerTheir", "their");
             DialogueLua.SetVariable("PlayerTheirs", "theirs");
         }
-
+        PlayerChar.Instance.charStats.gender = gender;
 
         DeactivateMenu();
-        // TODO: close this menu and immediately "level up"
+        // TODO: Demo: close this menu and immediately "level up"
     }
 }

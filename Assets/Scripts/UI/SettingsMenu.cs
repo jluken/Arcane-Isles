@@ -7,6 +7,8 @@ public class SettingsMenu : MenuScreen
 {
     public GameObject settingsMenu;
 
+    public static SettingsMenu Instance;
+
     public Slider music;
     private static string musicName = "musicVolume";
     private float defaultVol = 100f;
@@ -39,6 +41,7 @@ public class SettingsMenu : MenuScreen
 
     public void Awake()
     {
+        Instance = this;
         //minus.onClick.AddListener(() => ClickChange(-1));
         //plus.onClick.AddListener(() => ClickChange(1));
         if (!PlayerPrefs.HasKey(musicName)) PlayerPrefs.SetFloat(musicName, defaultVol); // TODO: these setting should be set outside of menu on game startup
@@ -79,14 +82,6 @@ public class SettingsMenu : MenuScreen
     public override bool IsActive()
     {
         return active;
-    }
-
-    public override bool overlay => true;
-
-    public void ClickChange(int valChange)  // TODO: store all menu button logic in menu script (look at pause menu for examples)
-    {
-        PlayerPrefs.SetInt("settingVal", PlayerPrefs.GetInt("settingVal") + valChange);
-        settingVal.text = PlayerPrefs.GetInt("settingVal").ToString();
     }
 
     public void MusicChange()

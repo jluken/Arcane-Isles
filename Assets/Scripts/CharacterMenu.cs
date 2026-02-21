@@ -53,16 +53,11 @@ public class CharacterMenu : MenuScreen
     public override void ActivateMenu()
     {
         UIActive = true;
-        currChar = PartyController.Instance.leader; // TODO: what if switch via menu?
+        currChar = PartyController.Instance.leader;
 
-        // TODO: refactor this into PartyController
-        int xpLevel = Array.FindLastIndex(PartyController.levelThresholds, xp => xp <= PartyController.Instance.xp) + 1;
-        Debug.Log("xpLevel: " + xpLevel);
+        int xpLevel = PartyController.Instance.GetLevelByXP();
         bool levelUp = xpLevel > currChar.charStats.GetCurrStat(StatVal.level) && currChar == PartyController.Instance.playerChar;
-        Debug.Log("levelUp: " + levelUp);
-        Debug.Log("curr Level: " + currChar.charStats.GetCurrStat(StatVal.level));
 
-        Debug.Log("Activate char menu");
         //UpdateStats();
         CharMenu.SetActive(true);
         Debug.Log("Set char menu");
@@ -76,9 +71,8 @@ public class CharacterMenu : MenuScreen
         nameField.text = currChar.charStats.charName;
         gender.text = currChar.charStats.gender;
 
-
-        // TODO: handle these differently based on if player char
-        levelUpButton.gameObject.SetActive(levelUp); // TODO: don't make clickable until skills are all selected
+        levelUpButton.gameObject.SetActive(levelUp);
+        levelUpButton.interactable = availPoints < (PartyController.Instance.GetLevelByXP() - currChar.charStats.GetCurrStat(StatVal.level));
         skillPointText.gameObject.SetActive(levelUp);
         skillPoints.gameObject.SetActive(levelUp);
         if (levelUp) {
@@ -98,9 +92,7 @@ public class CharacterMenu : MenuScreen
 
     public void LevelUp()
     {
-        Debug.Log("Level Up");
-        // TODO: refactor this into PartyController
-        int xpLevel = Array.FindLastIndex(PartyController.levelThresholds, xp => xp <= PartyController.Instance.xp) + 1;
+        int xpLevel = PartyController.Instance.GetLevelByXP();
         int fullLevel = xpLevel - currChar.charStats.GetCurrStat(StatVal.level);
         int gainedLevels = fullLevel - availPoints;
         Debug.Log("gained levels: " + gainedLevels);
@@ -112,6 +104,4 @@ public class CharacterMenu : MenuScreen
     {
         return UIActive;
     }
-
-    public override bool overlay => true;
 }

@@ -234,7 +234,7 @@ public class CombatManager : MonoBehaviour
 
     public void SpendActionPoints(int cost)
     {
-        //if (!combatActive) return;
+        if (!combatActive) return;
         if (cost > ActionPoints) Debug.LogError("Spending more APs than there are: " + cost + " > " + ActionPoints);
         ActionPoints -= cost;
     }

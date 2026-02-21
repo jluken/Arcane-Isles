@@ -16,8 +16,8 @@ public class ContainerInventoryMenu : InventoryMenu
     public GameObject inventoryMenu;
     EntityInventory currentInventory;
 
-    public GameObject playerInventorySlots;
-    public GameObject containerInventorySlots;
+    public InventoryPanel playerInventorySlots;
+    public InventoryPanel containerInventorySlots;
     public GameObject slotPrefab;
 
     //private SelectionController selectionController;
@@ -37,15 +37,12 @@ public class ContainerInventoryMenu : InventoryMenu
     //    containerMenu.SetActive(false);
     //}
 
-    public List<ItemSlot> PlayerInventorySlots;
-    public List<ItemSlot> ContainerInventorySlots;
+    //public List<ItemSlot> PlayerInventorySlots;
+    //public List<ItemSlot> ContainerInventorySlots;
 
     private void Awake()
     {
         Instance = this;
-
-        PlayerInventorySlots = new List<ItemSlot>();
-        ContainerInventorySlots = new List<ItemSlot>();
     }
 
     // Start is called before the first frame update
@@ -54,28 +51,11 @@ public class ContainerInventoryMenu : InventoryMenu
         //selectionController = SelectionController.Instance;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //if (menuActivated != inventoryMenu && Input.GetKeyDown(KeyCode.I))
-        //{
-        //    DeactivateInventory();
-        //    ActivateInventory();
-        //}
-        //else if (menuActivated == inventoryMenu && Input.GetKeyDown(KeyCode.I))
-        //{
-        //    DeactivateInventory();
-        //}
-        //else if (menuActivated != null && Input.GetKeyDown(KeyCode.Escape))
-        //{
-        //    DeactivateInventory();
-        //}
-    }
-
     public override void DeactivateMenu()
     {
+        if (!IsActive()) return;
         SelectionController.Instance.Deselect();
-        UpdateEntity();
+        //UpdateEntity();
         inventoryMenu.SetActive(false);
         currentInventory = null;
     }
@@ -83,35 +63,17 @@ public class ContainerInventoryMenu : InventoryMenu
     public void SetInventory(EntityInventory inventory = null)
     {
         currentInventory = inventory;
+        Debug.Log("current Inventory: " + currentInventory);
     }
 
     public override void ActivateMenu()
     {
         inventoryMenu.SetActive(true);
 
-        ClearInventorySlots();
-
-        for (int i = 0; i < PartyController.Instance.leader.inventory.maxInv; i++)
-        {
-            var slotData = PartyController.Instance.leader.inventory.GetInventory(i);
-            var slotItem = Instantiate(slotPrefab, playerInventorySlots.transform);
-            PlayerInventorySlots.Add(slotItem.GetComponent<ItemSlot>());
-            PlayerInventorySlots[i].slotID = i;
-            PlayerInventorySlots[i].parentMenu = this;
-            PlayerInventorySlots[i].slotGroup = PlayerInventorySlots;
-
-            if (slotData.type != null) { PlayerInventorySlots[i].AddItem(slotData.type, slotData.count); }
-        }
-        for (int i = 0; i < currentInventory.maxInv; i++)
-        {
-            var slotData = currentInventory.GetInventory(i);
-            var slotItem = Instantiate(slotPrefab, containerInventorySlots.transform);
-            ContainerInventorySlots.Add(slotItem.GetComponent<ItemSlot>());
-            ContainerInventorySlots[i].slotID = i;
-            ContainerInventorySlots[i].parentMenu = this;
-            ContainerInventorySlots[i].slotGroup = ContainerInventorySlots;
-            if (slotData.type != null) { ContainerInventorySlots[i].AddItem(slotData.type, slotData.count); }
-        }
+        //ClearInventorySlots();
+        playerInventorySlots.PopulateInventory(PartyController.Instance.leader.inventory);
+        Debug.Log("Populating container");
+        containerInventorySlots.PopulateInventory(currentInventory);
     }
 
     
@@ -121,20 +83,10 @@ public class ContainerInventoryMenu : InventoryMenu
         return inventoryMenu.activeSelf;
     }
 
-    public override bool overlay => true;
-
-    public override void ClearInventorySlots() {
-        DeselectAllSlots();
-        PlayerInventorySlots.ToList().ForEach(slot => Destroy(slot.gameObject));
-        PlayerInventorySlots = new List<ItemSlot>();
-        ContainerInventorySlots.ToList().ForEach(slot => Destroy(slot.gameObject));
-        ContainerInventorySlots = new List<ItemSlot>();
-    }
-
-    public override void ActivateItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotId)
+    public override void ActivateItem(InventoryData itemData, InventoryPanel slotGroup, int slotId)
     {
         var playerInventory = PartyController.Instance.leader.inventory;
-        if (slotGroup == PlayerInventorySlots)
+        if (slotGroup == playerInventorySlots)
         {
             var grabbedInv = playerInventory.GetInventory(slotId);
             var leftover = currentInventory.AddNewItem(itemData, grabbedInv.count);
@@ -149,7 +101,7 @@ public class ContainerInventoryMenu : InventoryMenu
         ActivateMenu(); // Reactivate menu after resetting through entity data
     }
 
-    public override void SelectItem(InventoryData itemData, List<ItemSlot> slotGroup, int slotID)
+    public override void SelectItem(InventoryData itemData, InventoryPanel slotGroup, int slotID)
     {
         DeselectAllSlots();
         if (itemData != null)
@@ -164,71 +116,15 @@ public class ContainerInventoryMenu : InventoryMenu
     public void CollectAll()
     {
         var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
-        if (currentInventory == null)
-        {
-            Debug.LogError("This should never be null in the collect all method");
-        }
-        var containerEntity = currentInventory;
-        for (int i = 0; i < containerEntity.inventory.Count; i++)
-        {
-            var invItem = containerEntity.GetInventory(i);
-            if (invItem.type == null) continue;
-
-            int leftover = playerInventory.AddNewItem(invItem.type, invItem.count);
-            containerEntity.SetInventory(i, invItem.type, leftover);
-        }
-
-        //SetInventory(currentInventory);  
+        playerInventory.ConsumeInventory(currentInventory);
+ 
         ActivateMenu(); // Reactivate menu after collecting all through entity data
-    }
-
-    //public InventoryData RemoveItem(int slotID, int amount = 1, bool destroyDrag = false)
-    //{
-    //    playerInventory.SetInventory(slotID, null, 0);
-    //    DeselectAllSlots();
-    //    return ItemSlots[slotID].RemoveItem(amount, destroyDrag);
-    //}
-
-    public override void UpdateEntity()
-    {
-        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
-        PlayerInventorySlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
-        //Debug.Log("inv slots");
-        //ContainerInventorySlots.ToList().ForEach(slot => Debug.Log(slot));
-        if (currentInventory != null)
-            ContainerInventorySlots.ToList().ForEach(slot => currentInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
-
-        //currentMenu.PlayerSlots.ToList().ForEach(slot => playerInventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
-        //currentMenu.ContainerSlots.ToList().ForEach(slot => currentContainer.GetComponent<EntityInventory>().SetInventory(slot.slotID, slot.itemData, slot.currentStack));
-
-        //for (int i = 0; i < currentPlayerSlots.Length; i++)
-        //{
-        //    //Debug.Log("item slot data " + i + ": " + ItemSlots[i].itemData);
-        //    playerInventory.SetInventory(i, currentPlayerSlots[i].itemData, currentPlayerSlots[i].currentStack);
-        //}
-        //if (menuActivated == inventoryMenu)
-        //{
-        //    // Take updates to the UI and alters the player inv to adjust
-        //    for (int i = 0; i < ItemSlots.Length; i++)
-        //    {
-        //        //Debug.Log("item slot data " + i + ": " + ItemSlots[i].itemData);
-        //        playerInventory.SetInventory(i, ItemSlots[i].itemData, ItemSlots[i].currentStack);
-        //    }
-        //}
-        //else if (menuActivated == containerMenu)
-        //{
-        //    for (int i = 0; i < ItemSlots.Length; i++)
-        //    {
-        //        playerInventory.SetInventory(i, PlayerSlots[i].itemData, PlayerSlots[i].currentStack);
-        //        currentContainer.GetComponent<EntityInventory>().SetInventory(i, ContainerSlots[i].itemData, ContainerSlots[i].currentStack);
-        //    }
-        //}
     }
 
     public override void DeselectAllSlots()
     {
-        PlayerInventorySlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
-        ContainerInventorySlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
+        playerInventorySlots.DeselectPanelSlots();
+        containerInventorySlots.DeselectPanelSlots();
 
         selectedSlotId = -1;
         itemDescriptionImage.sprite = emptySprite;

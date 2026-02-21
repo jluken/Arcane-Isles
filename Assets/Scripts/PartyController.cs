@@ -264,4 +264,9 @@ public class PartyController : MonoBehaviour
             leaderPathCorners = nextInLine.AgentPath().corners;
         }
     }
+
+    public int GetLevelByXP()
+    {
+        return Array.FindLastIndex(levelThresholds, levelxp => levelxp <= xp) + 1;
+    }
 }

@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class ItemSelectMenu : MenuScreen
@@ -27,31 +28,31 @@ public class ItemSelectMenu : MenuScreen
     {
         menuButtonPrefab = Resources.Load<GameObject>("Prefabs/MenuButton");
         buttons = new List<GameObject>();
+
+        InputActionMap uiActions = InputSystem.actions.FindActionMap("UI");
+        uiActions.FindAction("Click").performed += (sender) => HandleClick();
+        uiActions.FindAction("RightClick").performed += (sender) => HandleClick();
     }
 
     void Update()
     {
-        RaycastHit hit;
-        if (frameDelay && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, -1, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1))
-        {
-            if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-            {
-                UIController.Instance.CloseOverlays();
-            }
-        }
         if(menuOpen) frameDelay = true;
     }
 
-    public override bool IsActive()
+    private void HandleClick()
     {
-        return menuOpen;
+        RaycastHit hit;
+        if (frameDelay && Physics.Raycast(Camera.main.ScreenPointToRay(SelectionController.Instance.MousePosition()), out hit, 100, -1, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1))
+        {
+            UIController.Instance.CloseOverlays();
+        }
     }
 
-    public override bool overlay => true;
+    public override bool IsActive() => menuOpen;
 
     public override void DeactivateMenu()
     {
-        Debug.Log("Deactivate menu");
+        if (!IsActive()) return;
         menu.SetActive(false);
         menuOpen = false;
         frameDelay = false;
@@ -67,7 +68,7 @@ public class ItemSelectMenu : MenuScreen
         int i = 0;
         Debug.Log("action list: ");
         foreach (SelectionData entry in actionList)
-        {  // TODO: possibly make list of tuples to preserve order
+        { 
             buttons.Add(Instantiate(menuButtonPrefab, gameObject.transform));
             buttons[i].GetComponent<ButtonScript>().buttonText.text = entry.actionName;
             buttons[i].GetComponent<Button>().onClick.AddListener(() => SelectionController.Instance.InitiateSelection(entry));

@@ -1,5 +1,6 @@
 using System.Data;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class MapScript : MenuScreen
@@ -9,6 +10,8 @@ public class MapScript : MenuScreen
 
     public GameObject localMap;
     public GameObject worldMap;
+
+    public static MapScript Instance;
 
     public Image localMapImage;
     public Image worldMapImage;
@@ -25,6 +28,11 @@ public class MapScript : MenuScreen
 
     private LevelManager currentLevel;
 
+    public void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
         //DeactivateMap(); 
@@ -33,21 +41,20 @@ public class MapScript : MenuScreen
 
     void Update()
     {
-        float moveVertical = Input.GetAxisRaw("Vertical");  // TODO: legacy code
-        float moveHorizontal = Input.GetAxisRaw("Horizontal");
-        float moveZoom = Input.mouseScrollDelta.y;
+        Vector2 moveDirection = InputSystem.actions.FindActionMap("UI").FindAction("Navigate").ReadValue<Vector2>();
+        float zoom = SelectionController.Instance.MouseScroll().y;
 
         var mapRect = currentMapImage.GetComponent<RectTransform>();
-        mapRect.localPosition = new Vector2(mapRect.localPosition.x - (panSpeed * moveHorizontal), mapRect.localPosition.y - (panSpeed * moveVertical));
-        if (moveZoom != 0)
+        mapRect.localPosition = new Vector2(mapRect.localPosition.x - (panSpeed * moveDirection.x), mapRect.localPosition.y - (panSpeed * moveDirection.y));
+        if (zoom != 0)
         {
             var priorRectPos = currentMapImage.GetComponent<RectTransform>();
             var yPrior = priorRectPos.anchoredPosition.y / priorRectPos.localScale.y - (priorRectPos.sizeDelta.y / 2);
             var xPrior = -1 * priorRectPos.anchoredPosition.x / priorRectPos.localScale.x - (priorRectPos.sizeDelta.x / 2);
 
-            mapRect.localScale = new Vector3(System.Math.Max(mapRect.localScale.x + (zoomSpeed * moveZoom), 1),
-                System.Math.Max(mapRect.localScale.y + (zoomSpeed * moveZoom), 1),
-                System.Math.Max(mapRect.localScale.z + (zoomSpeed * moveZoom), 1));
+            mapRect.localScale = new Vector3(System.Math.Max(mapRect.localScale.x + (zoomSpeed * zoom), 1),
+                System.Math.Max(mapRect.localScale.y + (zoomSpeed * zoom), 1),
+                System.Math.Max(mapRect.localScale.z + (zoomSpeed * zoom), 1));
 
             
             CenterMapOnPoint(new Vector2(xPrior, yPrior));
@@ -72,8 +79,6 @@ public class MapScript : MenuScreen
     {
         return mapOpen;
     }
-
-    public override bool overlay => true;
 
     private void CenterMapOnPoint(Vector2 anchoredPos)
     {

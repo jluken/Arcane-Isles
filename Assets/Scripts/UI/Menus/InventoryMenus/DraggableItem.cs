@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using TMPro;
 using UnityEngine;
@@ -13,6 +15,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private UIController uiController;
     //private InventoryMenu invMenu;
     public InventoryData.ItemType sourceSlotType;
+
+    public List<InventoryPanel> dragTargets;
 
     public int stackSize;
 
@@ -53,7 +57,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         //Debug.Log("Dragging");
         if (!draggable) return;
-        transform.position = Input.mousePosition;
+        transform.position = SelectionController.Instance.MousePosition();
     }
 
     public void OnEndDrag(PointerEventData eventData)

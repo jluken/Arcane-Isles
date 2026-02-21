@@ -34,6 +34,8 @@ public class InventoryData : ScriptableObject
         misc
     };
 
+    public static readonly ItemType[] equipmentTypes = new ItemType[] { ItemType.weapon, ItemType.boots, ItemType.armor, ItemType.headwear};
+
     [Serializable]
     public class EquipStatEntry
     {

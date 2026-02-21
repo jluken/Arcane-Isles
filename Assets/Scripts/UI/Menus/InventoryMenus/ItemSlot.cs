@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,8 +9,9 @@ using UnityEngine.UI;
 public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     public int slotID;
-    public InventoryMenu parentMenu;  // TODO: reevaluate "parentMenu" and "slotGroup" approach
-    public List<ItemSlot> slotGroup;
+    //public InventoryMenu parentMenu;
+    public InventoryPanel slotPanel;
+    public List<InventoryPanel> dragMatches;
     
     public InventoryData itemData;
     public int currentStack = 0;
@@ -35,10 +37,8 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         
     }
 
-    public virtual void AddItem(InventoryData itemData, int newStackSize = 1)
+    public virtual void AddItem(InventoryData itemData, int newStackSize = 1, bool applyChanges = true)
     {
-        Debug.Log("ADD " + itemData.itemName + " to slot " + slotID);
-        Debug.Log("drag object: " + dragObject);
         if (this.currentStack > 0 && itemData != this.itemData) throw new System.Exception("Cannot add item to a slot if different item is already there");
         if (this.currentStack >= itemData.maxStackSize && newStackSize > 0) throw new System.Exception("Item slot already at max stack size");
         if (dragObject == null)
@@ -46,7 +46,6 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
             Debug.Log("Create new draggable");
             CreateDraggable(itemData);
         }
-        Debug.Log("draggable: " + dragObject);
         this.itemData = itemData;
         this.currentStack += newStackSize;
         dragObject.GetComponent<DraggableItem>().counterText.text = "";
@@ -57,6 +56,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 
         itemText.text = this.itemData.itemName; // Could just be used for counter over icon
         itemText.enabled = true;
+        if(applyChanges) slotPanel.UpdateEntity();
     }
 
     public void CreateDraggable(InventoryData itemData) 
@@ -68,6 +68,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         draggable.image.sprite = itemData.sprite;
         draggable.counterText.text = "";
         draggable.inventoryData = itemData;
+        draggable.dragTargets = dragMatches?.Append(slotPanel).ToList();
     }
 
     public virtual InventoryData RemoveItem(int amount = 1,  bool destroyDrag = false)
@@ -83,11 +84,12 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         {
             ClearItem(destroyDrag);
         }
+        slotPanel.UpdateEntity();
         return oldData;
     }
 
-    public virtual InventoryData ClearItem(bool destroyDrag = false) {
-        //Debug.Log("REMOVE");
+    public virtual InventoryData ClearItem(bool destroyDrag = false, bool applyChanges = true) {
+        Debug.Log("REMOVE");
         if (destroyDrag)
         {
             DestroyDraggable();
@@ -102,7 +104,8 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         itemText.text = null;
         itemText.enabled = false;
 
-        if (parentMenu != null) parentMenu.SelectItem(null, slotGroup, slotID);
+        if (slotPanel != null) slotPanel.DeselectMenuSlots();
+        if(applyChanges) slotPanel.UpdateEntity();
         return oldData;
     }
 
@@ -118,6 +121,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        Debug.Log("Event button: " + eventData.button);
         if (eventData.button == PointerEventData.InputButton.Left)
         {
             OnLeftClick();
@@ -126,38 +130,38 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         {
             OnRightClick();
         }
+        slotPanel.UpdateEntity();
     }
 
     public void OnLeftClick()
     {
+        Debug.Log("left click");
         if (itemSelected && this.itemData != null)
         {
-            parentMenu.ActivateItem(this.itemData, slotGroup, slotID);
-            parentMenu.DeselectAllSlots();
+            Debug.Log("Activate");
+            slotPanel.ActivateItem(this.itemData, slotID);
+            slotPanel.DeselectMenuSlots();
         }
         else
         {
-            parentMenu.SelectItem(this.itemData, slotGroup, slotID);
+            Debug.Log("select");
+            slotPanel.SelectItem(this.itemData, slotID);
             selectedShader.SetActive(true);
             itemSelected = true;
         }
-
-        Debug.Log("Left Click");
-        Debug.Log(parentMenu);
-        
-        
     }
 
     public void OnRightClick()
     {
     }
 
-    public virtual void OnDrop(PointerEventData eventData)  // TODO: allow for toggle for list of allowable drag-to panels (after that becomes a class)
+    public virtual void OnDrop(PointerEventData eventData) 
     {
         Debug.Log("DROP");
         
         GameObject dropped = eventData.pointerDrag;
         DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
+        if (draggableItem.dragTargets != null && !draggableItem.dragTargets.Contains(slotPanel)) return;  // if a draggable has marked allowed panels then this must be in it to drag
         if (draggableItem.sourceSlotType != InventoryData.ItemType.misc && currentStack > 0) // Will be swapping with a restricted slot
         {
             if (draggableItem.inventoryData.itemType != draggableItem.sourceSlotType) return;
@@ -169,6 +173,6 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         }
         draggableItem.parentAfterDrag = transform;
         draggableItem.invSlot = slotID;
-        parentMenu.UpdateEntity();
+        //parentMenu.UpdateEntity();
     }
 }

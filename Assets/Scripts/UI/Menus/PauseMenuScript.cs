@@ -7,11 +7,13 @@ public class PauseMenuScript : MenuScreen
     public GameObject menu;
     public GameObject ui;
 
+    public static MenuScreen Instance;
+
     private bool menuOpen;
 
-    void Start()
+    public void Awake()
     {
-        //DeactivateMenu();
+        Instance = this;
     }
 
     void Update()
@@ -43,8 +45,6 @@ public class PauseMenuScript : MenuScreen
         return menuOpen;
     }
 
-    public override bool overlay => true;
-
     public void ResumeGame()
     {
         UIController.Instance.CloseOverlays();
@@ -70,7 +70,7 @@ public class PauseMenuScript : MenuScreen
         SaveSystem.SaveGame(PartyController.Instance, SceneLoader.Instance);
     }
 
-    public void Load() // TODO: deal with duplicate with main menu UI
+    public void Load() // TODO: Implement full Save Menu/system
     {
         SceneLoader.Instance.LoadFromData(SaveSystem.LoadGame());
     }

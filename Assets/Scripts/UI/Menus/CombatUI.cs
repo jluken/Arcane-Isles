@@ -56,8 +56,6 @@ public class CombatUI : MenuScreen
         return UIActive;
     }
 
-    public override bool overlay => false;
-
     public void UpdateActions(List<AbilityAction> actions, bool enemyTurn)
     {
         foreach (GameObject but in actionButtons) Destroy(but);

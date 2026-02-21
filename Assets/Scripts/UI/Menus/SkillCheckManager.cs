@@ -62,9 +62,6 @@ public class SkillCheckManager : MonoBehaviour
 
     public void ActivateSkillCheck(CharStats.StatVal stat, int dc, (string, int)[] modifiers)  // TODO: reevaluate action approach after dialog is implemented
     {
-        // TODO: the dialog will be a list of scriptable objects, each containing a dialog chunk, a face, a color (face and color default to what was before if not specified),
-        // as well as a toggle for whether to take input. A similar toggle will also exist for a "skill check" input, which will branch it like normal selection input (Skill check should just return true/false)
-        // Find a wau to make it so that, as a dialog chunk option, it can call a specified script (maybe script object? Unity events and subscribe?)
         Debug.Log("Activate check");
         Time.timeScale = 0; // Pauses time
         Debug.Log("Pause Time");

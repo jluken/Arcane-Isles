@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.UIElements;
 
-public class GameOverScreen : MenuScreen // TODO: combine with other menus when refactor happens
+public class GameOverScreen : MenuScreen
 {
     public static GameOverScreen Instance { get; private set; }
     //public GameObject TextMenu;
@@ -38,8 +38,6 @@ public class GameOverScreen : MenuScreen // TODO: combine with other menus when 
     {
         return UIActive;
     }
-
-    public override bool overlay => false;
 
     public void MainMenu()
     {

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class camScript : MonoBehaviour
 {
@@ -19,8 +20,6 @@ public class camScript : MonoBehaviour
     private float xTilt = 37.5f;
     private float yRot = 135f;
 
-    private bool talking;
-
     private void Awake()
     {
         Instance = this;
@@ -35,9 +34,6 @@ public class camScript : MonoBehaviour
         ct = cam.transform;
         Camera.main.orthographic = true;
         ct.rotation = Quaternion.identity * Quaternion.Euler(xTilt, yRot, 0);
-
-        DialogueManager.instance.conversationStarted += (sender) => { talking = true; };  // TODO: wrap this up in the controller for general UI
-        DialogueManager.instance.conversationEnded += (sender) => { talking = false; };
     }
 
     void Update()
@@ -48,32 +44,31 @@ public class camScript : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if (!talking && UIController.Instance.DefaultUIOpen()) // TODO: with UI update: better handling of when can move camera (allow in combat)
+        if (!UIController.Instance.PauseTime())
         {
-            // Move player based on vertical input.
-            float moveVertical = Input.GetAxis("Vertical");  // TODO: legacy code
-            float moveHorizontal = Input.GetAxis("Horizontal");
+            Vector2 mousePosition = SelectionController.Instance.MousePosition();
+            Vector2 mouseScroll = SelectionController.Instance.MouseScroll();
+            Vector2 moveDirection = InputSystem.actions.FindActionMap("UI").FindAction("Navigate").ReadValue<Vector2>();
 
-            bool inBounds = Input.mousePosition.y >= 0 && Input.mousePosition.y <= Screen.height && Input.mousePosition.x >= 0 && Input.mousePosition.x <= Screen.width;
-            bool unmoving = moveHorizontal == 0 && moveVertical == 0;
+            bool inBounds = mousePosition.y >= 0 && mousePosition.y <= Screen.height && mousePosition.x >= 0 && mousePosition.x <= Screen.width;
 
-            if (inBounds && unmoving)
+            if (inBounds && moveDirection == Vector2.zero)
             {
                 float upThreshold = Screen.height * 0.90f;
                 float downThreshold = Screen.height * 0.10f;
                 float rightThreshold = Screen.width * 0.90f;
                 float leftThreshold = Screen.width * 0.10f;
-                if (Input.mousePosition.y >= upThreshold) moveVertical = (Input.mousePosition.y - upThreshold) / (Screen.height - upThreshold);
-                else if (Input.mousePosition.y <= downThreshold) moveVertical = (Input.mousePosition.y - downThreshold) / (downThreshold);
-                if (Input.mousePosition.x >= rightThreshold) moveHorizontal = (Input.mousePosition.x - rightThreshold) / (Screen.width - rightThreshold);
-                else if (Input.mousePosition.x <= leftThreshold) moveHorizontal = (Input.mousePosition.x - leftThreshold) / (leftThreshold);
-
-                Vector3 screenUp = new Vector3(1.0f, 0.0f, -1.0f);
-                Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
-                Vector3 movement = ((screenUp * moveVertical) + (screenRight * moveHorizontal));
-
-                camScript.Instance.MoveCamera(movement, Input.mouseScrollDelta.y);
+                if (mousePosition.y >= upThreshold) moveDirection.y = (mousePosition.y - upThreshold) / (Screen.height - upThreshold);
+                else if (mousePosition.y <= downThreshold) moveDirection.y = (mousePosition.y - downThreshold) / (downThreshold);
+                if (mousePosition.x >= rightThreshold) moveDirection.x = (mousePosition.x - rightThreshold) / (Screen.width - rightThreshold);
+                else if (mousePosition.x <= leftThreshold) moveDirection.x = (mousePosition.x - leftThreshold) / (leftThreshold);
             }
+
+            Vector3 screenUp = new Vector3(1.0f, 0.0f, -1.0f);
+            Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
+            Vector3 movement = ((screenUp * moveDirection.y) + (screenRight * moveDirection.x));
+
+            MoveCamera(movement, mouseScroll.y);
         }
     }
 

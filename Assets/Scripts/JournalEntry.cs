@@ -4,6 +4,6 @@ public class JournalEntry : MonoBehaviour
 {
     public void Start()
     {
-        // TODO: set font here from settings
+        // TODO: Vis - set font here from settings
     }
 }

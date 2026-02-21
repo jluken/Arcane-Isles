@@ -1,259 +1,238 @@
+using PixelCrushers.DialogueSystem;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 //using UnityEngine.Device;
 
 public class UIController : MonoBehaviour
 {
     public static UIController Instance { get; private set; }
 
-    //private camScript camScript;
+    // static objetc declaration required to ensure existence before access in Start scripts
 
-    //public GameObject map;
-    public MenuScreen mapScript;  //TODO: if all these are instances, any need to declare them?
-    //public GameObject buttons;
-    public DefaultUI defaultUI;
-    //public GameObject dialog;
-    public DialogueBox dialogScript;
-    //public GameObject journal;
-    public MenuScreen journalScript;
-    //public GameObject pauseScreen;
-    public MenuScreen pauseScreenScript;
-    //public GameObject charScreen;
-    public PlayerInventoryMenu charInventoryScript;
-    //public GameObject tradeScreen;
-    public TradingMenu tradeScreenScript;
-    public ContainerInventoryMenu containerScreenScript;
-    public ItemSelectMenu itemSelectScript;
-    public SettingsMenu settingsMenu;
-    //public MainMenu mainMenu;
-    public CharacterMenu characterMenu;
-
+    //Scene pages - restricted interation and no buttons allowed. Time paused
+    public MainMenu mainMenu;
+    public LoadingScreen loadingScreen;
+    public CharCreateMenu charCreateMenu;
     public GameOverScreen gameOverScreen;
 
-    private List<MenuScreen> screens;
-    //private List<MenuScreen> exitableScreens;
-    //private List<MenuScreen> stickyScreens;
+    // Default gameplay UI
+    public DefaultUI defaultUI;
 
-    private Dictionary<KeyCode, MenuScreen> screenKeyCodes;
+    //Journal menus - accessible during normal gameplay through key/button press. Time Paused
+    public MapScript mapScript;
+    public JournalScript journalScript;
+    public PlayerInventoryMenu charInventoryMenu;
+    public CharacterMenu characterMenu;
 
-    private bool menusAllowed;
+    // Special menus which override 
+    public PauseMenuScript pauseScreenScript;
+    public SettingsMenu settingsMenu;
+
+    //Interaction menus - accessed by specific interactions
+    public ContainerInventoryMenu containerScreenScript;
+    public TradingMenu tradeScreenScript;
+
+    // Special in-frame menu that does not pause - sticks around until custom condition
+    public ItemSelectMenu itemSelectMenu;
+
+    private List<MenuScreen> SceneScreens;
+    private List<MenuScreen> LogbookMenus;
+    private List<MenuScreen> PauseMenus;
+    private List<MenuScreen> InteractionMenus;
+
+    //Groupings
+    private List<MenuScreen> OverlayMenus;
+    private List<MenuScreen> JournalLockMenus;
+
+    private List<MenuScreen> AllMenus;
+
+    private InputActionMap uiActions;
+    private Dictionary<string, MenuScreen> screenKeyCodes;
+
+    private bool talking;
 
     private void Awake()
     {
         Instance = this;
-        // TODO: break this list up into list types
-        screens = new List<MenuScreen> { mapScript, defaultUI, dialogScript, journalScript, pauseScreenScript, charInventoryScript, containerScreenScript, tradeScreenScript, itemSelectScript, settingsMenu, characterMenu, gameOverScreen };// mainMenu };
-        menusAllowed = false;
+
+        SceneScreens = new List<MenuScreen>() {
+            mainMenu,
+            loadingScreen,
+            charCreateMenu,
+            gameOverScreen
+        };
+
+        LogbookMenus = new List<MenuScreen>()
+        {
+            mapScript,
+            journalScript,
+            charInventoryMenu,
+            characterMenu
+        };
+
+        PauseMenus = new List<MenuScreen>() {
+            pauseScreenScript,
+            settingsMenu
+        };
+
+        InteractionMenus = new List<MenuScreen>()
+        {
+            containerScreenScript,
+            tradeScreenScript
+        };
+
+        JournalLockMenus = new List<MenuScreen>();
+        JournalLockMenus.AddRange(SceneScreens);
+        JournalLockMenus.AddRange(PauseMenus);
+        JournalLockMenus.AddRange(InteractionMenus);
+
+
+        OverlayMenus = new List<MenuScreen>();
+        OverlayMenus.AddRange(PauseMenus);
+        OverlayMenus.AddRange(InteractionMenus);
+        OverlayMenus.AddRange(LogbookMenus);
+        OverlayMenus.Add(itemSelectMenu);
+
+        AllMenus = new List<MenuScreen>();
+        AllMenus.AddRange(SceneScreens);
+        AllMenus.AddRange(LogbookMenus);
+        AllMenus.AddRange(PauseMenus);
+        AllMenus.AddRange(InteractionMenus);
+        AllMenus.Add(defaultUI);
+        AllMenus.Add(itemSelectMenu);
+
+        uiActions = InputSystem.actions.FindActionMap("UI");
+        screenKeyCodes = new Dictionary<string, MenuScreen>
+        {
+            { "Map", mapScript },
+            { "Journal", journalScript },
+            { "Inventory" , charInventoryMenu},
+            { "CharScreen" , characterMenu}
+        };
     }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        DialogueManager.instance.conversationStarted += (sender) => ToggleConversationUI(true);
+        DialogueManager.instance.conversationEnded += (sender) => ToggleConversationUI(false);
 
-        screenKeyCodes = new Dictionary<KeyCode, MenuScreen>
-        {
-            { KeyCode.M, mapScript },
-            { KeyCode.J, journalScript },
-            { KeyCode.I , charInventoryScript},
-            { KeyCode.C , characterMenu}
-        };
-
-        //ActivateDefaultScreen();
-        DeactivateAllMenus();
+        foreach(string key in screenKeyCodes.Keys) uiActions.FindAction(key).performed += (sender) => HandleJournalKey(key);
+        uiActions.FindAction("Cancel").performed += (sender) => HandleCancel();
     }
 
-    public void AllowMenus(bool allow)
+    public bool PauseTime()
     {
-        menusAllowed = allow;  //TODO: handle this more about whether "in game" behavior vs main menu
+        var pausedMenus = new List<MenuScreen>();
+        pausedMenus.AddRange(LogbookMenus);
+        pausedMenus.AddRange(PauseMenus);
+        pausedMenus.AddRange(InteractionMenus);
+        return pausedMenus.Any(menu => menu.IsActive()) || talking;
     }
 
-    void Update()  // TODO: possibly make UI a state machine?
+    void Update()
     {
-        //TODO: limit menus you can open if not playerUnderControl
-        if (!menusAllowed) return;
-        foreach (KeyCode screenKey in screenKeyCodes.Keys)
+        Time.timeScale = PauseTime() ? 0 : 1;
+    }
+
+    private void HandleCancel()
+    {
+        bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking;
+        if (OverlayMenus.Any(menu => menu.IsActive())) CloseOverlays();
+        else if (!noButtonMenus) pauseScreenScript.ActivateMenu();
+    }
+    private void HandleJournalKey(string key)
+    {
+        bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking;
+        if (!noButtonMenus && !JournalLockMenus.Any(menu => menu.IsActive()))
         {
-            if(Input.GetKeyDown(screenKey) && !screenKeyCodes[screenKey].IsActive())
+            var currOpen = screenKeyCodes[key].IsActive();
+            CloseLogbook();
+            if (!currOpen)
             {
-                CloseOverlays();
-                Time.timeScale = 0; // Pause
-                Debug.Log("Pause Time");
-                screenKeyCodes[screenKey].ActivateMenu();
+                screenKeyCodes[key].ActivateMenu();
             }
-            else if (screenKeyCodes[screenKey].IsActive() && Input.GetKeyDown(screenKey))
-            {
-                Debug.Log("Close open screen");
-                //screenKeyCodes[screenKey].DeactivateMenu();
-                CloseOverlays();
-                Time.timeScale = 1; // Unpause
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (OverlayOpen()) CloseOverlays();
-            else ActivatePauseScreen();
         }
     }
 
-    // Update is called once per frame
-    void LateUpdate()
+    public void CloseLogbook()
     {
-        
+        foreach (var menu in LogbookMenus) { menu.DeactivateMenu(); }
+    }
+
+    public void CloseOverlays()
+    {
+        foreach (var menu in OverlayMenus) { menu.DeactivateMenu(); }
     }
 
     public void DeactivateAllMenus()
     {
-        foreach (MenuScreen screen in screens)
-        {
-            if (screen.IsActive()) screen.DeactivateMenu();
-        }
+        foreach (var menu in AllMenus) { menu.DeactivateMenu(); }
     }
 
     public void ActivateDefaultScreen()
     {
         DeactivateAllMenus();
-        //Debug.Log("Default");
-        Time.timeScale = 1; // Unpause
         defaultUI.ActivateMenu();
-        //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
     }
 
     public void ActivateGameOver()
     {
         DeactivateAllMenus();
-        Time.timeScale = 0;
-        Debug.Log("Pause Time");
         gameOverScreen.ActivateMenu();
     }
 
     public void ActivateCombatUI()
     {
         DeactivateAllMenus();
-        Time.timeScale = 1; // Unpause
         defaultUI.ActivateCombat();
-        //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
-    }
-
-    public void CloseOverlays()
-    {
-        foreach (MenuScreen screen in screens)
-        {
-            if (screen.overlay && screen.IsActive()) screen.DeactivateMenu();
-        }
-        if (!screens.Any(scr => scr.IsActive())) ActivateDefaultScreen(); // TODO: this is a hack that should be handled better by manager by specifying which overlays "turn off" default screen
-        Time.timeScale = 1; // Unpause
-    }
-
-    public bool OverlayOpen()  // TODO: make overlays still block whole screen from clicking, and section off where pausing/unpausing happens
-    {
-        return screens.Where(s => s.overlay && s.IsActive()).Any();
-    }
-
-    public void ActivateMapScreen()
-    {
-        DeactivateAllMenus();
-        Time.timeScale = 0; // Pause
-        Debug.Log("Pause Time");
-        mapScript.ActivateMenu();
-    }
-
-    public void ActivateJournalScreen()
-    {
-        DeactivateAllMenus();
-        Time.timeScale = 0; // Pause
-        Debug.Log("Pause Time");
-        journalScript.ActivateMenu();
-    }
-
-    public void ActivateDialog(List<string> newDialogue, Sprite speakerPic)
-    {
-        DeactivateAllMenus();
-        //TODO: Activate AviScreenScript separately (will still stay up if buttons go away for dialogue screen)
-        Time.timeScale = 0; // Pause
-        Debug.Log("Pause Time");
-        dialogScript.SetSpeaker(newDialogue, speakerPic);
-        dialogScript.ActivateMenu();
-    }
-
-    public void ActivatePauseScreen()
-    {
-        Time.timeScale = 0; // Pause
-        Debug.Log("Pause Time");
-        pauseScreenScript.ActivateMenu();
-    }
-
-    public InventoryMenu CurrentInventory()
-    {
-        if (charInventoryScript.IsActive()) return charInventoryScript;
-        else if (containerScreenScript.IsActive()) return containerScreenScript;
-        else if (tradeScreenScript.IsActive()) return tradeScreenScript;
-        else return null;
-    }
-
-    public void ActivateCharInventoryScreen()
-    {
-        DeactivateAllMenus();
-        Time.timeScale = 0; // Pause
-        Debug.Log("Pause Time");
-        charInventoryScript.ActivateMenu();
-    }
-
-    public void ActivateCharScreen()
-    {
-        DeactivateAllMenus();
-        Time.timeScale = 0; // Pause
-        Debug.Log("Pause Time");
-        characterMenu.ActivateMenu();
     }
 
     public void ActivateTradeScreen(EntityInventory inventory)
     {
-        DeactivateAllMenus();
-        Time.timeScale = 0; // Pause
-        Debug.Log("Pause Time");
+        CloseOverlays();
         tradeScreenScript.SetInventory(inventory);
         tradeScreenScript.ActivateMenu();
     }
 
     public void ActivateContainerScreen(EntityInventory inventory)
     {
-        DeactivateAllMenus();
-        Time.timeScale = 0; // Pause
-        Debug.Log("Pause Time");
+        CloseOverlays();
         containerScreenScript.SetInventory(inventory);
         containerScreenScript.ActivateMenu();
     }
 
     public void ActivateItemSelect(Vector3 pos, List<SelectionData> actionList)
     {
-        //DeactivateAllMenus();
-        //Time.timeScale = 0; // Pause
-        itemSelectScript.SetItemSelection(pos, actionList);
-        itemSelectScript.ActivateMenu();
-    }
-
-    public bool DefaultUIOpen()
-    {
-        return defaultUI.IsActive() && !OverlayOpen();
+        itemSelectMenu.SetItemSelection(pos, actionList);
+        itemSelectMenu.ActivateMenu();
     }
 
     public void ActivateSettings()
     {
-        DeactivateAllMenus();
-        Time.timeScale = 0; // Pause
-        Debug.Log("Pause Time");
+        CloseOverlays();
         settingsMenu.ActivateMenu();
     }
 
-    //public void ActivateMainMenu()
-    //{
-    //    DeactivateAllMenus();
-    //    Time.timeScale = 0; // Pause
-    //    mainMenu.ActivateMenu();
-    //}
+    public void ActivateLoadingScreen()
+    {
+        DeactivateAllMenus();
+        loadingScreen.ActivateMenu();
+    }
+
+    public void ActivateMainMenu()
+    {
+        DeactivateAllMenus();
+        mainMenu.ActivateMenu();
+    }
+
+    public void ToggleConversationUI(bool setTalking)
+    {
+        talking = setTalking;
+
+    }
 }

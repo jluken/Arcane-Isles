@@ -24,7 +24,7 @@ public class Companion : PartyMember
         charStats.SetStat(StatVal.finesse, companionData.Finesse);
         charStats.SetStat(StatVal.psyche, companionData.Psyche);
         SetSkills();
-        // TODO: take char model
+        // TODO: Vis - take char model
     }
 
     public override void SetStates()

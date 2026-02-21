@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EventHandler : MonoBehaviour
@@ -17,6 +18,7 @@ public class EventHandler : MonoBehaviour
         deathEvent?.Invoke(npc);
     }
 
-    
+    public event Action inventoryUpdate;
+    public void TriggerInventoryUpdate() { inventoryUpdate?.Invoke(); }
 
 }

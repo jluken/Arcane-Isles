@@ -29,20 +29,20 @@ public class EquipmentSlot : ItemSlot
         }
     }
 
-    public override void AddItem(InventoryData itemData, int newStackSize = 1)
-    {
-        base.AddItem(itemData, newStackSize);
-    }
+    //public override void AddItem(InventoryData itemData, int newStackSize = 1, bool applyChanges = true)
+    //{
+    //    base.AddItem(itemData, newStackSize);
+    //}
 
-    public override InventoryData RemoveItem(int amount = 1, bool destroyDrag = false)
-    {
-        var remove = base.RemoveItem(amount, destroyDrag);
-        return remove;
-    }
+    //public override InventoryData RemoveItem(int amount = 1, bool destroyDrag = false)
+    //{
+    //    var remove = base.RemoveItem(amount, destroyDrag);
+    //    return remove;
+    //}
 
-    public override InventoryData ClearItem(bool destroyDrag = false)
-    {
-        var clear = base.ClearItem(destroyDrag);
-        return clear;
-    }
+    //public override InventoryData ClearItem(bool destroyDrag = false, bool applyChanges = true)
+    //{
+    //    var clear = base.ClearItem(destroyDrag, applyChanges);
+    //    return clear;
+    //}
 }

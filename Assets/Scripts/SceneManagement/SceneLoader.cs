@@ -12,9 +12,6 @@ public class SceneLoader : MonoBehaviour
 
     public static SceneLoader Instance { get; private set; }
 
-    public MainMenu mainMenu;
-    public LoadingScreen loadingScreen;
-
     private LevelManager levelManager;
 
 
@@ -40,8 +37,8 @@ public class SceneLoader : MonoBehaviour
         if (levelManager != null) DeactivateLevel(levelManager);
         levelManager = null;
         SceneObjectManagers = new Dictionary<string, SceneObjectManager>();
-        
-        mainMenu.ActivateMenu();
+
+        UIController.Instance.ActivateMainMenu();
     }
 
 
@@ -65,11 +62,9 @@ public class SceneLoader : MonoBehaviour
         return levelManager;
     }
 
-    public void ToMainMenu() // TODO: put in UI update
+    public void ToMainMenu()
     {
-        mainMenu.ActivateMenu();
-        UIController.Instance.DeactivateAllMenus();
-        UIController.Instance.AllowMenus(false);
+        UIController.Instance.ActivateMainMenu();
         PartyController.Instance.DeactivateParty();
         DeactivateLevel(levelManager);
     }
@@ -77,7 +72,7 @@ public class SceneLoader : MonoBehaviour
     public void SetToLevelSpawn(string levelName, int spawnLoc)
     {
         var oldLevel = levelManager;
-        SetLoadingScreen();
+        UIController.Instance.ActivateLoadingScreen();
         //PartyController.Instance.MoveParty(levelManager.GetSpawnPoints(spawnLoc), false);
         StartCoroutine(ActivateLevel(levelName, spawnLoc));
         if (oldLevel != null && levelName != oldLevel.LevelName) StartCoroutine(DeactivateLevelCoroutine(oldLevel));
@@ -85,11 +80,9 @@ public class SceneLoader : MonoBehaviour
 
     public IEnumerator ActivateLevel(string levelName, int spawnLoc = -1)
     {
-        Time.timeScale = 1;  // TODO: Handle time better somewhere, UI refactor
-        Debug.Log("Unpause Time");
         if (levelManager == null || levelManager.LevelName != levelName)
         {
-            SetLoadingScreen();  // TODO: eventually refactor into UI manager
+            UIController.Instance.ActivateLoadingScreen();
             var levelLoad = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
             while (!levelLoad.isDone) yield return null;
         }
@@ -104,7 +97,7 @@ public class SceneLoader : MonoBehaviour
         var activateScenes = levelManager.sceneTriggers.Where(trigger => spawnPoints.Any(spawnPoint => trigger.GetComponent<Collider>().bounds.Contains(spawnPoint))).ToList();
         var activateSceneNames = activateScenes.Select(trigger => trigger.GetComponent<SceneTrigger>().sceneName).ToList();
         foreach (var name in activateSceneNames) Debug.Log("activate scene: " + name);
-        if (activateSceneNames.Any(activateScene => !SceneObjectManagers.ContainsKey(activateScene))) SetLoadingScreen();  // Will need to load new scenes before starting
+        if (activateSceneNames.Any(activateScene => !SceneObjectManagers.ContainsKey(activateScene))) UIController.Instance.ActivateLoadingScreen();  // Will need to load new scenes before starting
 
 
         //List<AsyncOperation> asyncOps = new List<AsyncOperation>();
@@ -114,25 +107,9 @@ public class SceneLoader : MonoBehaviour
         while (activateSceneNames.Any(sceneName => !SceneObjectManagers.ContainsKey(sceneName))) yield return null;
         Debug.Log("nearby scenes activated");
 
-
-        Time.timeScale = 1;  // TODO: find better way of handling stopping/starting time than relying on menus (currently getting stuck because the UI stopped for menu then never started)
         yield return new WaitForSeconds(0.5f);
         Debug.Log("wait over");
-        UnsetLoadingScreen();
         UIController.Instance.ActivateDefaultScreen();
-    }
-
-    private void SetLoadingScreen()
-    {
-        UIController.Instance.DeactivateAllMenus();
-        UIController.Instance.AllowMenus(false);
-        loadingScreen.ActivateMenu();
-    }
-
-    private void UnsetLoadingScreen()
-    {
-        loadingScreen.DeactivateMenu();
-        UIController.Instance.AllowMenus(true);
     }
 
     public IEnumerator DeactivateLevelCoroutine(LevelManager level)
