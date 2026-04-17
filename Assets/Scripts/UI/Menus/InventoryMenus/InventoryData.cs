@@ -16,9 +16,9 @@ public class InventoryData : ScriptableObject
     public int price;
     public float weight;
 
-    public int APCost; // Cost to use/equip the item
+    public int dt;
 
-    public List<AbilityAction> abilities;
+    public int APCost; // Cost to use/equip the item
 
     public int maxStackSize = 1;
 
@@ -36,6 +36,8 @@ public class InventoryData : ScriptableObject
 
     public static readonly ItemType[] equipmentTypes = new ItemType[] { ItemType.weapon, ItemType.boots, ItemType.armor, ItemType.headwear};
 
+    // TODO: some of these should be moved to child classes of specific types
+
     [Serializable]
     public class EquipStatEntry
     {
@@ -43,6 +45,8 @@ public class InventoryData : ScriptableObject
         public int value;
     }
     public List<EquipStatEntry> equipStats;
+
+    public bool consumeOnUse;
 
     [Serializable]
     public class ConsumeStatEntry
@@ -53,16 +57,26 @@ public class InventoryData : ScriptableObject
     }
     public List<ConsumeStatEntry> consumeStats;
 
-    public InventoryData(string name, string description, Sprite sprite)
-    {
-        this.itemName = name;
-        this.description = description;
-        this.sprite = sprite;
-    }
+    //public InventoryData(string name, string description, Sprite sprite)
+    //{
+    //    this.itemName = name;
+    //    this.description = description;
+    //    this.sprite = sprite;
+    //}
 
     public void DropItem(Vector3 location)
     {
         // TODO: call from inventory button that deletes as well
         Instantiate(itemPrefab, location, Quaternion.identity);
+    }
+
+    public virtual AbilityAction DefaultAttack()
+    {
+        return null;
+    }
+
+    public virtual List<AbilityAction> ItemActions()
+    {
+        return new List<AbilityAction>();
     }
 }

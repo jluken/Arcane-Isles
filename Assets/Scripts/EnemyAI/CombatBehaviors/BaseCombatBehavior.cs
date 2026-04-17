@@ -1,5 +1,7 @@
 using NUnit.Framework.Internal;
 using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -11,7 +13,28 @@ public class BaseCombatBehavior : ScriptableObject
         return null;
     }
 
-    public virtual IEnumerator CombatTurn(NPC attacker) { 
+    public IEnumerator CombatTurn(NPC attacker) {
+        while (CanAct(attacker))
+        {
+            Debug.Log("Do new action");
+            yield return DoNextAction(attacker);
+        }
+        CombatManager.Instance.NextTurn();
+        yield return null;
+    }
+
+    public virtual bool CanAct(NPC attacker)
+    {
+        return false;
+    }
+
+    public virtual IEnumerator DoNextAction(NPC attacker)
+    {
+        yield return null;
+    }
+
+    public virtual IEnumerator TakeAction()
+    {
         return null;
     }
 

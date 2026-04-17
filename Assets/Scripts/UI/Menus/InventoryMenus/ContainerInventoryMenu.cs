@@ -71,7 +71,7 @@ public class ContainerInventoryMenu : InventoryMenu
         inventoryMenu.SetActive(true);
 
         //ClearInventorySlots();
-        playerInventorySlots.PopulateInventory(PartyController.Instance.leader.inventory);
+        playerInventorySlots.PopulateInventory(PartyController.Instance.selectedPartyMember.inventory);
         Debug.Log("Populating container");
         containerInventorySlots.PopulateInventory(currentInventory);
     }
@@ -85,7 +85,7 @@ public class ContainerInventoryMenu : InventoryMenu
 
     public override void ActivateItem(InventoryData itemData, InventoryPanel slotGroup, int slotId)
     {
-        var playerInventory = PartyController.Instance.leader.inventory;
+        var playerInventory = PartyController.Instance.selectedPartyMember.inventory;
         if (slotGroup == playerInventorySlots)
         {
             var grabbedInv = playerInventory.GetInventory(slotId);
@@ -115,7 +115,7 @@ public class ContainerInventoryMenu : InventoryMenu
 
     public void CollectAll()
     {
-        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
+        var playerInventory = PartyController.Instance.selectedPartyMember.GetComponent<EntityInventory>();
         playerInventory.ConsumeInventory(currentInventory);
  
         ActivateMenu(); // Reactivate menu after collecting all through entity data

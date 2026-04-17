@@ -21,7 +21,7 @@ public class NPCState
 
     public virtual bool isActive => false;
 
-    public virtual void EnterState() { Debug.Log("Enter State: " + npc.charStats.charName + " " + this); }
+    public virtual void EnterState() { }
 
     public virtual void ExitState() { }
 
@@ -38,6 +38,7 @@ public class NPCState
     public virtual void EnterCombat() {
         Debug.Log(npc.charStats.charName + "entering combat");
         npcStateMachine.ChangeState(npc.IdleCombatState);
+        npc.mover.StopMoving();
         CombatManager.Instance.insertIntoInitiative(npc, npc.combatantType);
     }
 

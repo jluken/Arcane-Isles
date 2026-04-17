@@ -23,8 +23,8 @@ public class CharStats : MonoBehaviour
     //Skill levels
     public int intimidation;
     public int athletics;
-    public int melee;
-    public int endurance;
+    public int survival;
+    public int repair;
 
     public int guile;
     public int precision;
@@ -32,8 +32,8 @@ public class CharStats : MonoBehaviour
     public int stealth;
 
     public int persuasion;
-    public int survival;
-    public int perception;
+    public int physick;
+    public int insight;
     public int arcana;
 
     public static int MaxSkillVal = 5;
@@ -54,8 +54,8 @@ public class CharStats : MonoBehaviour
 
         intimidation,
         athletics,
-        melee,
-        endurance,
+        survival,
+        repair,
 
         guile,
         precision,
@@ -63,9 +63,9 @@ public class CharStats : MonoBehaviour
         stealth,
 
         persuasion,
-        perception, 
+        insight, 
         arcana,
-        survival,
+        physick,
 
         dodge,
         armor,
@@ -78,17 +78,17 @@ public class CharStats : MonoBehaviour
 
     private static Dictionary<StatVal, StatVal> Skills = new Dictionary<StatVal, StatVal>() { //Skills with their determining Attribute
         { StatVal.athletics, StatVal.vigor },
-        { StatVal.melee, StatVal.vigor },
-        { StatVal.endurance, StatVal.vigor },
+        { StatVal.survival, StatVal.vigor },
+        { StatVal.repair, StatVal.vigor },
         { StatVal.intimidation, StatVal.vigor },
         { StatVal.guile, StatVal.finesse },
         { StatVal.precision, StatVal.finesse },
         { StatVal.sleightOfHand, StatVal.finesse },
         { StatVal.stealth, StatVal.finesse },
         { StatVal.persuasion, StatVal.psyche },
-        { StatVal.perception, StatVal.psyche },
+        { StatVal.insight, StatVal.psyche },
         { StatVal.arcana, StatVal.psyche },
-        { StatVal.survival, StatVal.psyche },
+        { StatVal.physick, StatVal.psyche },
     };
 
     private Dictionary<StatVal, bool> skillGrowthOpen = new Dictionary<StatVal, bool>();
@@ -127,16 +127,16 @@ public class CharStats : MonoBehaviour
 
         statMap[StatVal.intimidation] = statData.intimidation;
         statMap[StatVal.athletics] = statData.athletics;
-        statMap[StatVal.melee] = statData.melee;
-        statMap[StatVal.endurance] = statData.endurance;
+        statMap[StatVal.survival] = statData.melee;
+        statMap[StatVal.repair] = statData.endurance;
 
         statMap[StatVal.guile] = statData.guile;
         statMap[StatVal.precision] = statData.precision;
         statMap[StatVal.sleightOfHand] = statData.sleightOfHand;
         statMap[StatVal.stealth] = statData.stealth;
 
-        statMap[StatVal.survival] = statData.survival;
-        statMap[StatVal.perception] = statData.perception;
+        statMap[StatVal.physick] = statData.survival;
+        statMap[StatVal.insight] = statData.perception;
         statMap[StatVal.arcana] = statData.arcana;
         statMap[StatVal.persuasion] = statData.persuasion;
 
@@ -166,16 +166,16 @@ public class CharStats : MonoBehaviour
 
         statMap[StatVal.intimidation] = intimidation;
         statMap[StatVal.athletics] = athletics;
-        statMap[StatVal.melee] = melee;
-        statMap[StatVal.endurance] = endurance;
+        statMap[StatVal.survival] = survival;
+        statMap[StatVal.repair] = repair;
 
         statMap[StatVal.guile] = guile;
         statMap[StatVal.precision] = precision;
         statMap[StatVal.sleightOfHand] = sleightOfHand;
         statMap[StatVal.stealth] = stealth;
 
-        statMap[StatVal.survival] = survival;
-        statMap[StatVal.perception] = perception;
+        statMap[StatVal.physick] = physick;
+        statMap[StatVal.insight] = insight;
         statMap[StatVal.arcana] = arcana;
         statMap[StatVal.persuasion] = persuasion;
 
@@ -240,7 +240,7 @@ public class CharStats : MonoBehaviour
         modifiers.Remove(id);
     }
 
-    private int maxHealth => 10 + GetCurrStat(StatVal.level) * Math.Max(1, GetCurrStat(StatVal.endurance) / 2);
+    private int maxHealth => 10 + GetCurrStat(StatVal.level) * Math.Max(1, GetCurrStat(StatVal.repair) / 2);
     private int maxMagick => GetCurrStat(StatVal.level) + 2 * GetCurrStat(StatVal.arcana);
     private int actionPoints => 10 + (2 * GetCurrStat(StatVal.finesse));
 
@@ -280,10 +280,11 @@ public class CharStats : MonoBehaviour
         //Debug.Log(charInventory);
         var equipStats = npc.inventory.GetEquipmentStatMods();
         if (equipStats.ContainsKey(stat)) statMod += equipStats[stat];
-        if (stat == StatVal.actionPoints)
+        if (stat == StatVal.finesse)
         {
-            float excessWeight = Math.Max(0, npc.inventory.getTotalWeight() - (100 + 10 * GetCurrStat(StatVal.athletics))); 
-            statMod -= (int)Math.Ceiling(excessWeight / 10); // TODO: also make slower?
+            //float excessWeight = Math.Max(0, npc.inventory.getTotalWeight() - (100 + 10 * GetCurrStat(StatVal.athletics)));
+            float excessWeight = Math.Max(0, npc.inventory.getEquippedWeight() - (10 * GetCurrStat(StatVal.athletics)));
+            statMod -= (int)Math.Ceiling(excessWeight / 10);
         }
         foreach (var entry in modifiers)
         {

@@ -23,7 +23,7 @@ public class SceneTrigger : MonoBehaviour
         //Debug.Log("Test enter scene trigger ");
         if (other.gameObject.GetComponent<PartyMember>() != null && !SceneLoader.Instance.SceneLoaded(sceneName))
         {
-            Debug.Log("Enter scene trigger " + sceneName);
+            Debug.Log("Enter scene trigger " + sceneName + " by member " + other);
             StartCoroutine(SceneLoader.Instance.ActivateSubscene(sceneName));
         }
     }
@@ -41,7 +41,7 @@ public class SceneTrigger : MonoBehaviour
         Debug.Log("TEst Exit scene trigger " + sceneName);
         if (other.gameObject.GetComponent<PartyMember>() != null && SceneLoader.Instance.SceneLoaded(sceneName))
         {
-            Debug.Log("Exit scene trigger " + sceneName);
+            Debug.Log("Exit scene trigger " + sceneName + " by member " + other);
             Debug.Log("Agent: " + other.name); 
             //SceneLoader.Instance.SceneObjectManagers.Keys.ForEach(Console.WriteLine);
             StartCoroutine(SceneLoader.Instance.DeactivateSubscene(sceneName));

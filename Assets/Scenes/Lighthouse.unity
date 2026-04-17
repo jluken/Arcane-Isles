@@ -221,6 +221,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &10211226
 MeshFilter:
@@ -333,6 +334,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &19566108
 MeshFilter:
@@ -460,6 +462,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &37917234
 MeshFilter:
@@ -618,6 +621,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &66133295
 MeshFilter:
@@ -729,6 +733,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &81083383
 MeshFilter:
@@ -833,6 +838,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1186,6 +1192,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &351693345
 GameObject:
@@ -1339,6 +1346,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!4 &423269039
 Transform:
@@ -1610,6 +1618,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &465849369
 MeshFilter:
@@ -1692,6 +1701,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!4 &508029298
 Transform:
@@ -1803,6 +1813,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1886,6 +1897,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &552563122
 GameObject:
@@ -2042,7 +2054,7 @@ MonoBehaviour:
   interactRad: {fileID: 19566105}
   reach: 1
   dialogue: []
-  defaultAttacks: []
+  defaultWeapon: {fileID: 0}
   combatantType: 3
 --- !u!114 &597588029
 MonoBehaviour:
@@ -2326,6 +2338,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &597588040
 MeshFilter:
@@ -2492,6 +2505,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &605977423
 MeshFilter:
@@ -2640,6 +2654,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &645551376
 MeshFilter:
@@ -2751,6 +2766,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &688308505
 MeshFilter:
@@ -2862,6 +2878,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &705125680
 MeshFilter:
@@ -2974,6 +2991,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &710398450
 MeshFilter:
@@ -2992,7 +3010,7 @@ Transform:
   m_GameObject: {fileID: 710398446}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.916626, y: 0, z: 6.0666666}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.6500001, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3100,6 +3118,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &756557738
 MeshFilter:
@@ -3187,7 +3206,7 @@ MonoBehaviour:
   dialogue:
   - Hi!
   - I'm here too!
-  defaultAttacks: []
+  defaultWeapon: {fileID: 0}
   combatantType: 3
 --- !u!65 &772118978
 BoxCollider:
@@ -3257,6 +3276,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &772118980
 MeshFilter:
@@ -3459,6 +3479,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &787909774
 MeshFilter:
@@ -3606,6 +3627,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &806172937
 MeshFilter:
@@ -3732,6 +3754,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &843732348
 MeshFilter:
@@ -3859,6 +3882,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &940039895
 MeshFilter:
@@ -4090,6 +4114,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!4 &1122373583
 Transform:
@@ -4202,6 +4227,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -4463,6 +4489,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1400828620
 MeshFilter:
@@ -4574,6 +4601,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1426265574
 MeshFilter:
@@ -4755,6 +4783,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -4898,13 +4927,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1511110430}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1569bc291563824b83014e302b51925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   activateDist: 1
-  useMarker: 0
+  useMarker: 1
   controlled: 0
   movingThreshold: 0.05
 --- !u!208 &1511110435
@@ -5016,8 +5045,8 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
-  m_CollisionDetection: 0
+  m_Constraints: 126
+  m_CollisionDetection: 1
 --- !u!136 &1511110441
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5088,6 +5117,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1511110443
 MeshFilter:
@@ -5168,7 +5198,7 @@ MonoBehaviour:
   interactRad: {fileID: 710398448}
   reach: 1
   dialogue: []
-  defaultAttacks: []
+  defaultWeapon: {fileID: 11400000, guid: 807636dd5ec75ee49921f094702773b9, type: 2}
   combatantType: 3
   companionData: {fileID: 11400000, guid: c6f71494ad92c92459ad105274c18aee, type: 2}
   recruited: 0
@@ -5274,6 +5304,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1605270289
 MeshFilter:
@@ -5390,6 +5421,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1715392436
 MeshFilter:
@@ -5501,6 +5533,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1732013788
 MeshFilter:
@@ -5852,6 +5885,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1843676853
 MeshFilter:
@@ -5971,6 +6005,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -6191,6 +6226,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1921501360
 MeshFilter:
@@ -6305,6 +6341,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!4 &1952343796
 Transform:
@@ -6513,6 +6550,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &2015671830
 MeshFilter:
@@ -6624,6 +6662,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &2062124040
 MeshFilter:
@@ -6710,7 +6749,7 @@ PrefabInstance:
     - target: {fileID: 6136358186394097512, guid: a42b42d2979191541984016de734263d, type: 3}
       propertyPath: itemData
       value: 
-      objectReference: {fileID: 11400000, guid: 597bf1617779c474eb975a7b5131cddc, type: 2}
+      objectReference: {fileID: 11400000, guid: aa37b5d2512de28429814ce8763ed18f, type: 2}
     - target: {fileID: 7308277452962088877, guid: a42b42d2979191541984016de734263d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.07
@@ -6911,7 +6950,7 @@ PrefabInstance:
     - target: {fileID: 1835745153656063066, guid: 5157e8026c9406f44a909e1d280f9b42, type: 3}
       propertyPath: itemData
       value: 
-      objectReference: {fileID: 11400000, guid: e4f9a8221afe05d45ba395ff508066ac, type: 2}
+      objectReference: {fileID: 11400000, guid: 9e5872adcfb3a214192bf26b8092233e, type: 2}
     - target: {fileID: 3755820190599420863, guid: 5157e8026c9406f44a909e1d280f9b42, type: 3}
       propertyPath: m_Name
       value: Super Sword

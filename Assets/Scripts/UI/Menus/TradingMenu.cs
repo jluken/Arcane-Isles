@@ -73,7 +73,7 @@ public class TradingMenu : InventoryMenu
     {
         if (!IsActive()) return;
         SelectionController.Instance.Deselect();
-        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
+        var playerInventory = PartyController.Instance.selectedPartyMember.GetComponent<EntityInventory>();
         for (int i = 0; i < playerBarterInv.maxInv; i++)
         {
             var slotData = playerBarterInv.GetInventory(i);
@@ -102,7 +102,7 @@ public class TradingMenu : InventoryMenu
 
         //ClearInventorySlots();
 
-        var activePlayer = PartyController.Instance.leader;
+        var activePlayer = PartyController.Instance.selectedPartyMember;
         playerInventorySlots.PopulateInventory(activePlayer.inventory, new List<InventoryPanel>() { playerBarterSlots });
         playerName.text = activePlayer.charStats.charName;
         playerGold.text = activePlayer.inventory.money.ToString();
@@ -132,7 +132,7 @@ public class TradingMenu : InventoryMenu
     public override void ActivateItem(InventoryData itemData, InventoryPanel slotGroup, int slotId)
     {
         Debug.Log("Trading activate");
-        var playerInventory = PartyController.Instance.leader.inventory;
+        var playerInventory = PartyController.Instance.selectedPartyMember.inventory;
         if (slotGroup == playerInventorySlots)
         {
             Debug.Log("player slots");
@@ -176,7 +176,7 @@ public class TradingMenu : InventoryMenu
 
     public void Trade() // TODO: what if not enough space?
     {
-        var playerInventory = PartyController.Instance.leader.GetComponent<EntityInventory>();
+        var playerInventory = PartyController.Instance.selectedPartyMember.GetComponent<EntityInventory>();
 
         int playerCost = merchantSaleVal() - playerSaleVal();
 

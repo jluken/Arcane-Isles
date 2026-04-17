@@ -194,8 +194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   activeCombatant: {fileID: 0}
-  currentAction: {fileID: 0}
-  defaultRun: {fileID: 11400000, guid: c299b8daca1ff954680bbfbd2c67c0a5, type: 2}
+  runIcon: {fileID: 21300000, guid: 0eb5849450b935f4d83dfbd53b46676a, type: 3}
 --- !u!4 &1048850814
 Transform:
   m_ObjectHideFlags: 0

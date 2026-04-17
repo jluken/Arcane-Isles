@@ -10,6 +10,7 @@ public class AwareRad : MonoBehaviour
         if (enemy.isAggroed && other.gameObject.GetComponent<PartyMember>() != null && !enemy.AwarePlayers.Contains(other.gameObject))
         {
             enemy.AwarePlayers.Add(other.gameObject);
+            if (CombatManager.Instance.combatActive) enemy.SetToCombat();
         }
     }
 

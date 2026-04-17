@@ -104,7 +104,7 @@ public class MapScript : MenuScreen
         var worldWidth = currentLevel.levelDims[0];
         var worldHeight = currentLevel.levelDims[1];
         localMapImage.sprite = currentLevel.levelMap;
-        var playerPos = PartyController.Instance.leader.transform.position;
+        var playerPos = PartyController.Instance.selectedPartyMember.transform.position;
         var mapWidth = currentLevel.levelMap.rect.size.x;
         var mapHeight = currentLevel.levelMap.rect.size.y;
         localMarker.GetComponent<RectTransform>().anchoredPosition = new Vector3(mapWidth * playerPos.x / worldWidth, mapHeight * playerPos.y / worldHeight);

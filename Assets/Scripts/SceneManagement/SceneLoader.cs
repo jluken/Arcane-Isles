@@ -137,19 +137,12 @@ public class SceneLoader : MonoBehaviour
     {
         Debug.Log("Deactivate Subscene " + sceneName);
         if (SceneObjectManagers.ContainsKey(sceneName)) {
-            Debug.Log("Contains");
             var manager = SceneObjectManagers[sceneName];
-            Debug.Log("Contains2");
             SceneData[sceneName] = new SceneSaveData(manager.npcs, manager.containers, manager.GroundObjects);
-            Debug.Log("Contains3");
             SceneData[sceneName].loaded = false;
-            Debug.Log("Unloaded");
             //ActiveLevelScenes.Remove(sceneName);
             SceneObjectManagers.Remove(sceneName);
-            Debug.Log("Removed");
             SceneManager.UnloadSceneAsync(sceneName);
-            Debug.Log("Async unloaded");
-
         }
         yield return null;
 

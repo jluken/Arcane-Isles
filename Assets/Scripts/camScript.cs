@@ -68,7 +68,7 @@ public class camScript : MonoBehaviour
             Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
             Vector3 movement = ((screenUp * moveDirection.y) + (screenRight * moveDirection.x));
 
-            MoveCamera(movement, mouseScroll.y);
+            if (inBounds && (movement != Vector3.zero || mouseScroll.y != 0)) MoveCamera(movement, mouseScroll.y);
         }
     }
 
@@ -88,7 +88,6 @@ public class camScript : MonoBehaviour
 
     public void CenterCamera(Vector3 position)  // TODO: make private? Only call Track Obj?
     {
-        //Debug.Log("Center Camera: " + position);
         var tiltDownRad = Math.PI * xTilt / 180.0;
         var rotRad = Math.PI * yRot / 180.0;
 

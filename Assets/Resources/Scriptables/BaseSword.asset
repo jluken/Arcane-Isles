@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4831c1a46adc8c14c8a63f7b5afe6e61, type: 3}
+  m_Name: BaseSword
+  m_EditorClassIdentifier: Assembly-CSharp::Sword
+  itemName: Sword
+  description: Pretty good
+  sprite: {fileID: 21300000, guid: 9cdd97799b791064da4993559680c672, type: 3}
+  itemPrefab: {fileID: 0}
+  price: 5
+  weight: 1
+  APCost: 0
+  maxStackSize: 1
+  itemType: 1
+  equipStats: []
+  consumeStats: []
+  damageDie: 6
+  swingAp: 4
+  swordIcon: {fileID: 21300000, guid: 9cdd97799b791064da4993559680c672, type: 3}

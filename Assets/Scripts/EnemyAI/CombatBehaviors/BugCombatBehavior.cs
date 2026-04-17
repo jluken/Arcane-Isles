@@ -1,102 +1,120 @@
+using System;
 using System.Collections;
 using UnityEngine;
-using System;
+using static UnityEngine.GraphicsBuffer;
 
 [CreateAssetMenu(fileName = "BugCombatBehavior", menuName = "Scriptable Objects/BugCombatBehavior")]
 public class BugCombatBehavior : BaseCombatBehavior
 {
-    public AbilityAction Bite;
-    public AbilityAction MoveTo;
-    public AbilityAction MoveTowards;
+    private AttackAction Bite = new AttackAction(attackCost: 4, damageDie: 3, modifier: CharStats.StatVal.survival, name: "bite", icon: null, range: 1.5f);
+    private MoveToObject MoveTo = new MoveToObject(name: "bite", icon: null, range: float.PositiveInfinity);
+    private MoveToPoint MoveTowards = new MoveToPoint("bite", null);
 
     public override NPC ChooseTarget(NPC attacker)
     {
+        Debug.Log("Bug choosing target " + FindClosestTarget(attacker));
         return FindClosestTarget(attacker);
     }
 
-    public override IEnumerator CombatTurn(NPC attacker)
+    public override bool CanAct(NPC attacker)
     {
-        Debug.Log("Bug Combat, AP: " + CombatManager.Instance.ActionPoints);
-        NPC target = null;
-        var combatMover = attacker.mover;
-
-        while (target == null)  // TODO: handle better when death is settled
+        if (CombatManager.Instance.ActionPoints == 0) return false;
+        NPC target = ChooseTarget(attacker);
+        if(target == null) return false;
+        var inBiteRange = false;
+        var dist = Vector3.Distance(attacker.gameObject.transform.position, target.gameObject.transform.position);
+        if (target.GetComponent<NPC>() != null && dist < 1)
         {
-            Debug.Log("new target");
-            target = ChooseTarget(attacker);
-            if (target == null) break;  // TODO: handle better when death is settled
-            target.Select();
-            //yield return StartCoroutine(HandleNextTarget(attacker, target));
-
-            if (Bite.CheckValidTarget(attacker, target)) { 
-                Debug.Log("Bite Now"); 
-                while (Bite.CheckValidTarget(attacker, target)) { 
-                    //Bite.UseAbility(attacker, target);
-                    CombatManager.Instance.SetCurrentAction(Bite);
-                    CombatManager.Instance.UseCombatAbility(target, CombatManager.CombatActionType.Attack);
-                    while (CombatManager.Instance.inAction) yield return null;
-                } 
-            }
-            else if (MoveTo.CheckValidTarget(attacker, target))
-            {
-                Debug.Log("Move to, AP: " + CombatManager.Instance.ActionPoints);
-                CombatManager.Instance.SetCurrentAction(MoveTo);
-                CombatManager.Instance.UseCombatAbility(target, CombatManager.CombatActionType.Run);
-                //yield return StartCoroutine(MoveTo.UseAbility(attacker, target));
-                int ctr = 0;
-                while (CombatManager.Instance.inAction && ctr < 100)//CombatManager.Instance.inAction)
-                {
-                    //ctr++;
-                    //Debug.Log("waiting...");
-                    yield return null;
-                }
-                Debug.Log("Done moving, AP left: " + CombatManager.Instance.ActionPoints);
-                while (Bite.CheckValidTarget(attacker, target)) {
-                    Debug.Log("Bite");
-                    Debug.Log(CombatManager.Instance.ActionPoints);
-                    //Bite.UseAbility(attacker, target);
-                    CombatManager.Instance.SetCurrentAction(Bite);
-                    CombatManager.Instance.UseCombatAbility(target, CombatManager.CombatActionType.Attack);
-                    while (CombatManager.Instance.inAction) yield return null;
-                }
-            }
-            else
-            {
-                Debug.Log("Move towards, AP: " + CombatManager.Instance.ActionPoints);
-                //MoveTowards.UseAbility(attacker, target);
-                CombatManager.Instance.SetCurrentAction(MoveTowards);
-                CombatManager.Instance.UseCombatAbility(target, CombatManager.CombatActionType.Run);
-                while (CombatManager.Instance.inAction) yield return null;
-            }
+            inBiteRange = Utils.LineOfSight(attacker.gameObject, target.gameObject);
         }
-        CombatManager.Instance.NextTurn();
+        Bite.SetActor(attacker);
+        if (inBiteRange && !Bite.CheckValidTarget(target)) return false;
+        return true;
     }
 
-    private IEnumerator HandleNextTarget(NPC attacker, NPC target)
+    public override IEnumerator DoNextAction(NPC attacker)
     {
-        var combatMover = attacker.GetComponent<MoveToClick>();
-        if (Bite.CheckValidTarget(attacker, target)) { while (Bite.CheckValidTarget(attacker, target)) { Bite.UseAbility(attacker, target); } }
-        else if (MoveTo.CheckValidTarget(attacker, target))
-        {
-            MoveTo.UseAbility(attacker, target);
-            while (combatMover.IsMoving())
-            {
-                yield return null; // Wait for the next frame
-            }
-            while (Bite.CheckValidTarget(attacker, target)) { Bite.UseAbility(attacker, target); }
-        }
-        else
-        {
-            MoveTowards.UseAbility(attacker, target);
-            while (combatMover.IsMoving())
-            {
-                yield return null; // Wait for the next frame
-            }
-        }
-        //return null;
+        NPC target = ChooseTarget(attacker);
+        if (target == null) yield break;  
+        target.Select();
 
-            //while (Bite.CheckValidTarget(attacker, target)) { Bite.UseAbility(attacker, target); }
+        Bite.SetActor(attacker);
+        MoveTo.SetActor(attacker);
+        MoveTowards.SetActor(attacker);
+
+        var inBiteRange = false;
+        var dist = Vector3.Distance(attacker.gameObject.transform.position, target.gameObject.transform.position);
+        if (target.GetComponent<NPC>() != null && dist < 1)
+        {
+            inBiteRange =  Utils.LineOfSight(attacker.gameObject, target.gameObject);
+        }
+
+
+        if (Bite.CheckValidTarget(target))
+        {
+            yield return BugBite(target);
+        }
+        else if (MoveTo.CheckValidTarget(target))
+        {
+            yield return MoveToTarget(target);
+        }
+        else if (inBiteRange)
+        {
+            yield return MoveTowardsTarget(target.transform.position);
+        }
+        while (CombatManager.Instance.inAction) yield return null;
     }
+
+    public IEnumerator BugBite(NPC target)
+    {
+        Bite.SetTarget(target);
+        CombatManager.Instance.UseCombatAbility(Bite);
+        //while (CombatManager.Instance.inAction) yield return null;
+        yield break;
+    }
+
+    public IEnumerator MoveToTarget(NPC target)
+    {
+        Debug.Log("Bug Move To");
+        MoveTo.SetTarget(target);
+        CombatManager.Instance.UseCombatAbility(MoveTo);
+        //while (CombatManager.Instance.inAction) yield return null;
+        yield break;
+    }
+
+    public IEnumerator MoveTowardsTarget(Vector3 targetPos)
+    {
+        MoveTowards.SetTarget(targetPos);
+        CombatManager.Instance.UseCombatAbility(MoveTowards);
+        //while (CombatManager.Instance.inAction) yield return null;
+        yield break;
+    }
+
+    //private IEnumerator HandleNextTarget(NPC attacker, NPC target)
+    //{
+    //    var combatMover = attacker.GetComponent<MoveToClick>();
+    //    if (Bite.CheckValidTarget(attacker, target)) { while (Bite.CheckValidTarget(attacker, target)) { Bite.UseAbility(attacker, target); } }
+    //    else if (MoveTo.CheckValidTarget(attacker, target))
+    //    {
+    //        MoveTo.UseAbility(attacker, target);
+    //        while (combatMover.IsMoving())
+    //        {
+    //            yield return null; // Wait for the next frame
+    //        }
+    //        while (Bite.CheckValidTarget(attacker, target)) { Bite.UseAbility(attacker, target); }
+    //    }
+    //    else
+    //    {
+    //        MoveTowards.UseAbility(attacker, target);
+    //        while (combatMover.IsMoving())
+    //        {
+    //            yield return null; // Wait for the next frame
+    //        }
+    //    }
+    //    //return null;
+
+    //        //while (Bite.CheckValidTarget(attacker, target)) { Bite.UseAbility(attacker, target); }
+    //}
 
     public override void AttackTarget(NPC attacker)
     {

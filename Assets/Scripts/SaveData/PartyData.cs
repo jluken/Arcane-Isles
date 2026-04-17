@@ -83,15 +83,15 @@ public class PartyData
         charStatData.finesse = charStats.GetCurrStat(CharStats.StatVal.finesse, false);
         charStatData.intimidation = charStats.GetCurrStat(CharStats.StatVal.intimidation, false);
         charStatData.athletics = charStats.GetCurrStat(CharStats.StatVal.athletics, false);
-        charStatData.melee = charStats.GetCurrStat(CharStats.StatVal.melee, false);
-        charStatData.endurance = charStats.GetCurrStat(CharStats.StatVal.endurance, false);
+        charStatData.melee = charStats.GetCurrStat(CharStats.StatVal.survival, false);
+        charStatData.endurance = charStats.GetCurrStat(CharStats.StatVal.repair, false);
         charStatData.guile = charStats.GetCurrStat(CharStats.StatVal.guile, false);
         charStatData.precision = charStats.GetCurrStat(CharStats.StatVal.precision, false);
         charStatData.sleightOfHand = charStats.GetCurrStat(CharStats.StatVal.sleightOfHand, false);
         charStatData.stealth = charStats.GetCurrStat(CharStats.StatVal.stealth, false);
         charStatData.persuasion = charStats.GetCurrStat(CharStats.StatVal.persuasion, false);
-        charStatData.survival = charStats.GetCurrStat(CharStats.StatVal.survival, false);
-        charStatData.perception = charStats.GetCurrStat(CharStats.StatVal.perception, false);
+        charStatData.survival = charStats.GetCurrStat(CharStats.StatVal.physick, false);
+        charStatData.perception = charStats.GetCurrStat(CharStats.StatVal.insight, false);
         charStatData.arcana = charStats.GetCurrStat(CharStats.StatVal.arcana, false);
 
         return charStatData;

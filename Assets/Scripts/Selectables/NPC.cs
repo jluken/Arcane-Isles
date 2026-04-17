@@ -32,7 +32,7 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
 
     public List<string> dialogue;
 
-    public List<AbilityAction> defaultAttacks;
+    public WeaponItem defaultWeapon;
 
     public CombatManager.CombatantType combatantType = CombatManager.CombatantType.Bystander;
 
@@ -107,22 +107,33 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
         return StateMachine.CurrentPlayerState.GetActions();
     }
 
-    //public override List<SelectionData> CombatActions()
-    //{
-    //    var acts = new List<SelectionData>() { attack, inspectSelection, combatMovement };
-    //    return acts;
-    //}
-
     public List<AbilityAction> GetWeaponAbilities()
     {
         var weapon = inventory.GetEquipment(InventoryData.ItemType.weapon);
-        if (weapon == null) return new List<AbilityAction>(defaultAttacks); ;
-        return new List<AbilityAction>(weapon.abilities);
+        if (weapon == null) return new List<AbilityAction>(defaultWeapon.ItemActions());
+        var abilities =  new List<AbilityAction>(weapon.ItemActions());
+        foreach ( var action in abilities) { action.SetActor(this); }
+        return abilities;
+    }
+
+    public AbilityAction GetDefaultAttack()
+    {
+        var weapon = inventory.GetEquipment(InventoryData.ItemType.weapon);
+        if (weapon == null || weapon.DefaultAttack() == null) return defaultWeapon.DefaultAttack();
+        var attack = weapon.DefaultAttack();
+        attack.SetActor(this);
+        return attack;
+    }
+
+    public void takeDamage(int rawDamage)
+    {
+        var totalArmor = inventory.GetEquipmentArmor();
+        charStats.updateHealth(-1 * Math.Max(rawDamage - totalArmor, 0));
     }
 
     public void TargetAttack()
     {
-        CombatManager.Instance.UseCombatAbility(this, CombatManager.CombatActionType.Attack);
+        CombatManager.Instance.AttackTarget(this);
     }
 
     void Update()
@@ -172,9 +183,10 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
 
     public List<AbilityAction> GetActions()
     {
-        var attacks = GetWeaponAbilities();
-        attacks.Insert(0, CombatManager.Instance.defaultRun);  // TODO: handle special case of movement better
-        return attacks;
+        var abilities = GetWeaponAbilities();
+        abilities.Insert(0, CombatManager.Instance.defaultRun);
+        foreach (var action in abilities) { action.SetActor(this); }
+        return abilities;
     }
 
     public virtual bool IsActive => StateMachine.CurrentPlayerState.isActive;

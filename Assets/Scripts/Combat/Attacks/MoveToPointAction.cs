@@ -5,16 +5,17 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
 
-[CreateAssetMenu(fileName = "MoveTowards", menuName = "Scriptable Objects/MoveTowards")]
-public class MoveTowards : MoveTo
+public class MoveToPoint : PointAction
 {
 
-    private Vector3 FurthestPoint(NPC actor, Selectable target)
+    public MoveToPoint(string name, Sprite icon, NPC actor = null, Vector3 target = new Vector3()) : base(name: name, icon: icon, actor: actor, point: target) { }
+
+    private Vector3 FurthestPoint(NPC actor, Vector3 target)
     {
-        var path = actor.GetComponent<MoveToClick>().PathToPoint(target.transform.position);
+        var path = actor.GetComponent<MoveToClick>().PathToPoint(target);
         if (path != null)
         {
-            var maxdist = Math.Min(PathDist(actor, target), CombatManager.Instance.ActionPoints); //TODO: meter to AP conversion
+            var maxdist = Math.Min(PathDistToPoint(actor, target), CombatManager.Instance.ActionPoints);
             return MoveToClick.PointAlongPath(path, maxdist);
         }
         return actor.transform.position;
@@ -26,12 +27,15 @@ public class MoveTowards : MoveTo
         return MoveToClick.PathDist(path);
     }
 
-    public override bool CheckValidTarget(NPC actor, Selectable target)
+    public override bool CheckValidAction()
     {
-        return !actor.mover.pathLocked;
+        Debug.Log("name " + actionName);
+        Debug.Log("actor " + actor);
+        Debug.Log("mover " + actor.mover);
+        return !actor.mover.pathLocked;  // will get as close as possible (apply to MoveToObject too?)
     }
 
-    public override IEnumerator UseAbility(NPC actor, Selectable target)
+    public override IEnumerator UseAbility()
     {
         var targetPoint = FurthestPoint(actor, target);
         Debug.Log("Towards: " + targetPoint);
@@ -43,7 +47,8 @@ public class MoveTowards : MoveTo
             yield return null; // Wait for the next frame
         }
 
-        CombatManager.Instance.SpendActionPoints(cost); // account for floating point and wiggle room
-        CombatManager.Instance.FinishAction();
+        //CombatManager.Instance.SpendActionPoints(cost); // account for floating point and wiggle room
+        //CombatManager.Instance.FinishAction();
+        yield break;
     }
 }

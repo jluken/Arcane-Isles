@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,12 +33,13 @@ public class EntityInventory : MonoBehaviour
     public bool hasEquip;
 
 
-    public Dictionary<ItemType, InventoryData> equipment = new Dictionary<ItemType, InventoryData>() {
+    public Dictionary<ItemType, InventoryData> equipment = new Dictionary<ItemType, InventoryData>() { // todo: make InventoryStack to allow for holding "stack" of stuff like bomb?
         { ItemType.headwear, null},
         { ItemType.armor, null},
         { ItemType.weapon, null},
         { ItemType.boots, null}
     };
+    // TODO: head, body, legs, boots, overcoat/cape, gloves, necklace, ringx2, handx2
 
     public int money;
     public bool merchant;
@@ -76,6 +78,13 @@ public class EntityInventory : MonoBehaviour
     {
         var currStack = GetInventory(idx);
         SetInventory(idx, currStack.type, currStack.count + change);
+    }
+
+    public void UseWeapon()
+    {
+        if (equipment[ItemType.weapon] != null && equipment[ItemType.weapon].consumeOnUse) {
+            SetEquipment(ItemType.weapon, null); // TODO: possibly automatically draw from inventory if present
+        }
     }
 
     public void SetInventory(int idx, InventoryData itemData, int count=1)
@@ -133,6 +142,17 @@ public class EntityInventory : MonoBehaviour
         return modifiers;
     }
 
+    public int GetEquipmentArmor()
+    {
+        var dt = 0;
+        foreach (ItemType type in equipment.Keys)
+        {
+            if (equipment[type] == null) continue;
+            dt += equipment[type].dt;
+        }
+        return dt;
+    }
+
     public int AddNewItem(InventoryData itemData, int newStackSize=1)
     {
         for (int i = 0; i < maxInv; i++)
@@ -181,6 +201,17 @@ public class EntityInventory : MonoBehaviour
         var invWeight = Enumerable.Range(0, inventory.Count).Where(i => GetInventory(i).count > 0).Select(i => GetInventory(i).type.weight * GetInventory(i).count).Sum();
         foreach (ItemType type in equipment.Keys) if (GetEquipment(type) != null) invWeight += GetEquipment(type).weight;
         return invWeight;
+    }
+
+    public float getEquippedWeight()
+    {
+        var weight = 0f;
+        foreach (ItemType type in equipment.Keys)
+        {
+            if (equipment[type] == null) continue;
+            weight += equipment[type].weight;
+        }
+        return weight;
     }
 
     public int getTotalValue()

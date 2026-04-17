@@ -19,7 +19,7 @@ public class SkillCheck : ScriptableObject
     public void CheckSkill()
     {
         skillCheckManager = GameObject.Find("SkillCheckCanvas").GetComponent<SkillCheckManager>(); // TODO: put skill check into the UI manager (and right click select)
-        playerStats = PartyController.Instance.leader.charStats;
+        playerStats = PartyController.Instance.selectedPartyMember.charStats;
 
         
         (string, int)[] abilitySkillScores = { (skill.ToString(), playerStats.GetCurrStat(skill)) };

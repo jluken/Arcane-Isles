@@ -20,6 +20,7 @@ public class EnemyPatrolState: IdleState
 
     public override void EnterState()
     {
+        Debug.Log("Start Patrol");
         enemy.isAggroed = false;
         base.EnterState();
     }

@@ -62,10 +62,14 @@ public class SelectionController : MonoBehaviour
     {
         if (pointedObject?.GetComponent<groundScript>() != null)
         {
-            if (leftClick)
+            if (leftClick && PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
             {
-                Deselect();
-                PartyController.Instance.GoTo(pointSpot);
+                if (CombatManager.Instance.currentAction == null)
+                {
+                    Deselect();
+                    PartyController.Instance.GoTo(pointSpot);
+                }
+                else CombatManager.Instance.TargetPoint(pointSpot);
             }
         }
         else if (pointedObject?.GetComponent<Selectable>() != null)
@@ -106,14 +110,12 @@ public class SelectionController : MonoBehaviour
     {
         Deselect();
         selectedItem = selectable;
-        Debug.Log("Select: " + selectable.name);
         //PartyController.Instance.GoTo(selectable.transform.position);  // TODO: if selectable standpoint, set here with absolute values
     }
 
     public void Deselect()
     {
         selectedItem = null;
-        Debug.Log("Deselect: " + this.name);
         deselectEvent?.Invoke();  // Monitored by Selectable items to deselect when triggered
     }
 

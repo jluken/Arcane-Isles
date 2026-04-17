@@ -77,8 +77,6 @@ public class ItemSelectMenu : MenuScreen
             i++;
         }
         var menuDims = menu.GetComponent<RectTransform>().rect;
-        Debug.Log("pos: " + pos);
-        Debug.Log("dims: " + menuDims);
         var padding = menu.GetComponent<VerticalLayoutGroup>().padding;
         var spacing = menu.GetComponent<VerticalLayoutGroup>().spacing;
         var buttonDims = menuButtonPrefab.GetComponent<RectTransform>().rect;

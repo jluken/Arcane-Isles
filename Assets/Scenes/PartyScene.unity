@@ -413,6 +413,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!23 &3404439087598271374
 MeshRenderer:
@@ -461,6 +462,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &3910713494445814303
 MonoBehaviour:
@@ -558,6 +560,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!23 &4863118002703892970
 MeshRenderer:
@@ -606,6 +609,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &5034178226128367691
 MeshFilter:
@@ -781,6 +785,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7604127806412255885
 GameObject:
@@ -942,8 +947,7 @@ MonoBehaviour:
   interactRad: {fileID: 2394911103204674550}
   reach: 1
   dialogue: []
-  defaultAttacks:
-  - {fileID: 11400000, guid: d5faf3d8bffe252418b31ff386c31de9, type: 2}
+  defaultWeapon: {fileID: 11400000, guid: 807636dd5ec75ee49921f094702773b9, type: 2}
   combatantType: 3
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

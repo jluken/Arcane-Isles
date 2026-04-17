@@ -3,9 +3,11 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MoveTo", menuName = "Scriptable Objects/MoveTo")]
-public class MoveTo : AbilityAction
+public class MoveToObject : InteractionAction
 {
+    public MoveToObject(string name, Sprite icon, float range, NPC actor = null) : base(name, icon, range, actor)
+    {
+    }
 
     protected float PathDist(NPC actor, Selectable target)
     {
@@ -25,15 +27,18 @@ public class MoveTo : AbilityAction
         return MoveToClick.PathDist(path);
     }
 
-    public override bool CheckValidTarget(NPC actor, Selectable target)
+    public override bool CheckValidAction()
+    {
+        return CheckValidTarget(target);
+    }
+
+    public override bool CheckValidTarget(Selectable target)
     {
         var inRange = Mathf.CeilToInt(PathDist(actor, target)) <= CombatManager.Instance.ActionPoints;  // TODO: meter conversion
-        Debug.Log("Check in range: " + inRange);
-        Debug.Log("locked: " + actor.mover.pathLocked);
         return !actor.mover.pathLocked && inRange;
     }
 
-    public override IEnumerator UseAbility(NPC actor, Selectable target)
+    public override IEnumerator UseAbility()
     {
         var cost = PathDist(actor, target);
         Debug.Log("Move to raw cost " + cost);
@@ -44,7 +49,7 @@ public class MoveTo : AbilityAction
             yield return null; // Wait for the next frame
         }
         Debug.Log("Move to done");
-        CombatManager.Instance.SpendActionPoints(Mathf.CeilToInt(cost - 0.1f)); // account for floating point and wiggle room
-        CombatManager.Instance.FinishAction();
+        //CombatManager.Instance.SpendActionPoints(Mathf.CeilToInt(cost - 0.1f)); // account for floating point and wiggle room
+        //CombatManager.Instance.FinishAction();
     }
 }

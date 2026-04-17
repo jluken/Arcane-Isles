@@ -53,7 +53,7 @@ public class CharacterMenu : MenuScreen
     public override void ActivateMenu()
     {
         UIActive = true;
-        currChar = PartyController.Instance.leader;
+        currChar = PartyController.Instance.selectedPartyMember;
 
         int xpLevel = PartyController.Instance.GetLevelByXP();
         bool levelUp = xpLevel > currChar.charStats.GetCurrStat(StatVal.level) && currChar == PartyController.Instance.playerChar;

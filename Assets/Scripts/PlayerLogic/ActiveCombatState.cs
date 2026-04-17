@@ -42,9 +42,8 @@ public class ActiveCombatState: NPCState
 
     public override void MoveTo(Vector3 destination)
     {
-        Selectable target;
-        if (SelectionController.Instance.selectedItem != null) target = SelectionController.Instance.selectedItem;
-        else target = CombatManager.Instance.activeCombatant.GetComponent<MoveToClick>().SetTempMarker(destination); // TODO: make into an agnostic event with no move destination hack
-        CombatManager.Instance.UseCombatAbility(target, CombatManager.CombatActionType.Run);
+        Debug.Log("Combat move");
+        Debug.Log("active combatant: " + CombatManager.Instance.activeCombatant);
+        CombatManager.Instance.UseCombatAbility(new MoveToPoint("Move", null, CombatManager.Instance.activeCombatant, destination));
     }
 }

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db90c29b24e5bb84885eb9f2fe4f44f5, type: 3}
-  m_Name: Sword
+  m_Name: Sword - OLD
   m_EditorClassIdentifier: 
   itemName: Sword
   description: Sharp and pointy

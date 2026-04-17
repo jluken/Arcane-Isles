@@ -22,12 +22,6 @@ public class CombatManager : MonoBehaviour
         public CombatantType type;
     }
 
-    public enum CombatActionType
-    {
-        Run,
-        Attack
-    }
-
     public enum CombatantType
     {
         Party,
@@ -41,15 +35,21 @@ public class CombatManager : MonoBehaviour
     public NPC activeCombatant;
     public AbilityAction currentAction;
     private int initiativeTurn;
+
+    private float turnTravel;
     public int ActionPoints { get; private set; }
 
-    public AbilityAction defaultRun; // TODO: Holdover until UI overhaul
+    public Sprite runIcon;
+    public AbilityAction defaultRun;
 
     void Awake()
     {
         Instance = this;
         combatantInitiative = new List<InitiativeEntry>();
+        Debug.Log("active combatant null");
         activeCombatant = null;
+
+        defaultRun = new MoveToPoint("run", runIcon);
     }
 
     public void Start()
@@ -156,8 +156,10 @@ public class CombatManager : MonoBehaviour
 
     private void SetCombatant(int turn)
     {
+        Debug.Log("New combatant");
         activeCombatant = combatantInitiative[turn].npc;
         activeCombatant.SetActiveNPC();
+        turnTravel = 0;
         ActionPoints = activeCombatant.charStats.GetCurrStat(CharStats.StatVal.actionPoints);
         bool isEnemy = combatantInitiative[turn].type == CombatantType.Enemy;
         UIController.Instance.ActivateCombatUI();
@@ -182,37 +184,64 @@ public class CombatManager : MonoBehaviour
 
     public bool inAction { private set; get; }
 
-    public void UseCombatAbility(Selectable target, CombatActionType defaultAction)
+    public void SetCurrentAction(AbilityAction action)
     {
-        if (currentAction == null)
-        {
-            switch (defaultAction)
-            {
-                case CombatActionType.Attack:  // TODO: better handling of separate "attack" vs move
-                    currentAction = activeCombatant.GetActions()[1];
-                    break;
-                case CombatActionType.Run:
-                    currentAction = defaultRun;
-                    break;
-            }
-        }
+        Debug.Log("Set Action");
+        currentAction = action;
+    }
+
+    public void AttackTarget(Selectable target)
+    {
+        Debug.Log("attack target with action " + currentAction);
+        if(currentAction == null) currentAction = activeCombatant.GetDefaultAttack();
+        currentAction.SetActor(activeCombatant);
+        currentAction.SetTarget(target);
+        UseCombatAbility(currentAction);
+    }
+
+    public void TargetPoint(Vector3 target)
+    {
+        Debug.Log("Target Point");
+        currentAction ??= defaultRun;
+        currentAction.SetActor(activeCombatant);
+        currentAction.SetTarget(target);
+        UseCombatAbility(currentAction);
+    }
+
+    public void UseCombatAbility(AbilityAction action)
+    {
+        Debug.Log("Use Combat Ability " + action);
+        if(inAction && activeCombatant.mover.IsMoving()) activeCombatant.mover.StopMoving(); // Movement can be overridden 
         if (!inAction)
         {
             Debug.Log("Inaction pass");
-            if (currentAction != null && currentAction.CheckValidTarget(activeCombatant, target))
+            Debug.Log("action actor " + action.actor);
+            if (action != null && action.CheckValidAction())
             {
+                Debug.Log("valid action");
                 var prev = SelectionController.Instance.playerUnderControl;
                 SelectionController.Instance.playerUnderControl = false;
                 // TODO: grey out buttons as well
-                inAction = true;
-                StartCoroutine(currentAction.UseAbility(activeCombatant, target));
+                StartCoroutine(action.UseAbility());
                 //SpendActionPoints(currentAction.UseAbility(activeCombatant, target));
                 SelectionController.Instance.playerUnderControl = prev;
             }
             else SelectionController.Instance.Deselect();  // Here to deselect out of range selectables for now
             currentAction = null;
         }
-        DefaultUI.Instance.FillActionPoints(activeCombatant); // TODO: gets called before coroutine is finished; AP isn't spent
+    }
+
+    public void LogTravel(NavMeshAgent agent, float dist)
+    {
+        int prevPipTravel = (int)Math.Floor(turnTravel);
+        turnTravel += dist;
+        if (agent == activeCombatant.mover.agent && (int)Math.Floor(turnTravel) > prevPipTravel) SpendActionPoints(1); // TODO: update with specific stat modifiers
+        if (ActionPoints == 0) activeCombatant.mover.StopMoving();
+    }
+
+    public void LockAction()
+    {
+        inAction = true;
     }
 
     public void FinishAction()
@@ -222,14 +251,20 @@ public class CombatManager : MonoBehaviour
 
     public void RemoveCombatant(NPC npc)
     {
+        Debug.Log("Death event: remove npc " + npc);
         if (!combatantInitiative.Any(entry => entry.npc == npc)) return;
         if (activeCombatant == npc) NextTurn();
         combatantInitiative.Remove(combatantInitiative.Where(entry => entry.npc == npc).FirstOrDefault());
+        ResetInitiative();
     }
 
-    public void SetCurrentAction(AbilityAction action)
+    public void ResetInitiative()
     {
-        currentAction = action;
+        for (int i = 0; i < combatantInitiative.Count; i++)
+        {
+            combatantInitiative[i] = new InitiativeEntry() { npc = combatantInitiative[i].npc, initiative = i, type = combatantInitiative[i].type };
+        }
+        initiativeTurn = combatantInitiative.Where(entry => entry.npc == activeCombatant).FirstOrDefault().initiative;
     }
 
     public void SpendActionPoints(int cost)
@@ -237,6 +272,7 @@ public class CombatManager : MonoBehaviour
         if (!combatActive) return;
         if (cost > ActionPoints) Debug.LogError("Spending more APs than there are: " + cost + " > " + ActionPoints);
         ActionPoints -= cost;
+        DefaultUI.Instance.FillActionPoints(activeCombatant);
     }
 
     public bool CheckActionPoints(int cost)

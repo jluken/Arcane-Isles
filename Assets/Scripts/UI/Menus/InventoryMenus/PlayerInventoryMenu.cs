@@ -42,8 +42,8 @@ public class PlayerInventoryMenu : InventoryMenu
     {
         inventoryMenu.SetActive(true);
         
-        playerInventorySlots.PopulateInventory(PartyController.Instance.leader.inventory);
-        equipmentSlots.PopulateInventory(PartyController.Instance.leader.inventory);
+        playerInventorySlots.PopulateInventory(PartyController.Instance.selectedPartyMember.inventory);
+        equipmentSlots.PopulateInventory(PartyController.Instance.selectedPartyMember.inventory);
     }
 
     public override void SelectItem(InventoryData itemData, InventoryPanel slotGroup, int slotID)
@@ -72,22 +72,22 @@ public class PlayerInventoryMenu : InventoryMenu
             Debug.Log("Pass Check");
             foreach (var consumeData in itemData.consumeStats)
             {
-                if (consumeData.consumeStat == CharStats.StatVal.health) PartyController.Instance.leader.charStats.updateHealth(consumeData.value);
-                else if (consumeData.consumeStat == CharStats.StatVal.magick) PartyController.Instance.leader.charStats.updateMagick(consumeData.value);
+                if (consumeData.consumeStat == CharStats.StatVal.health) PartyController.Instance.selectedPartyMember.charStats.updateHealth(consumeData.value);
+                else if (consumeData.consumeStat == CharStats.StatVal.magick) PartyController.Instance.selectedPartyMember.charStats.updateMagick(consumeData.value);
                 else
                 {
-                    PartyController.Instance.leader.charStats.addModifier(consumeData.consumeStat, consumeData.value, consumeData.duration);
+                    PartyController.Instance.selectedPartyMember.charStats.addModifier(consumeData.consumeStat, consumeData.value, consumeData.duration);
                 }
             }
             CombatManager.Instance.SpendActionPoints(itemData.APCost);
-            Debug.Log("prev count " + PartyController.Instance.leader.inventory.inventory[slotId].count);
+            Debug.Log("prev count " + PartyController.Instance.selectedPartyMember.inventory.inventory[slotId].count);
             Debug.Log("Remove 1 from slot " + slotId);
-            PartyController.Instance.leader.inventory.UpdateInvStack(slotId, -1);
-            Debug.Log("post count " + PartyController.Instance.leader.inventory.inventory[slotId].count);
+            PartyController.Instance.selectedPartyMember.inventory.UpdateInvStack(slotId, -1);
+            Debug.Log("post count " + PartyController.Instance.selectedPartyMember.inventory.inventory[slotId].count);
         }
         else if (equipmentTypes.Contains(itemData.itemType))
         {
-            var playerInventory = PartyController.Instance.leader.inventory;
+            var playerInventory = PartyController.Instance.selectedPartyMember.inventory;
             Debug.Log("Equipment type");
             if (slotGroup == playerInventorySlots) // Equip the item from the inventory
             {

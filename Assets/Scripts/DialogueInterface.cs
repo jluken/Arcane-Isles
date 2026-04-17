@@ -117,15 +117,15 @@ public class DialogueInterface : MonoBehaviour
     {
         Debug.Log("Dialogue skill check");
         if (!Enum.TryParse(skill, out CharStats.StatVal skillType)) Debug.LogError("Invalid skill type " + skill);
-        Debug.Log("Dialogue skill check preview: " + PartyController.Instance.leader.charStats.GetCurrStat(skillType));
-        return (double)PartyController.Instance.leader.charStats.GetCurrStat(skillType);
+        Debug.Log("Dialogue skill check preview: " + PartyController.Instance.selectedPartyMember.charStats.GetCurrStat(skillType));
+        return (double)PartyController.Instance.selectedPartyMember.charStats.GetCurrStat(skillType);
     }
 
     public static void SetStat(string skill, double value)
     {
         Debug.Log("Set Stat");
         if (!Enum.TryParse(skill, out CharStats.StatVal skillType)) Debug.LogError("Invalid skill type " + skill);
-        PartyController.Instance.leader.charStats.SetStat(skillType, (int)value);
+        PartyController.Instance.selectedPartyMember.charStats.SetStat(skillType, (int)value);
     }
 
     public void TalkRecruit()

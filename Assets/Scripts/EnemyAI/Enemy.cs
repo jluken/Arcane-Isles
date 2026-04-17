@@ -1,7 +1,9 @@
 using NUnit.Framework;
 using PixelCrushers.DialogueSystem;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Enemy : NPC
 {
@@ -36,6 +38,11 @@ public class Enemy : NPC
 
         combatantType = CombatManager.CombatantType.Enemy;
         base.Start();
+    }
+
+    public override void SetToCombat()
+    {
+        if(AwarePlayers.Count > 0) base.SetToCombat();
     }
 
     //public override List<SelectionData> Actions()

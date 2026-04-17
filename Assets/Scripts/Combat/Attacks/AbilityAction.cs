@@ -2,16 +2,32 @@ using System.Collections;
 using UnityEngine;
 using static CharStats;
 
-[CreateAssetMenu(fileName = "AbilityAction", menuName = "Scriptable Objects/AbilityAction")]
-public abstract class AbilityAction : ScriptableObject
+public abstract class AbilityAction
 {
-    public string attackName;
+    public string actionName;
     public Sprite icon;
-    public int damageDie;
-    public StatVal modifier;
     public float range;
 
-    public abstract bool CheckValidTarget(NPC actor, Selectable target);
+    public NPC actor;
 
-    public abstract IEnumerator UseAbility(NPC actor, Selectable target);
+    public AbilityAction(string name="", Sprite icon = null, float range=0f, NPC actor=null)
+    {
+        actionName = name;
+        this.icon = icon;
+        this.actor = actor;
+        this.range = range;
+    }
+
+    public void SetActor(NPC actor)
+    {
+        this.actor = actor;
+    }
+
+    public abstract void SetTarget(Vector3 point);
+
+    public abstract void SetTarget(Selectable target);
+
+    public abstract bool CheckValidAction();
+
+    public abstract IEnumerator UseAbility();
 }

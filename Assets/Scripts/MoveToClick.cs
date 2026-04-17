@@ -30,6 +30,9 @@ public class MoveToClick : MonoBehaviour
     private int stopCount;
     private int maxStopCount = 20;
 
+    private Vector3 lastPoint;
+    
+
     public void Awake()
     {
         Debug.Log("Mover Awake");
@@ -43,6 +46,8 @@ public class MoveToClick : MonoBehaviour
         //selectionController = SelectionController.Instance;
         stopCount = 0;
         destMarkerPrefab = Resources.Load<GameObject>("Prefabs/Destination");
+
+        Debug.Log("Prefab load for " + agent + " is " + destMarkerPrefab);
 
         if (controlled) SelectionController.Instance.deselectEvent += StopMoving;
     }
@@ -69,6 +74,12 @@ public class MoveToClick : MonoBehaviour
                 //Debug.Log("done");
                 StopMoving();
             }
+        }
+        if (startedMoving && CombatManager.Instance.combatActive)
+        {
+            //Debug.Log("agent " + agent.gameObject);
+            CombatManager.Instance.LogTravel(agent, Vector3.Distance(agent.transform.position, lastPoint));
+            lastPoint = agent.transform.position;
         }
     }
 
@@ -118,6 +129,7 @@ public class MoveToClick : MonoBehaviour
 
     public Selectable SetTempMarker(Vector3 dest)
     {
+        Debug.Log("Set temp marker");
         destMarker = Instantiate(destMarkerPrefab, dest, destMarkerPrefab.transform.rotation);
         return destMarker.GetComponent<Selectable>();
     }
@@ -128,6 +140,7 @@ public class MoveToClick : MonoBehaviour
         if (pathLocked) return;
         var path = PathToPoint(dest);
         if (path != null) agent.SetPath(path);
+        lastPoint = agent.transform.position;
         locked = pathLocked;
         //else
         //{
@@ -146,6 +159,7 @@ public class MoveToClick : MonoBehaviour
         pathLocked = false;
         agent.isStopped = true;
         agent.ResetPath();
+        lastPoint = agent.transform.position;
         startedMoving = false;
         Destroy(destMarker);
         stopCount = 0;
