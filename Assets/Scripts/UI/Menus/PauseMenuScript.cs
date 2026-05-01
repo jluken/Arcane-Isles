@@ -67,11 +67,11 @@ public class PauseMenuScript : MenuScreen
 
     public void Save()
     {
-        SaveSystem.SaveGame(PartyController.Instance, SceneLoader.Instance);
+        UIController.Instance.ActivateSaveMenu();
     }
 
     public void Load() // TODO: Implement full Save Menu/system
     {
-        SceneLoader.Instance.LoadFromData(SaveSystem.LoadGame());
+        UIController.Instance.ActivateLoadMenu();
     }
 }

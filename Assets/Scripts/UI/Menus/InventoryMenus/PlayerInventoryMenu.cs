@@ -34,7 +34,7 @@ public class PlayerInventoryMenu : InventoryMenu
 
     public override void DeactivateMenu()
     {
-        SelectionController.Instance.Deselect();
+        //SelectionController.Instance.Deselect();
         inventoryMenu.SetActive(false);
     }
 

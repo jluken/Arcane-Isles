@@ -54,7 +54,7 @@ public class ContainerInventoryMenu : InventoryMenu
     public override void DeactivateMenu()
     {
         if (!IsActive()) return;
-        SelectionController.Instance.Deselect();
+       // SelectionController.Instance.Deselect();
         //UpdateEntity();
         inventoryMenu.SetActive(false);
         currentInventory = null;

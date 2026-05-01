@@ -165,6 +165,18 @@ public class MoveToClick : MonoBehaviour
         stopCount = 0;
     }
 
+    public void OnDisable()
+    {
+        Debug.Log("Unsubscribe");
+        SelectionController.Instance.deselectEvent -= StopMoving;
+    }
+
+    public void OnEnable()
+    {
+        Debug.Log("Subscribe");
+        if (controlled && gameObject != null) SelectionController.Instance.deselectEvent -= StopMoving;
+    }
+
     public bool IsMoving()
     {
         return startedMoving || agent.hasPath;

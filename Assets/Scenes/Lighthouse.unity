@@ -2131,15 +2131,15 @@ MonoBehaviour:
   psyche: 5
   intimidation: 0
   athletics: 0
-  melee: 0
-  endurance: 0
+  survival: 0
+  repair: 0
   guile: 0
   precision: 0
   sleightOfHand: 0
   stealth: 0
   persuasion: 0
-  survival: 0
-  perception: 0
+  physick: 0
+  insight: 0
   arcana: 0
 --- !u!114 &597588032
 MonoBehaviour:
@@ -3915,7 +3915,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 960508004}
-  - component: {fileID: 960508003}
+  - component: {fileID: 960508005}
   m_Layer: 0
   m_Name: SceneManager
   m_TagString: Untagged
@@ -3923,27 +3923,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &960508003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 960508002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed1ad6355a331d74ba9772d8a4bd85cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneName: Lighthouse
-  containers:
-  - {fileID: 605977425}
-  npcs:
-  - {fileID: 1511110430}
-  GroundObjects:
-  - {fileID: 4050724249317418873}
-  - {fileID: 9134572636145541646}
-  - {fileID: 3763547041196240530}
 --- !u!4 &960508004
 Transform:
   m_ObjectHideFlags: 0
@@ -3959,6 +3938,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &960508005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 960508002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e7de441bbbc0ba498297526991b904c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LighthouseSceneManager
+  sceneName: Lighthouse
+  containers:
+  - {fileID: 605977425}
+  npcs:
+  - {fileID: 1511110430}
+  - {fileID: 597588027}
+  GroundObjects:
+  - {fileID: 4050724249317418873}
+  - {fileID: 9134572636145541646}
+  - {fileID: 3763547041196240530}
 --- !u!1 &1010358427
 GameObject:
   m_ObjectHideFlags: 0
@@ -4910,15 +4911,15 @@ MonoBehaviour:
   psyche: 0
   intimidation: 0
   athletics: 0
-  melee: 0
-  endurance: 0
+  survival: 0
+  repair: 0
   guile: 0
   precision: 0
   sleightOfHand: 0
   stealth: 0
   persuasion: 0
-  survival: 0
-  perception: 0
+  physick: 0
+  insight: 0
   arcana: 0
 --- !u!114 &1511110434
 MonoBehaviour:

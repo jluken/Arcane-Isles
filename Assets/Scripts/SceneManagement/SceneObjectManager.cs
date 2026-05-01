@@ -14,7 +14,7 @@ public class SceneObjectManager : MonoBehaviour
     public List<GameObject> GroundObjects;
 
 
-    void Awake()
+    protected virtual void Awake()
     {
         SceneLoader.Instance.AddSceneManager(this);
         SceneSaveData sceneData = SceneLoader.Instance.GetSceneData(sceneName);
@@ -28,24 +28,34 @@ public class SceneObjectManager : MonoBehaviour
             }
         }
 
+        // NPCs are unique enough that they aren't loaded from prefabs, but all possible NPCs are already inside a scene and then which ones are active is determined by settings/save
         foreach (GameObject npc in npcs)
         {
-            if (sceneData.NPCs.Any(saveNpc => saveNpc.id == npc.name)){
+            Debug.Log("Loading npc: " + npc);
+            Debug.Log("Loading npc name: " + npc.name);
+            Debug.Log("Saved npcs: ");
+            foreach (var i in sceneData.NPCs) Debug.Log(i.id);
+            if (sceneData.NPCs.Any(saveNpc => saveNpc.id == npc.name))
+            {
+                Debug.Log("Found in save data");
                 SceneSaveData.NPCData npcSceneData = sceneData.NPCs.First(saveNpc => saveNpc.id == npc.name);
 
-                if (!String.IsNullOrEmpty(npcSceneData.charData.id))  // Character data has been initialized from initial load
+                if (!String.IsNullOrEmpty(npcSceneData.charData.id))  // Character data has been initialized from initial load and possibly altered from default state
                 {
                     var npcData = npc.GetComponent<NPC>();
                     npcData.charStats.LoadFromSaveData(npcSceneData.charData.charStatData);
                     npcData.inventory.LoadFromSaveData(npcSceneData.charData.inventory);
+                    npcData.LoadState(npcSceneData.charData.stateName);
                     npcData.mover.agent.Warp(new Vector3(npcSceneData.charData.pos[0], npcSceneData.charData.pos[1], npcSceneData.charData.pos[2]));
                 }
                 npc.SetActive(npcSceneData.active);  // Can be turned on/off prior to loading, otherwise leave as default
             }
+            else Destroy(npc);  // NPC totally removed from scene and moved somewhere else (eg recruited)
         }
+        npcs.RemoveAll(npc => npc == null || !sceneData.NPCs.Any(saveNpc => saveNpc.id == npc.name));
 
         //Delete existing ground objects from default
-        foreach(var existGroundObj in GroundObjects)
+        foreach (var existGroundObj in GroundObjects)
         {
             Destroy(existGroundObj);
         }
@@ -63,7 +73,7 @@ public class SceneObjectManager : MonoBehaviour
 
     public void Start()
     {
-        EventHandler.Instance.deathEvent += RemoveNPC;
+        //EventHandler.Instance.deathEvent += RemoveNPC;
     }
 
     public void AddDroppedObject(string itemName)

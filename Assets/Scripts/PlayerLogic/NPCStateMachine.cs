@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class NPCStateMachine
 {
-    public NPCState CurrentPlayerState { get; set; }
+    public NPCState CurrentPlayerState { get; private set; }
 
     public void Initialize(NPCState startingState)
     {
@@ -16,5 +16,4 @@ public class NPCStateMachine
         CurrentPlayerState = newState;
         CurrentPlayerState.EnterState();
     }
-
 }

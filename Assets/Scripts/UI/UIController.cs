@@ -30,6 +30,7 @@ public class UIController : MonoBehaviour
     // Special menus which override 
     public PauseMenuScript pauseScreenScript;
     public SettingsMenu settingsMenu;
+    public SavesMenuScript savesMenu;
 
     //Interaction menus - accessed by specific interactions
     public ContainerInventoryMenu containerScreenScript;
@@ -75,7 +76,8 @@ public class UIController : MonoBehaviour
 
         PauseMenus = new List<MenuScreen>() {
             pauseScreenScript,
-            settingsMenu
+            settingsMenu,
+            savesMenu
         };
 
         InteractionMenus = new List<MenuScreen>()
@@ -216,6 +218,20 @@ public class UIController : MonoBehaviour
     {
         CloseOverlays();
         settingsMenu.ActivateMenu();
+    }
+
+    public void ActivateSaveMenu()
+    {
+        CloseOverlays();
+        savesMenu.SetSaveMode();
+        savesMenu.ActivateMenu();
+    }
+
+    public void ActivateLoadMenu()
+    {
+        CloseOverlays();
+        savesMenu.SetLoadMode();
+        savesMenu.ActivateMenu();
     }
 
     public void ActivateLoadingScreen()

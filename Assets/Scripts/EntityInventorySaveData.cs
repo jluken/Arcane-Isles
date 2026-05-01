@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using System.Collections.Generic;
 using static EntityInventory;
 using static InventoryData;
@@ -20,6 +21,7 @@ public class EntityInventorySaveData
 
     public EntityInventorySaveData(EntityInventory entInv)
     {
+        Debug.Log("Saving inventory");
         containerId = entInv.containerId;
         inventory = new List<(string, int)>();
         for (int j = 0; j < entInv.inventory.Count; j++)

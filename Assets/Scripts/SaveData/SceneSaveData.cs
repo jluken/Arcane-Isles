@@ -12,7 +12,6 @@ public class SceneSaveData
         public bool active;
         public float[] pos;
         public PartyData.CharSaveData charData;
-        // TODO: fill in with more interesting data as dialogue and combat added
     }
 
     [System.Serializable]
@@ -32,11 +31,12 @@ public class SceneSaveData
     {
         NPCs = new List<NPCData>();
         foreach (var gameNPC in gameNPCs) {
+            Debug.Log("Saving NPC " + gameNPC);
             var npcData = new NPCData();
             npcData.id = gameNPC.name;
             npcData.active = gameNPC.activeSelf;
             npcData.pos = new float[] { gameNPC.transform.position.x, gameNPC.transform.position.y, gameNPC.transform.position.z };
-            npcData.charData = PartyData.LoadCharData(gameNPC.name, gameNPC.transform.position, gameNPC.transform.rotation.eulerAngles, gameNPC.GetComponent<CharStats>(), gameNPC.GetComponent<EntityInventory>());
+            npcData.charData = PartyData.LoadCharData(gameNPC.name, gameNPC.transform.position, gameNPC.transform.rotation.eulerAngles, gameNPC.GetComponent<NPC>(), gameNPC.GetComponent<CharStats>(), gameNPC.GetComponent<EntityInventory>());
             NPCs.Add(npcData);
         }
 
@@ -50,7 +50,10 @@ public class SceneSaveData
         foreach (var gameGroundObj in gameGroundObjs)
         {
             var groundScript = gameGroundObj.GetComponent<ItemScript>();
+            Debug.Log("ground item " + gameGroundObj);
             var groundObjData = new GroundObjData();
+            Debug.Log("ground item script " + groundScript);
+            Debug.Log("ground item data " + groundScript.itemData);
             groundObjData.itemName = groundScript.itemData.itemName;
             groundObjData.count = groundScript.stackSize;
             groundObjData.pos = new float[] { gameGroundObj.transform.position.x, gameGroundObj.transform.position.y, gameGroundObj.transform.position.z };
@@ -61,9 +64,12 @@ public class SceneSaveData
 
     public SceneSaveData(List<string> activeNPCs, List<string> inactiveNPCs)
     {
+        // Used for setting NPCs to either Active or inactive, but everything else is null so it keeps default
+        // Useful for establishing save states
         NPCs = new List<NPCData>();
         foreach (var gameNPC in activeNPCs)
         {
+            Debug.Log("Saving active NPC " + gameNPC);
             var npcData = new NPCData();
             npcData.id = gameNPC;
             npcData.active = true;
@@ -71,6 +77,7 @@ public class SceneSaveData
         }
         foreach (var gameNPC in inactiveNPCs)
         {
+            Debug.Log("Saving inactive NPC " + gameNPC);
             var npcData = new NPCData();
             npcData.id = gameNPC;
             npcData.active = false;

@@ -52,7 +52,7 @@ public class SelectionController : MonoBehaviour
         RaycastHit hit;
         LayerMask layerMask = LayerMask.GetMask("Barrier"); // TODO: maybe detect selectable specifically instead of ignoring barrier
 
-        bool objectPoint = Physics.Raycast(Camera.main.ScreenPointToRay(MousePosition()), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1);
+        bool objectPoint = Physics.Raycast(Camera.main.ScreenPointToRay(MousePosition()), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject();
         pointedObject = objectPoint ? hit.transform.gameObject : null;
         pointSpot = hit.point;
         pointedObject?.GetComponent<Selectable>()?.HoverDisplay();
@@ -60,6 +60,7 @@ public class SelectionController : MonoBehaviour
 
     private void HandleClick(bool leftClick)
     {
+        if (UIController.Instance.PauseTime()) return;
         if (pointedObject?.GetComponent<groundScript>() != null)
         {
             if (leftClick && PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)

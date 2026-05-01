@@ -42,7 +42,6 @@ public class InventoryPanel : MonoBehaviour
 
     public void ActivateItem(InventoryData itemData, int slotId)
     {
-        Debug.Log("panel activate");
         inventoryMenu.ActivateItem(itemData, this, slotId);
     }
 
@@ -55,7 +54,6 @@ public class InventoryPanel : MonoBehaviour
 
     public virtual void DeselectPanelSlots()
     {
-        Debug.Log("Deselect all");
         InventorySlots.ToList().ForEach(slot => { slot.selectedShader.SetActive(false); slot.itemSelected = false; });
     }
 
@@ -66,7 +64,6 @@ public class InventoryPanel : MonoBehaviour
 
     public virtual void UpdateEntity()
     {
-        Debug.Log("Update Entity");
         InventorySlots.ToList().ForEach(slot => inventory.SetInventory(slot.slotID, slot.itemData, slot.currentStack));
         EventHandler.Instance.TriggerInventoryUpdate();
     }

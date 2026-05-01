@@ -31,12 +31,14 @@ public class SceneLoader : MonoBehaviour
     {
         // TODO: Unload existing scenes, make sure players in right position
         Debug.Log("New Game");
-        SceneData = new Dictionary<string, SceneSaveData>();
-        foreach (var character in PartyController.Instance.party) { character.charStats.setInitStats(true); character.SetStates(); }  // TODO: handle more "default" save data
-        PartyController.Instance.DeactivateParty();
-        if (levelManager != null) DeactivateLevel(levelManager);
-        levelManager = null;
-        SceneObjectManagers = new Dictionary<string, SceneObjectManager>();
+        //SceneData = new Dictionary<string, SceneSaveData>();
+        //foreach (var character in PartyController.Instance.party) { character.charStats.setInitStats(true); character.SetStates(); }  // TODO: handle more "default" save data
+        //PartyController.Instance.DeactivateParty();
+        //if (levelManager != null) DeactivateLevel(levelManager);
+        //levelManager = null;
+        //SceneObjectManagers = new Dictionary<string, SceneObjectManager>();
+
+        ResetData();
 
         UIController.Instance.ActivateMainMenu();
     }
@@ -64,9 +66,10 @@ public class SceneLoader : MonoBehaviour
 
     public void ToMainMenu()
     {
+        ResetData();
         UIController.Instance.ActivateMainMenu();
-        PartyController.Instance.DeactivateParty();
-        DeactivateLevel(levelManager);
+        //PartyController.Instance.DeactivateParty();
+        //DeactivateLevel(levelManager);
     }
 
     public void SetToLevelSpawn(string levelName, int spawnLoc)
@@ -78,7 +81,7 @@ public class SceneLoader : MonoBehaviour
         if (oldLevel != null && levelName != oldLevel.LevelName) StartCoroutine(DeactivateLevelCoroutine(oldLevel));
     }
 
-    public IEnumerator ActivateLevel(string levelName, int spawnLoc = -1)
+    public IEnumerator InitializeLevel(string levelName)
     {
         if (levelManager == null || levelManager.LevelName != levelName)
         {
@@ -86,6 +89,11 @@ public class SceneLoader : MonoBehaviour
             var levelLoad = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
             while (!levelLoad.isDone) yield return null;
         }
+    }
+
+    public IEnumerator ActivateLevel(string levelName, int spawnLoc = -1)
+    {
+        yield return InitializeLevel(levelName);
 
         Debug.Log("About to move party");
         if (spawnLoc >= 0) PartyController.Instance.MoveParty(levelManager.GetSpawnPoints(spawnLoc), true);
@@ -200,18 +208,33 @@ public class SceneLoader : MonoBehaviour
     //    return SceneObjectManagers;
     //}
 
-    public void LoadFromData(GameSaveData saveData)  //TODO: maybe goes better in SaveSystem
+    private void ResetData()
+    {
+        foreach (var character in PartyController.Instance.party) { character.charStats.setInitStats(true); character.inventory.SetInitInventory(); character.SetStates(); }  // initialize chars before manipulating
+        PartyController.Instance.DeactivateParty();
+        if (levelManager != null) DeactivateLevel(levelManager);
+        levelManager = null;
+        SceneObjectManagers = new Dictionary<string, SceneObjectManager>();
+        SceneData = new Dictionary<string, SceneSaveData>();
+    }
+
+    public IEnumerator LoadFromData(GameSaveData saveData)  //TODO: maybe goes better in SaveSystem
     {
         Debug.Log("Load from Data " + saveData.levelName);
+
+        ResetData();
         SceneData = saveData.SceneData;
-        PartyController.Instance.InstantiateFromData(saveData.partyData);
         //Debug.Log("Party Instantiated");
         PersistentDataManager.ApplySaveData(saveData.dialogData);
-        StartCoroutine(ActivateLevel(saveData.levelName));
+
+        yield return InitializeLevel(saveData.levelName);
+        PartyController.Instance.InstantiateFromData(saveData.partyData);
+        yield return ActivateLevel(saveData.levelName);
     }
 
     public void SetActiveSceneNPCs(string sceneName, List<string> npcActiveNames, List<string> npcInactiveNames)
     {
+        // Call from action/dialog trigger that affects scene states
         var sceneData = GetSceneData(sceneName);
 
         if (SceneObjectManagers.ContainsKey(sceneName))  // currently active
@@ -225,8 +248,10 @@ public class SceneLoader : MonoBehaviour
                 SceneObjectManagers[sceneName].EnableDisableNPC(npc, false);
             }
         }
-        else if (sceneData != null) {  // Currently in loaded data
-            foreach (var npc in npcActiveNames) {
+        else if (sceneData != null)
+        {  // Currently in loaded data
+            foreach (var npc in npcActiveNames)
+            {
                 sceneData.NPCs.Where(npcdata => npcdata.id == npc).ToList().ForEach(npcdata => npcdata.active = true);
             }
             foreach (var npc in npcInactiveNames)

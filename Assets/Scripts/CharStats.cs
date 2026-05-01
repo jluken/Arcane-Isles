@@ -140,23 +140,36 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.arcana] = statData.arcana;
         statMap[StatVal.persuasion] = statData.persuasion;
 
-        statMap[StatVal.health] = statData.health;  
-        statMap[StatVal.maxHealth] = maxHealth;
-        statMap[StatVal.magick] = statData.magick; 
-        statMap[StatVal.maxMagick] = maxMagick;
+        statMap[StatVal.dodge] = 0; //TODO: pull from attack logic, make derived stat
+        statMap[StatVal.armor] = 0; //TODO: remove from charstats
 
-        statMap[StatVal.dodge] = 0; //TODO: figure out formula
-        statMap[StatVal.armor] = 0; //TODO: figure out formula
+        setDerivedStats();
+
+        statMap[StatVal.health] = statData.health;
+        statMap[StatVal.magick] = statData.magick;
+    }
+
+    private int maxHealth => 10 + GetCurrStat(StatVal.level) * GetCurrStat(StatVal.vigor);
+    private int maxMagick => GetCurrStat(StatVal.level) + 2 * GetCurrStat(StatVal.arcana);
+    private int actionPoints => 10 + (2 * GetCurrStat(StatVal.finesse));
+
+    public void setDerivedStats()
+    {
+        statMap[StatVal.maxHealth] = maxHealth;
+        statMap[StatVal.maxMagick] = maxMagick;
         statMap[StatVal.actionPoints] = actionPoints;
+    }
+
+    public void maxBars()
+    {
+        statMap[StatVal.health] = maxHealth;
+        statMap[StatVal.magick] = maxMagick;
     }
 
     public void setInitStats(bool statOverride = false)
     {
-        Debug.Log("loading init stats for " + charName);
 
-        if (!statOverride && statMap.Count > 0) return; // already loaded values
-
-        Debug.Log("loading full stats");
+        if (!statOverride && statMap.Count > 0) return; // already loaded values;
 
         statMap[StatVal.level] = level;
 
@@ -179,13 +192,11 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.arcana] = arcana;
         statMap[StatVal.persuasion] = persuasion;
 
-        statMap[StatVal.health] = statMap[StatVal.maxHealth] = maxHealth;
-        statMap[StatVal.magick] = statMap[StatVal.maxMagick] = maxMagick;
-        Debug.Log("Set health: " + statMap[StatVal.health]);
+        setDerivedStats();
+        maxBars();
 
         statMap[StatVal.dodge] = 0; //TODO: figure out formula
         statMap[StatVal.armor] = 0; //TODO: figure out formula
-        statMap[StatVal.actionPoints] = actionPoints;
     }
 
     public int GetCurrStat(StatVal stat, bool includeMods = true)
@@ -240,13 +251,10 @@ public class CharStats : MonoBehaviour
         modifiers.Remove(id);
     }
 
-    private int maxHealth => 10 + GetCurrStat(StatVal.level) * Math.Max(1, GetCurrStat(StatVal.repair) / 2);
-    private int maxMagick => GetCurrStat(StatVal.level) + 2 * GetCurrStat(StatVal.arcana);
-    private int actionPoints => 10 + (2 * GetCurrStat(StatVal.finesse));
+    
 
     public void updateHealth(int amount = 0)
     {
-        Debug.Log("Set health3: " + statMap[StatVal.health]);
         statMap[StatVal.health] = GetCurrStat(StatVal.health) + amount;
         statMap[StatVal.health] = Math.Min(GetCurrStat(StatVal.health), GetCurrStat(StatVal.maxHealth));
         if (GetCurrStat(StatVal.health) <= 0) {
@@ -266,8 +274,6 @@ public class CharStats : MonoBehaviour
 
     public void SetStat(StatVal stat, int val)
     {
-        if (stat == StatVal.health) Debug.Log("Set health4: " + statMap[StatVal.health]);
-        Debug.Log("Set Stat " + stat + " to " + val);
         statMap[stat] = val;
         PartyController.Instance.UpdateParty();
     }

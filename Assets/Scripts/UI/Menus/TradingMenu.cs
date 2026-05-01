@@ -72,7 +72,7 @@ public class TradingMenu : InventoryMenu
     public override void DeactivateMenu()
     {
         if (!IsActive()) return;
-        SelectionController.Instance.Deselect();
+        //SelectionController.Instance.Deselect();
         var playerInventory = PartyController.Instance.selectedPartyMember.GetComponent<EntityInventory>();
         for (int i = 0; i < playerBarterInv.maxInv; i++)
         {

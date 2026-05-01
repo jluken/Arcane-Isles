@@ -112,7 +112,7 @@ public class SkillCheckManager : MonoBehaviour
             // Clear listeners to roll event
             failEvent = null;
             successEvent = null;
-            SelectionController.Instance.Deselect();
+            //SelectionController.Instance.Deselect();
             Time.timeScale = 1;
         }
     }

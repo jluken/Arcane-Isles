@@ -20,7 +20,7 @@ public class MainMenu : MenuScreen
 
     public void Load() // TODO: Implement proper save menu/system
     {
-        SceneLoader.Instance.LoadFromData(SaveSystem.LoadGame());
+        UIController.Instance.ActivateLoadMenu();
     }
 
     public void QuitGame()

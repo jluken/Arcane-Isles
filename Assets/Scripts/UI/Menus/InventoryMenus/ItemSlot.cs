@@ -89,7 +89,6 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
     }
 
     public virtual InventoryData ClearItem(bool destroyDrag = false, bool applyChanges = true) {
-        Debug.Log("REMOVE");
         if (destroyDrag)
         {
             DestroyDraggable();

@@ -41,14 +41,12 @@ public class MoveToObject : InteractionAction
     public override IEnumerator UseAbility()
     {
         var cost = PathDist(actor, target);
-        Debug.Log("Move to raw cost " + cost);
         actor.mover.SetDestination(target.transform.position, true);
 
         while (actor.mover.IsMoving())
         {
             yield return null; // Wait for the next frame
         }
-        Debug.Log("Move to done");
         //CombatManager.Instance.SpendActionPoints(Mathf.CeilToInt(cost - 0.1f)); // account for floating point and wiggle room
         //CombatManager.Instance.FinishAction();
     }

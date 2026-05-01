@@ -50,7 +50,7 @@ public class AoeAttackAction : PointAction
         CombatManager.Instance.SpendActionPoints(attackCost);
         if(weaponAttack) actor.inventory.UseWeapon();
         yield return new WaitForSeconds(1.0f);
-        foreach(NPC victim in victims) victim.takeDamage(-damage);
+        foreach(NPC victim in victims) victim.takeDamage(damage);
         CombatManager.Instance.FinishAction();
         yield break;
     }

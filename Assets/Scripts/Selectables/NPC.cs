@@ -101,6 +101,25 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
         StateMachine.Initialize(IdleState);
     }
 
+    public virtual void LoadState(string stateName)
+    {
+        switch (stateName)
+        {
+            case "ActiveState":
+                StateMachine.ChangeState(ActiveState); break;
+            case "IdleState":
+                StateMachine.ChangeState(IdleState); break;
+            case "ActiveCombatState":
+                StateMachine.ChangeState(ActiveCombatState); break;
+            case "IdleCombatState":
+                StateMachine.ChangeState(IdleCombatState); break;
+            case "DeadState":
+                StateMachine.ChangeState(DeadState); break;
+        }
+    }
+
+    public string StateName() => nameof(StateMachine.CurrentPlayerState);
+
     public override List<SelectionData> Actions()
     {
         //Debug.Log("Get Actions from " + charStats.charName + " at state " + StateMachine.CurrentPlayerState);
@@ -127,7 +146,9 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
 
     public void takeDamage(int rawDamage)
     {
+        Debug.Log("raw damage: " + rawDamage);
         var totalArmor = inventory.GetEquipmentArmor();
+        Debug.Log("armor: " + totalArmor);
         charStats.updateHealth(-1 * Math.Max(rawDamage - totalArmor, 0));
     }
 

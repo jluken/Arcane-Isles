@@ -46,12 +46,19 @@ public class EntityInventory : MonoBehaviour
 
     public void Start()
     {
+        SetInitInventory();
+    }
+
+    public void SetInitInventory()
+    {
         if (initInv.Count > maxInv) Debug.LogError("Present inventory greater than maximum");
         inventory = new List<InventoryStack>();
-        for (int i = 0; i < initInv.Count; i++) { 
+        for (int i = 0; i < initInv.Count; i++)
+        {
             int stack = i < initInvStacks.Count ? initInvStacks[i] : 1;
             inventory.Add(new InventoryStack(initInv[i], stack));
         }
+        //TODO: allow set init equipment
     }
 
     public void LoadFromSaveData(EntityInventorySaveData saveData)

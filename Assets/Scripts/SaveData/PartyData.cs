@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 
 [System.Serializable]
@@ -39,6 +40,7 @@ public class PartyData
         public CharStatData charStatData;
         //Inventory
         public EntityInventorySaveData inventory;
+        public string stateName;
     }
 
     public CharSaveData[] partyMembers;
@@ -52,11 +54,11 @@ public class PartyData
         for (int i = 0; i < partyController.party.Count; i++) {
             PartyMember partyMember = partyController.party[i];
             partyMembers[i] = LoadCharData(partyMember.gameObject.name, partyMember.transform.position, partyMember.transform.rotation.eulerAngles,
-                partyMember.charStats, partyMember.inventory);
+                partyMember, partyMember.charStats, partyMember.inventory);
         }
     }
 
-    public static CharSaveData LoadCharData(string name, Vector3 pos, Vector3 EulerRot, CharStats charStats, EntityInventory inv)
+    public static CharSaveData LoadCharData(string name, Vector3 pos, Vector3 EulerRot, NPC npc, CharStats charStats, EntityInventory inv)
     {
         CharSaveData charSaveData = new CharSaveData();
         charSaveData.id = name;
@@ -67,12 +69,14 @@ public class PartyData
         charSaveData.charStatData = LoadCharStatData(charStats);
 
         charSaveData.inventory = new EntityInventorySaveData(inv);
+        charSaveData.stateName = npc.StateName();
 
         return charSaveData;
     }
 
     public static CharStatData LoadCharStatData(CharStats charStats)
     {
+        Debug.Log("Saved health: " + charStats.GetCurrStat(CharStats.StatVal.health, false));
         CharStatData charStatData = new CharStatData();
         charStatData.name = charStats.charName;
         charStatData.charImageName = charStats.charImage != null ? charStats.charImage.name : "";  // TODO: placeholder until better system; assume always there? Default sprite?
