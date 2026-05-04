@@ -10,33 +10,32 @@ public class CharStats : MonoBehaviour
     public string charName;
     public string gender = "X";
 
-    public NPC npc => gameObject.GetComponent<NPC>();
+    public Character character => gameObject.GetComponent<Character>();
 
     public int level = 1;
 
-    // Initial values: TODO: make this private but accessible
     //Abilities
-    public int vigor;
-    public int finesse;
-    public int psyche;
+    [SerializeField] private int vigor;
+    [SerializeField] private int finesse;
+    [SerializeField] private int psyche;
 
     //Skill levels
-    public int intimidation;
-    public int athletics;
-    public int survival;
-    public int repair;
+    [SerializeField] private int intimidation;
+    [SerializeField] private int athletics;
+    [SerializeField] private int survival;
+    [SerializeField] private int repair;
 
-    public int guile;
-    public int precision;
-    public int sleightOfHand;
-    public int stealth;
+    [SerializeField] private int guile;
+    [SerializeField] private int precision;
+    [SerializeField] private int sleightOfHand;
+    [SerializeField] private int stealth;
 
-    public int persuasion;
-    public int physick;
-    public int insight;
-    public int arcana;
+    [SerializeField] private int persuasion;
+    [SerializeField] private int physick;
+    [SerializeField] private int insight;
+    [SerializeField] private int arcana;
 
-    public static int MaxSkillVal = 5;
+    public static int MaxSkillVal = 6;
 
     // This is a list of every core and derived stat, which can be used to add modifiers
     public enum StatVal 
@@ -68,13 +67,12 @@ public class CharStats : MonoBehaviour
         physick,
 
         dodge,
-        armor,
         actionPoints
     };
 
     public Dictionary<StatVal, int> statMap = new Dictionary<StatVal, int>(); // current vals 
 
-    private List<StatVal> Attributes = new List<StatVal>() { StatVal.vigor, StatVal.finesse, StatVal.psyche};
+    private static List<StatVal> Attributes = new List<StatVal>() { StatVal.vigor, StatVal.finesse, StatVal.psyche};
 
     private static Dictionary<StatVal, StatVal> Skills = new Dictionary<StatVal, StatVal>() { //Skills with their determining Attribute
         { StatVal.athletics, StatVal.vigor },
@@ -90,8 +88,8 @@ public class CharStats : MonoBehaviour
         { StatVal.arcana, StatVal.psyche },
         { StatVal.physick, StatVal.psyche },
     };
-
-    private Dictionary<StatVal, bool> skillGrowthOpen = new Dictionary<StatVal, bool>();
+    public static bool IsAttribute(StatVal statVal) => Attributes.Contains(statVal);
+    public static bool IsSkill(StatVal stat) => Skills.Keys.Contains(stat);
 
     private Dictionary<int, (StatVal, int)> modifiers = new Dictionary<int, (StatVal, int)>(); // id: (stat, amount)
     private Dictionary<int, float> modifierTimeouts = new Dictionary<int, float>(); // id: (stat, endTime)
@@ -140,9 +138,6 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.arcana] = statData.arcana;
         statMap[StatVal.persuasion] = statData.persuasion;
 
-        statMap[StatVal.dodge] = 0; //TODO: pull from attack logic, make derived stat
-        statMap[StatVal.armor] = 0; //TODO: remove from charstats
-
         setDerivedStats();
 
         statMap[StatVal.health] = statData.health;
@@ -152,12 +147,16 @@ public class CharStats : MonoBehaviour
     private int maxHealth => 10 + GetCurrStat(StatVal.level) * GetCurrStat(StatVal.vigor);
     private int maxMagick => GetCurrStat(StatVal.level) + 2 * GetCurrStat(StatVal.arcana);
     private int actionPoints => 10 + (2 * GetCurrStat(StatVal.finesse));
+    private int dodge => GetCurrStat(StatVal.finesse) + 6;
+
+    public float runModifier => GetCurrStat(StatVal.athletics) / 3.0f;
 
     public void setDerivedStats()
     {
         statMap[StatVal.maxHealth] = maxHealth;
         statMap[StatVal.maxMagick] = maxMagick;
         statMap[StatVal.actionPoints] = actionPoints;
+        statMap[StatVal.dodge] = dodge;
     }
 
     public void maxBars()
@@ -194,15 +193,10 @@ public class CharStats : MonoBehaviour
 
         setDerivedStats();
         maxBars();
-
-        statMap[StatVal.dodge] = 0; //TODO: figure out formula
-        statMap[StatVal.armor] = 0; //TODO: figure out formula
     }
 
     public int GetCurrStat(StatVal stat, bool includeMods = true)
     {
-        //if(stat == StatVal.actionPoints) Debug.Log("getAP: " + statMap[StatVal.actionPoints]);
-        //if (!statMap.ContainsKey(stat)) Debug.Log("Filling in blind");
         int premod = 0;
         if (Skills.ContainsKey(stat)) premod = GetCurrStat(Skills[stat]) + statMap[stat];  // Skills combine with their parent attribute
         else premod = statMap[stat];
@@ -211,19 +205,7 @@ public class CharStats : MonoBehaviour
 
     public static StatVal GetSkillAbility(StatVal stat) => Skills[stat];
 
-    public int GetRawStat(StatVal stat) => statMap[stat];  // TODO: make skill specific?
-
-    public void ChangeSkillGrowth(StatVal stat, bool open)
-    {
-        if (open) skillGrowthOpen[stat] = true; // TODO: maybe create "check if skill/attribute" error catch?
-        else skillGrowthOpen[stat] = false;
-    }
-
-    public bool CheckOpenSkillGrowth(StatVal stat)
-    {
-        if(skillGrowthOpen.ContainsKey(stat) && skillGrowthOpen[stat]) return true;
-        return false;
-    }
+    public int GetRawStat(StatVal stat) => statMap[stat];
 
     public int addModifier(StatVal stat, int amount, float duration)
     {
@@ -232,7 +214,7 @@ public class CharStats : MonoBehaviour
         while (existingIDs.Contains(newId)) newId = rnd.Next();
         modifiers[newId] = (stat, amount);
         PartyController.Instance.UpdateParty();
-        // TODO: eventually allow potions to add new actions, not just stat modifiers?
+        // TODO: eventually allow potions to add new actions, not just stat modifiers? [status effects]
         if(duration > 0) { modifierTimeouts[newId] = GameData.Instance.gameTime + duration; }
         return newId;
     }
@@ -259,7 +241,7 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.health] = Math.Min(GetCurrStat(StatVal.health), GetCurrStat(StatVal.maxHealth));
         if (GetCurrStat(StatVal.health) <= 0) {
             statMap[StatVal.health] = 0;
-            npc.Die();
+            character.Die();
         }
         PartyController.Instance.UpdateParty();
     }
@@ -284,12 +266,12 @@ public class CharStats : MonoBehaviour
     {
         var statMod = 0;
         //Debug.Log(charInventory);
-        var equipStats = npc.inventory.GetEquipmentStatMods();
+        var equipStats = character.inventory.GetEquipmentStatMods();
         if (equipStats.ContainsKey(stat)) statMod += equipStats[stat];
         if (stat == StatVal.finesse)
         {
             //float excessWeight = Math.Max(0, npc.inventory.getTotalWeight() - (100 + 10 * GetCurrStat(StatVal.athletics)));
-            float excessWeight = Math.Max(0, npc.inventory.getEquippedWeight() - (10 * GetCurrStat(StatVal.athletics)));
+            float excessWeight = Math.Max(0, character.inventory.getEquippedWeight() - (10 * GetCurrStat(StatVal.athletics)));
             statMod -= (int)Math.Ceiling(excessWeight / 10);
         }
         foreach (var entry in modifiers)
@@ -304,7 +286,7 @@ public class CharStats : MonoBehaviour
         GameData.Instance.gameTime += 28800; // 8 hours
         statMap[StatVal.health] = GetCurrStat(StatVal.maxHealth);
         statMap[StatVal.magick] = GetCurrStat(StatVal.maxMagick);
-        // TODO: handle spell selection
+        // TODO: handle spell selection [magic/status]
     }
 
 }

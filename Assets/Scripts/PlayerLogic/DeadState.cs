@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class DeadState : NPCState
+public class DeadState : CharState
 {
-    public DeadState(NPC npc, NPCStateMachine playerStateMachine, List<SelectionData> actions) : base(npc, playerStateMachine, actions)
+    public DeadState(Character npc, CharStateMachine playerStateMachine, List<SelectionData> actions) : base(npc, playerStateMachine, actions)
     {
     }
 
@@ -16,13 +16,14 @@ public class DeadState : NPCState
 
     public override void EnterState()
     {
-        npc.mover.StopMoving();
-        npc.mover.agent.avoidancePriority = 50;
+        character.mover.StopMoving();
+        character.mover.PlantFeet();
         base.EnterState();
     }
 
     public override void ExitState()
     {
+        character.mover.DefaultAvoidance();
         base.ExitState();
     }
 
@@ -40,9 +41,9 @@ public class DeadState : NPCState
     {
     }
 
-    public override void SetActiveNPC()
+    public override void SetActiveChar()
     {
-        throw new Exception("Cannot set dead NPC as active");
+        throw new Exception("Cannot set dead Char as active");
     }
 
 }

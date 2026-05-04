@@ -10,20 +10,20 @@ public class BugCombatBehavior : BaseCombatBehavior
     private MoveToObject MoveTo = new MoveToObject(name: "bite", icon: null, range: float.PositiveInfinity);
     private MoveToPoint MoveTowards = new MoveToPoint("bite", null);
 
-    public override NPC ChooseTarget(NPC attacker)
+    public override Character ChooseTarget(Character attacker)
     {
         Debug.Log("Bug choosing target " + FindClosestTarget(attacker));
         return FindClosestTarget(attacker);
     }
 
-    public override bool CanAct(NPC attacker)
+    public override bool CanAct(Character attacker)
     {
         if (CombatManager.Instance.ActionPoints == 0) return false;
-        NPC target = ChooseTarget(attacker);
+        Character target = ChooseTarget(attacker);
         if(target == null) return false;
         var inBiteRange = false;
         var dist = Vector3.Distance(attacker.gameObject.transform.position, target.gameObject.transform.position);
-        if (target.GetComponent<NPC>() != null && dist < 1)
+        if (target.GetComponent<Character>() != null && dist < 1)
         {
             inBiteRange = Utils.LineOfSight(attacker.gameObject, target.gameObject);
         }
@@ -32,9 +32,9 @@ public class BugCombatBehavior : BaseCombatBehavior
         return true;
     }
 
-    public override IEnumerator DoNextAction(NPC attacker)
+    public override IEnumerator DoNextAction(Character attacker)
     {
-        NPC target = ChooseTarget(attacker);
+        Character target = ChooseTarget(attacker);
         if (target == null) yield break;  
         target.Select();
 
@@ -44,7 +44,7 @@ public class BugCombatBehavior : BaseCombatBehavior
 
         var inBiteRange = false;
         var dist = Vector3.Distance(attacker.gameObject.transform.position, target.gameObject.transform.position);
-        if (target.GetComponent<NPC>() != null && dist < 1)
+        if (target.GetComponent<Character>() != null && dist < 1)
         {
             inBiteRange =  Utils.LineOfSight(attacker.gameObject, target.gameObject);
         }
@@ -65,7 +65,7 @@ public class BugCombatBehavior : BaseCombatBehavior
         while (CombatManager.Instance.inAction) yield return null;
     }
 
-    public IEnumerator BugBite(NPC target)
+    public IEnumerator BugBite(Character target)
     {
         Bite.SetTarget(target);
         CombatManager.Instance.UseCombatAbility(Bite);
@@ -73,7 +73,7 @@ public class BugCombatBehavior : BaseCombatBehavior
         yield break;
     }
 
-    public IEnumerator MoveToTarget(NPC target)
+    public IEnumerator MoveToTarget(Character target)
     {
         Debug.Log("Bug Move To");
         MoveTo.SetTarget(target);
@@ -116,7 +116,7 @@ public class BugCombatBehavior : BaseCombatBehavior
     //        //while (Bite.CheckValidTarget(attacker, target)) { Bite.UseAbility(attacker, target); }
     //}
 
-    public override void AttackTarget(NPC attacker)
+    public override void AttackTarget(Character attacker)
     {
 
     }

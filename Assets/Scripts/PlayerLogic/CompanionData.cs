@@ -15,6 +15,5 @@ public class CompanionData : ScriptableObject
     public int Psyche;
 
     //Skill Level Ups in the order they're taken
-    // TODO: look into separating "skills" and "attributes" in charStats
     public List<StatVal> statList;
 }

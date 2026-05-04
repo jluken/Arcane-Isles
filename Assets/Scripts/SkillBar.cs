@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static CharStats;
 
 public class SkillBar : MonoBehaviour
 {
@@ -12,7 +13,9 @@ public class SkillBar : MonoBehaviour
     private bool openSkill;
     private int lastMarked;
 
-    public void Populate(NPC character, bool skillsAvailable = false, bool modifiers = false)
+    private Dictionary<StatVal, bool> skillGrowthOpen = new Dictionary<StatVal, bool>();
+
+    public void Populate(Character character, bool skillsAvailable = false, bool modifiers = false)
     {
         //Debug.Log("Populate skill bar " + stat);
         storedRankUp = 0;
@@ -83,11 +86,25 @@ public class SkillBar : MonoBehaviour
         }
     }
 
-    public void ApplyChanges(NPC character)
+    public void ApplyChanges(Character character)
     {
         character.charStats.SetStat(stat, character.charStats.GetRawStat(stat) + storedRankUp);
-        if (openSkill) character.charStats.ChangeSkillGrowth(stat, true);
+        if (openSkill) ChangeSkillGrowth(stat, true);
         storedRankUp = 0;
         openSkill = false;
     }
+
+    private void ChangeSkillGrowth(StatVal stat, bool open)
+    {
+        if (!CharStats.IsSkill(stat))
+            if (open) skillGrowthOpen[stat] = true; // TODO: maybe create "check if skill/attribute" error catch?
+            else skillGrowthOpen[stat] = false;
+    }
+
+    public bool CheckOpenSkillGrowth(StatVal stat)
+    {
+        if (skillGrowthOpen.ContainsKey(stat) && skillGrowthOpen[stat]) return true;
+        return false;
+    }
+
 }

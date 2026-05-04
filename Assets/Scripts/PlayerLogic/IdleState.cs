@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IdleState: NPCState
+public class IdleState: CharState
 {
-    public IdleState(NPC npc, NPCStateMachine npcStateMachine, List<SelectionData> actions) : base(npc, npcStateMachine, actions)
+    public IdleState(Character npc, CharStateMachine npcStateMachine, List<SelectionData> actions) : base(npc, npcStateMachine, actions)
     {
     }
 
@@ -14,7 +14,6 @@ public class IdleState: NPCState
 
     public override void EnterState()
     {
-        npc.mover.agent.avoidancePriority = 40;
         base.EnterState();
     }
 
@@ -33,7 +32,7 @@ public class IdleState: NPCState
         base.PhysicsUpdate();
     }
 
-    public override void SetActiveNPC() { 
-        npcStateMachine.ChangeState(npc.ActiveState);
+    public override void SetActiveChar() { 
+        charStateMachine.ChangeState(character.ActiveState);
     }
 }

@@ -11,7 +11,7 @@ public class AoeAttackAction : PointAction
 
     public bool weaponAttack;
 
-    public AoeAttackAction(int attackCost, int damageDie, float radius, bool weaponAttack, string name, Sprite icon, float range, NPC actor = null, Vector3 point = new Vector3()) : base(name, icon, range: range, actor: actor, point: point)
+    public AoeAttackAction(int attackCost, int damageDie, float radius, bool weaponAttack, string name, Sprite icon, float range, Character actor = null, Vector3 point = new Vector3()) : base(name, icon, range: range, actor: actor, point: point)
     {
         this.attackCost = attackCost;
         this.damageDie = damageDie;
@@ -36,12 +36,12 @@ public class AoeAttackAction : PointAction
     public override IEnumerator UseAbility()
     {
         Collider[] hitColliders = Physics.OverlapSphere(target, radius);
-        List<NPC> victims = new();
+        List<Character> victims = new();
         foreach (var hitCollider in hitColliders)
         {
-            if (hitCollider.gameObject != null && hitCollider.gameObject.GetComponent<NPC>() != null && Utils.LineOfSight(hitCollider.gameObject, target))
+            if (hitCollider.gameObject != null && hitCollider.gameObject.GetComponent<Character>() != null && Utils.LineOfSight(hitCollider.gameObject, target))
             {
-                victims.Add(hitCollider.gameObject.GetComponent<NPC>());
+                victims.Add(hitCollider.gameObject.GetComponent<Character>());
             }
         }
         var damage = Random.Range(1, damageDie);
@@ -50,7 +50,7 @@ public class AoeAttackAction : PointAction
         CombatManager.Instance.SpendActionPoints(attackCost);
         if(weaponAttack) actor.inventory.UseWeapon();
         yield return new WaitForSeconds(1.0f);
-        foreach(NPC victim in victims) victim.takeDamage(damage);
+        foreach(Character victim in victims) victim.takeDamage(damage);
         CombatManager.Instance.FinishAction();
         yield break;
     }

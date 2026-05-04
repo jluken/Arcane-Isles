@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Merchant : NPC  // Making a type of NPC for now
+public class Merchant : Character  // Making a type of NPC for now
 {
 
     public override void Start()

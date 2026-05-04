@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class MoveToObject : InteractionAction
 {
-    public MoveToObject(string name, Sprite icon, float range, NPC actor = null) : base(name, icon, range, actor)
+    public MoveToObject(string name, Sprite icon, float range, Character actor = null) : base(name, icon, range, actor)
     {
     }
 
-    protected float PathDist(NPC actor, Selectable target)
+    protected float PathDist(Character actor, Selectable target)
     {
         var path = actor.mover.PathToPoint(target.transform.position);
 
@@ -34,20 +34,18 @@ public class MoveToObject : InteractionAction
 
     public override bool CheckValidTarget(Selectable target)
     {
-        var inRange = Mathf.CeilToInt(PathDist(actor, target)) <= CombatManager.Instance.ActionPoints;  // TODO: meter conversion
+        var inRange = Mathf.CeilToInt(PathDist(actor, target) / actor.charStats.runModifier) <= CombatManager.Instance.ActionPoints;
         return !actor.mover.pathLocked && inRange;
     }
 
     public override IEnumerator UseAbility()
     {
         var cost = PathDist(actor, target);
-        actor.mover.SetDestination(target.transform.position, true);
+        actor.mover.SetDestination(target);
 
         while (actor.mover.IsMoving())
         {
             yield return null; // Wait for the next frame
         }
-        //CombatManager.Instance.SpendActionPoints(Mathf.CeilToInt(cost - 0.1f)); // account for floating point and wiggle room
-        //CombatManager.Instance.FinishAction();
     }
 }

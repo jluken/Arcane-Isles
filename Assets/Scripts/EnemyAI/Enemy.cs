@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class Enemy : NPC
+public class Enemy : Character
 {
     public BaseCombatBehavior CombatBehavior;
 
@@ -15,11 +15,6 @@ public class Enemy : NPC
     public AwareRad AwareRad;
 
     public List<GameObject> AwarePlayers = new List<GameObject>();
-    
-    //public EnemyStateMachine StateMachine;
-    //public EnemyIdleState IdleState;
-    //public EnemyPatrolState PatrolState;
-    //public EnemyTurnChaseState TurnChaseState;
 
     public bool isAggroed = false;
     
@@ -45,18 +40,6 @@ public class Enemy : NPC
         if(AwarePlayers.Count > 0) base.SetToCombat();
     }
 
-    //public override List<SelectionData> Actions()
-    //{
-    //    var acts = new List<SelectionData>() { inspectSelection, goHere, startAttack };
-    //    return acts;
-    //}
-
-    //public override List<SelectionData> CombatActions()
-    //{
-    //    var acts = new List<SelectionData>() { attack, inspectSelection, combatMovement };
-    //    return acts;
-    //}
-
     public override void SetStates()
     {
         base.SetStates();
@@ -66,14 +49,12 @@ public class Enemy : NPC
         ActiveState = new ActiveState(this, StateMachine, acts);
         IdleState = new EnemyPatrolState(this, StateMachine, acts);
 
-        Debug.Log("Enemy init to idle");
         StateMachine.Initialize(IdleState);
     }
 
     public override void Die()
     {
         Debug.Log("Enemy Die");
-        QuestLog.SetQuestEntryState("Kill the bug", 1, "success");  //TODO: temporary testing
         base.Die();
     }
 

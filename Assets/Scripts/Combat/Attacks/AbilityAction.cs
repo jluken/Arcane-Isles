@@ -8,9 +8,9 @@ public abstract class AbilityAction
     public Sprite icon;
     public float range;
 
-    public NPC actor;
+    public Character actor;
 
-    public AbilityAction(string name="", Sprite icon = null, float range=0f, NPC actor=null)
+    public AbilityAction(string name="", Sprite icon = null, float range=0f, Character actor=null)
     {
         actionName = name;
         this.icon = icon;
@@ -18,7 +18,7 @@ public abstract class AbilityAction
         this.range = range;
     }
 
-    public void SetActor(NPC actor)
+    public void SetActor(Character actor)
     {
         this.actor = actor;
     }

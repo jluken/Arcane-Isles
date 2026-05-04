@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UnrecruitedState : IdleState
 {
-    public UnrecruitedState(NPC npc, NPCStateMachine npcStateMachine, List<SelectionData> actions) : base(npc, npcStateMachine, actions)
+    public UnrecruitedState(Character npc, CharStateMachine npcStateMachine, List<SelectionData> actions) : base(npc, npcStateMachine, actions)
     {
     }
 
@@ -15,22 +15,28 @@ public class UnrecruitedState : IdleState
 
     public override void EnterState()
     {
-        npc.mover.agent.avoidancePriority = 20;
+        character.mover.PlantFeet();
         base.EnterState();
     }
 
+    public override void ExitState()
+    {
+        character.mover.DefaultAvoidance();
+        base.ExitState();
+    }
+
     public override void SetIdle() {
-        npcStateMachine.ChangeState(npc.IdleState);
+        charStateMachine.ChangeState(character.IdleState);
     }
 
     public override void EnterCombat()
     {
         //npcStateMachine.ChangeState(npc.IdleCombatState);
-        CombatManager.Instance.insertIntoInitiative(npc, CombatManager.CombatantType.Bystander); // TODO: determine behavior if combat starts near unrecruited companion
+        CombatManager.Instance.insertIntoInitiative(character, CombatManager.CombatantType.Bystander);
     }
 
-    public override void SetActiveNPC()
+    public override void SetActiveChar()
     {
-        throw new Exception("Cannot set unrecruited as active"); // TODO: determine behavior if combat starts near unrecruited companion
+        throw new Exception("Cannot set unrecruited as active");
     }
 }

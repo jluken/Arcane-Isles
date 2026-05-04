@@ -6,7 +6,7 @@ public class PointAction : AbilityAction
     protected Vector3 target;
     protected Selectable targetObject;
 
-    public PointAction(string name, Sprite icon,  NPC actor, float range = 0f, Vector3 point = new Vector3()) : base(name: name, icon: icon, range: range, actor: actor)
+    public PointAction(string name, Sprite icon,  Character actor, float range = 0f, Vector3 point = new Vector3()) : base(name: name, icon: icon, range: range, actor: actor)
     {
         SetTarget(point);
     }

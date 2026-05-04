@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class SceneObjectManager : MonoBehaviour
 {
@@ -31,22 +29,15 @@ public class SceneObjectManager : MonoBehaviour
         // NPCs are unique enough that they aren't loaded from prefabs, but all possible NPCs are already inside a scene and then which ones are active is determined by settings/save
         foreach (GameObject npc in npcs)
         {
-            Debug.Log("Loading npc: " + npc);
-            Debug.Log("Loading npc name: " + npc.name);
-            Debug.Log("Saved npcs: ");
             foreach (var i in sceneData.NPCs) Debug.Log(i.id);
             if (sceneData.NPCs.Any(saveNpc => saveNpc.id == npc.name))
             {
-                Debug.Log("Found in save data");
-                SceneSaveData.NPCData npcSceneData = sceneData.NPCs.First(saveNpc => saveNpc.id == npc.name);
+                SceneSaveData.CharData npcSceneData = sceneData.NPCs.First(saveNpc => saveNpc.id == npc.name);
 
                 if (!String.IsNullOrEmpty(npcSceneData.charData.id))  // Character data has been initialized from initial load and possibly altered from default state
                 {
-                    var npcData = npc.GetComponent<NPC>();
-                    npcData.charStats.LoadFromSaveData(npcSceneData.charData.charStatData);
-                    npcData.inventory.LoadFromSaveData(npcSceneData.charData.inventory);
-                    npcData.LoadState(npcSceneData.charData.stateName);
-                    npcData.mover.agent.Warp(new Vector3(npcSceneData.charData.pos[0], npcSceneData.charData.pos[1], npcSceneData.charData.pos[2]));
+                    var npcData = npc.GetComponent<Character>();
+                    npcData.LoadFromSaveData(npcSceneData.charData);
                 }
                 npc.SetActive(npcSceneData.active);  // Can be turned on/off prior to loading, otherwise leave as default
             }
@@ -63,7 +54,6 @@ public class SceneObjectManager : MonoBehaviour
         //Load in new ground objects
         foreach(var groundObj in sceneData.groundObjs)
         {
-            Debug.Log("Instantiate " + groundObj.itemName);
             var newItem = Instantiate(Resources.Load<GameObject>("Prefabs/" + groundObj.itemName), gameObject.transform);
             newItem.transform.position = new Vector3(groundObj.pos[0], groundObj.pos[1], groundObj.pos[2]);
             newItem.GetComponent<ItemScript>().stackSize = groundObj.count;
@@ -87,7 +77,7 @@ public class SceneObjectManager : MonoBehaviour
         Destroy(obj);
     }
 
-    public void RemoveNPC(NPC npc)
+    public void RemoveNPC(Character npc)
     {
         if(npcs.Contains(npc.gameObject)) npcs.Remove(npc.gameObject);
         //Destroy(npc);
@@ -100,7 +90,8 @@ public class SceneObjectManager : MonoBehaviour
 
     public void EnableDisableNPC(string npcName, bool enable)
     {
-        var npcObj =  npcs.First(npc => npc.name == npc.name);  //TODO: log error if not present
-        npcObj.SetActive(enable);
+        var npcObj =  npcs.FirstOrDefault(npc => npc.name == npc.name);
+        if (npcObj != null) npcObj.SetActive(enable);
+        else Debug.LogError(npcName + " not present in " + sceneName + " data");
     }
 }

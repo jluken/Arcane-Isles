@@ -1,16 +1,16 @@
 using UnityEngine;
 
-public class NPCStateMachine
+public class CharStateMachine
 {
-    public NPCState CurrentPlayerState { get; private set; }
+    public CharState CurrentPlayerState { get; private set; }
 
-    public void Initialize(NPCState startingState)
+    public void Initialize(CharState startingState)
     {
         CurrentPlayerState = startingState;
         CurrentPlayerState.EnterState();
     }
 
-    public void ChangeState(NPCState newState)
+    public void ChangeState(CharState newState)
     {
         CurrentPlayerState.ExitState();
         CurrentPlayerState = newState;

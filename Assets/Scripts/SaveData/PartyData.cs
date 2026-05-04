@@ -58,7 +58,7 @@ public class PartyData
         }
     }
 
-    public static CharSaveData LoadCharData(string name, Vector3 pos, Vector3 EulerRot, NPC npc, CharStats charStats, EntityInventory inv)
+    public static CharSaveData LoadCharData(string name, Vector3 pos, Vector3 EulerRot, Character npc, CharStats charStats, EntityInventory inv)
     {
         CharSaveData charSaveData = new CharSaveData();
         charSaveData.id = name;
@@ -79,7 +79,7 @@ public class PartyData
         Debug.Log("Saved health: " + charStats.GetCurrStat(CharStats.StatVal.health, false));
         CharStatData charStatData = new CharStatData();
         charStatData.name = charStats.charName;
-        charStatData.charImageName = charStats.charImage != null ? charStats.charImage.name : "";  // TODO: placeholder until better system; assume always there? Default sprite?
+        charStatData.charImageName = charStats.charImage != null ? charStats.charImage.name : "";
         charStatData.level = charStats.GetCurrStat(CharStats.StatVal.level, false);
         charStatData.health = charStats.GetCurrStat(CharStats.StatVal.health, false);
         charStatData.magick = charStats.GetCurrStat(CharStats.StatVal.magick, false);

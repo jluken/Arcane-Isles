@@ -8,12 +8,12 @@ using UnityEngine.AI;
 [CreateAssetMenu(fileName = "BaseCombatBehavior", menuName = "Scriptable Objects/BaseCombatBehavior")]
 public class BaseCombatBehavior : ScriptableObject
 {
-    public virtual NPC ChooseTarget(NPC attacker)
+    public virtual Character ChooseTarget(Character attacker)
     {
         return null;
     }
 
-    public IEnumerator CombatTurn(NPC attacker) {
+    public IEnumerator CombatTurn(Character attacker) {
         while (CanAct(attacker))
         {
             Debug.Log("Do new action");
@@ -23,12 +23,12 @@ public class BaseCombatBehavior : ScriptableObject
         yield return null;
     }
 
-    public virtual bool CanAct(NPC attacker)
+    public virtual bool CanAct(Character attacker)
     {
         return false;
     }
 
-    public virtual IEnumerator DoNextAction(NPC attacker)
+    public virtual IEnumerator DoNextAction(Character attacker)
     {
         yield return null;
     }
@@ -38,22 +38,22 @@ public class BaseCombatBehavior : ScriptableObject
         return null;
     }
 
-    public virtual void AttackTarget(NPC attacker) { 
+    public virtual void AttackTarget(Character attacker) { 
     
     }
 
-    public NPC FindClosestTarget(NPC attacker)
+    public Character FindClosestTarget(Character attacker)
     {
         float minDist = Mathf.Infinity;
-        NPC closest = null;
+        Character closest = null;
         foreach(var target in CombatManager.Instance.Allies)
         {
-            var path = attacker.GetComponent<MoveToClick>().PathToPoint(target.npc.transform.position);
+            var path = attacker.GetComponent<MoveToClick>().PathToPoint(target.character.transform.position);
             var dist = path != null ? MoveToClick.PathDist(path) : Mathf.Infinity;
             if (dist < minDist)
             {
                 minDist = dist;
-                closest = target.npc;
+                closest = target.character;
             }
         }
         return closest;

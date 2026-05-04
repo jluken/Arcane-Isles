@@ -1,22 +1,16 @@
+using NUnit.Framework.Internal;
 using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using TMPro;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.EventSystems;
-using static UnityEngine.GraphicsBuffer;
 
 public class MoveToClick : MonoBehaviour
 {
     public NavMeshAgent agent => GetComponent<NavMeshAgent>();
 
-    private string[] interactTags = { "object", "npc" };
-    //private GameObject target;
-    //private SelectionController selectionController;
     public float activateDist = 1.0f;
     private GameObject destMarkerPrefab;
     private GameObject destMarker;
@@ -30,62 +24,57 @@ public class MoveToClick : MonoBehaviour
     private int stopCount;
     private int maxStopCount = 20;
 
-    private Vector3 lastPoint;
-    
+    private Character followTarget;
+    private float followDist = 1.5f;
 
-    public void Awake()
-    {
-        Debug.Log("Mover Awake");
-        //agent = GetComponent<NavMeshAgent>();
-    }
+    private Vector3 lastPoint;
 
     void Start()
     {
         startedMoving = false;
         pathLocked = false;
-        //selectionController = SelectionController.Instance;
+        followTarget = null;
         stopCount = 0;
         destMarkerPrefab = Resources.Load<GameObject>("Prefabs/Destination");
-
-        Debug.Log("Prefab load for " + agent + " is " + destMarkerPrefab);
 
         if (controlled) SelectionController.Instance.deselectEvent += StopMoving;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        //Debug.Log("fixed update");
+        if(followTarget != null)
+        {
+            var distToTarget = Vector3.Distance(agent.transform.position, followTarget.transform.position);
+            if (!followTarget.mover.IsMoving() && distToTarget <= followDist)
+            {
+                followTarget = null;
+                StopMoving();
+            }
+            else if(distToTarget > followDist) SetDestination(followTarget);
+        }
+
         if (!agent.pathPending)
         {
             if (!startedMoving && agent.velocity.sqrMagnitude > movingThreshold) { startedMoving = true; stopCount = 0; }
             if (agent.hasPath && agent.velocity.sqrMagnitude <= movingThreshold) //stuck
             {
-                //Debug.Log("stopped");
                 stopCount++;
                 if (stopCount >= maxStopCount)
                 {
                     // end pathing
-                    //Debug.Log("stuck end");
                     StopMoving();
                 }
             }
             else if (!agent.hasPath && startedMoving && agent.velocity.sqrMagnitude <= movingThreshold) // finished
             {
-                //Debug.Log("done");
                 StopMoving();
             }
         }
         if (startedMoving && CombatManager.Instance.combatActive)
         {
-            //Debug.Log("agent " + agent.gameObject);
             CombatManager.Instance.LogTravel(agent, Vector3.Distance(agent.transform.position, lastPoint));
             lastPoint = agent.transform.position;
         }
-    }
-
-    void LateUpdate()
-    {
-
     }
 
     public NavMeshPath PathToPoint(Vector3 dest)
@@ -127,35 +116,52 @@ public class MoveToClick : MonoBehaviour
         return startNode;
     }
 
-    public Selectable SetTempMarker(Vector3 dest)
+    public void Follow(Character leader)
     {
-        Debug.Log("Set temp marker");
-        destMarker = Instantiate(destMarkerPrefab, dest, destMarkerPrefab.transform.rotation);
-        return destMarker.GetComponent<Selectable>();
+        followTarget = leader;
     }
 
-    public void SetDestination(Vector3 dest, bool locked = false)
+    public void PlantFeet() { agent.avoidancePriority = 0; }
+
+    public void DefaultAvoidance() { agent.avoidancePriority = 50; }
+
+    public Vector3 PointNearObject(Selectable target)
     {
-        //Debug.Log("Check lock: " + pathLocked);
+        var agentWidth = Math.Max(agent.transform.localScale.x, agent.transform.localScale.z);
+        var interactRad = agent.GetComponent<Character>().reach;
+        var rawPath = PathToPoint(target.transform.position);
+        const float interactBuffer = 0.05f;
+
+        int backtrack = 1;
+        var ghostPoint = new Vector3(rawPath.corners[^backtrack].x, target.transform.position.y, rawPath.corners[^backtrack].z);
+        while (target.GetComponent<Collider>().ClosestPoint(ghostPoint) == ghostPoint && backtrack < rawPath.corners.Length)
+        {
+            backtrack++;
+            ghostPoint = new Vector3(rawPath.corners[^backtrack].x, target.transform.position.y, rawPath.corners[^backtrack].z);
+        }
+        var pointOfContact = target.GetComponent<Collider>().ClosestPoint(ghostPoint);
+        var pathToEdge = PathToPoint(pointOfContact);
+
+        return PointAlongPath(pathToEdge, (PathDist(pathToEdge) - (interactRad * agentWidth/2)) + interactBuffer); ;
+    }
+
+    public void SetDestination(Selectable target)
+    {
+        SetDestination(PointNearObject(target));
+    }
+
+    public void SetDestination(Vector3 dest)
+    {
         if (pathLocked) return;
         var path = PathToPoint(dest);
         if (path != null) agent.SetPath(path);
         lastPoint = agent.transform.position;
-        locked = pathLocked;
-        //else
-        //{
-        //    Debug.Log("calcfail");
-        //    Debug.Log(gameObject);
-        //    Debug.Log(gameObject.transform.position);
-        //    Debug.Log(agent.isOnNavMesh);
-        //}
         Destroy(destMarker);
-        if (useMarker) destMarker = Instantiate(destMarkerPrefab, agent.destination, destMarkerPrefab.transform.rotation);  // TODO: don't set marker if going to selectable and not in combat (just have selectable glow)
+        if (useMarker) destMarker = Instantiate(destMarkerPrefab, agent.destination, destMarkerPrefab.transform.rotation);
     }
 
     public void StopMoving()
     {
-        //Debug.Log("stop");
         pathLocked = false;
         agent.isStopped = true;
         agent.ResetPath();
@@ -167,13 +173,11 @@ public class MoveToClick : MonoBehaviour
 
     public void OnDisable()
     {
-        Debug.Log("Unsubscribe");
         SelectionController.Instance.deselectEvent -= StopMoving;
     }
 
     public void OnEnable()
     {
-        Debug.Log("Subscribe");
         if (controlled && gameObject != null) SelectionController.Instance.deselectEvent -= StopMoving;
     }
 
@@ -186,6 +190,4 @@ public class MoveToClick : MonoBehaviour
     {
         return agent.path;
     }
-
-    // TODO: Create child dummy navmeshagent for that cannot move, but is used for "hovering" to display how far it will go, and maximum (UI/combat stage)
 }

@@ -5,7 +5,6 @@ public class GameData : MonoBehaviour
 {
     public static GameData Instance { get; private set; }
 
-    // TODO: store flags and etc here; load from save file
     public float gameTime;
 
     void Awake()

@@ -12,8 +12,6 @@ using UnityEngine.EventSystems;
 
 public class Selectable : MonoBehaviour
 {
-    public Vector3 standPoint;  // TODO: possibly reevaluate whether this is best practice. Old 2d games like BG1 use it, but not modern games like BG3
-    //private SelectionController selectionController;
 
     protected Interaction interactAction;
 
@@ -90,7 +88,7 @@ public class Selectable : MonoBehaviour
         displayRoutine = DisplayText();
     }
 
-    public virtual void Interact(NPC npc)
+    public virtual void Interact(Character npc)
     {
         Debug.Log("Interact: " + this.name + interactAction);
         interactAction?.Interact(npc, this);
@@ -102,7 +100,7 @@ public class Selectable : MonoBehaviour
     public void HoverDisplay()
     {
         //Debug.Log("Hover over object " + gameObject.name);
-        //TODO: highlight object - possibly use asset if can't find way to "outline" in 3D
+        //TODO: highlight object - possibly use asset if can't find way to "outline" in 3D [UI]
     }
 
     public void Select()
@@ -126,26 +124,10 @@ public class Selectable : MonoBehaviour
         return acts;
     }
 
-    //public virtual List<SelectionData> CombatActions()
-    //{
-    //    //Returns the actions accessible during combat
-    //    return Actions();
-    //}
-
     public void Inspect()
     {
-        //dialogueBox.AddText(description); // TODO: what sort of dialogue box should be persistant, separate from talking box
-        //StopCoroutine(displayRoutine);
-        //displayRoutine = DisplayText();
-        //StartCoroutine(displayRoutine);
         DialogueInterface.Instance.DescriptionBark(this);
     }
-
-    //public void CombatMove()
-    //{
-    //    PartyController.Instance.GoTo(gameObject.transform.position);
-    //    //CombatManager.Instance.UseCombatAbility(this, CombatManager.CombatActionType.Run);
-    //}
 
     IEnumerator DisplayText()
     {
@@ -157,22 +139,22 @@ public class Selectable : MonoBehaviour
         itemPopUp.GetComponent<TMP_Text>().text = description;
         itemPopUp.SetActive(true);
         yield return new WaitForSeconds(3);
-        Destroy(itemPopUp);// TODO: fade out animation?
+        Destroy(itemPopUp);// TODO: fade out animation? [UI]
     }
 }
 
-public abstract class Interaction  // TODO: possibly have every interaction carry an AP cost?
+public abstract class Interaction
 {
-    public abstract void Interact(NPC npc, Selectable interactable);
+    public abstract void Interact(Character npc, Selectable interactable);
 }
 
 public class Open : Interaction
 {
-    public override void Interact(NPC npc, Selectable interactable)
+    public override void Interact(Character npc, Selectable interactable)
     {
-        if (interactable.GetComponent<Container>() == null  && interactable.GetComponent<NPC>() == null) { Debug.LogError("Can only open objects with inventories"); }
+        if (interactable.GetComponent<Container>() == null  && interactable.GetComponent<Character>() == null) { Debug.LogError("Can only open objects with inventories"); }
         var container = interactable.GetComponent<Container>();
-        if (container == null) UIController.Instance.ActivateContainerScreen(interactable.GetComponent<NPC>().inventory);
+        if (container == null) UIController.Instance.ActivateContainerScreen(interactable.GetComponent<Character>().inventory);
         else UIController.Instance.ActivateContainerScreen(container.inventory);
     }
 }

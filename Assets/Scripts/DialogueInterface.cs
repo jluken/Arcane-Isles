@@ -20,8 +20,8 @@ public class DialogueInterface : MonoBehaviour
     public delegate void ChatEvent(List<string> currChatHistory);
     public event ChatEvent updateChatLog;
 
-    private NPC actor;
-    private NPC conversant;
+    private Character actor;
+    private Character conversant;
 
     private void Awake()
     {
@@ -63,7 +63,7 @@ public class DialogueInterface : MonoBehaviour
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void StartPlayerConversation(string conversationName, NPC player, NPC npc)
+    public void StartPlayerConversation(string conversationName, Character player, Character npc)
     {
         DialogueLua.SetActorField("Player", "Display Name", player.charStats.charName);
         DialogueManager.masterDatabase.GetActor("Player").spritePortrait = player.charStats.charImage;
@@ -101,7 +101,7 @@ public class DialogueInterface : MonoBehaviour
         //item.GetComponent<DialogueActor>().barkUISettings.barkUI = speakBarkUI;
     }
 
-    public void SpeakBark(NPC npc)
+    public void SpeakBark(Character npc)
     {
         //npc.GetComponent<DialogueActor>().barkUISettings.barkUI = speakBarkUI;
         DialogueLua.SetVariable("BarkText", npc.description);
@@ -146,7 +146,7 @@ public class DialogueInterface : MonoBehaviour
         QuestLog.SetQuestState(questName, QuestState.Active);
         DialogueLua.SetQuestField(questName, "StartTime", GameData.Instance.gameTime);
         if(initEntryNum > 0) ActivateQuestEntry(questName, initEntryNum);
-        //TODO: pop up notification?
+        //TODO: pop up notification? [UI]
     }
 
     public void ActivateQuestEntry(string questName, double entryNumd)
@@ -167,7 +167,7 @@ public class DialogueInterface : MonoBehaviour
             }
         }
         PartyController.Instance.xp += totalXp;
-        //TODO: pop up notification?
+        //TODO: pop up notification? [UI]
     }
 
     public struct QuestData

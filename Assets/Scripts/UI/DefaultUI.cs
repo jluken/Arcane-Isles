@@ -55,6 +55,7 @@ public class DefaultUI : MenuScreen
 
         PartyController.Instance.updatePartyEvent += UpdateStats;
         DialogueInterface.Instance.updateChatLog += UpdateChatUI;
+        CombatManager.Instance.combatStatUpdate += UpdateStats;
     }
 
     public void SetScrollToBottom()
@@ -77,6 +78,7 @@ public class DefaultUI : MenuScreen
             }
         }
         UpdateActions(PartyController.Instance.selectedPartyMember);
+        UpdateInitiative();
     }
 
     public void ActivateCombat()
@@ -88,7 +90,7 @@ public class DefaultUI : MenuScreen
         initiativeIcons.Clear();
     }
 
-    public void UpdateActions(NPC selectedNPC)
+    public void UpdateActions(Character selectedNPC)
     {
         foreach (GameObject but in actionButtons) Destroy(but);
         actionButtons.Clear();
@@ -122,20 +124,22 @@ public class DefaultUI : MenuScreen
         }
     }
 
-    public void ListInitiatives(List<NPC> npcs)
+    public void UpdateInitiative()
     {
+        if (!CombatManager.Instance.combatActive) { initiativeBar.SetActive(false); return; }
+        var combatants = CombatManager.Instance.GetInitiativeOrder();
+        initiativeBar.SetActive(true);
         foreach (GameObject icon in initiativeIcons) Destroy(icon);
         initiativeIcons.Clear();
-        foreach (NPC npc in npcs)
+        foreach (Character npc in combatants)
         {
             var icon = Instantiate(CharIconPrefab, initiativeBar.transform);
             initiativeIcons.Add(icon);
             icon.GetComponent<charIcon>().UpdateIcon(npc);
         }
-
     }
 
-    public void FillActionPoints(NPC selectedNPC)
+    public void FillActionPoints(Character selectedNPC)
     {
         foreach (GameObject pip in ActionPointPips) Destroy(pip);
         ActionPointPips.Clear();

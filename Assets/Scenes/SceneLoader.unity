@@ -435,8 +435,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52cbd6ebf5d5ce648ae69264ee10c26d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollSpeed: 0.001
+  scrollSpeed: 0.0015
   zoomSpeed: 0.1
+  maxCamDist: 40
 --- !u!81 &1569938485
 AudioListener:
   m_ObjectHideFlags: 0

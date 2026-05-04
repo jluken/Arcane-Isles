@@ -6,7 +6,7 @@ using UnityEngine;
 public class SceneSaveData
 {
     [System.Serializable]
-    public struct NPCData
+    public struct CharData
     {
         public string id;
         public bool active;
@@ -23,21 +23,21 @@ public class SceneSaveData
     }
 
     public bool loaded;
-    public List<NPCData> NPCs;
+    public List<CharData> NPCs;
     public List<EntityInventorySaveData> Containers;
     public List<GroundObjData> groundObjs;
 
-    public SceneSaveData(List<GameObject> gameNPCs, List<EntityInventory> gameContainers, List<GameObject> gameGroundObjs)
+    public SceneSaveData(List<GameObject> gameChars, List<EntityInventory> gameContainers, List<GameObject> gameGroundObjs)
     {
-        NPCs = new List<NPCData>();
-        foreach (var gameNPC in gameNPCs) {
-            Debug.Log("Saving NPC " + gameNPC);
-            var npcData = new NPCData();
-            npcData.id = gameNPC.name;
-            npcData.active = gameNPC.activeSelf;
-            npcData.pos = new float[] { gameNPC.transform.position.x, gameNPC.transform.position.y, gameNPC.transform.position.z };
-            npcData.charData = PartyData.LoadCharData(gameNPC.name, gameNPC.transform.position, gameNPC.transform.rotation.eulerAngles, gameNPC.GetComponent<NPC>(), gameNPC.GetComponent<CharStats>(), gameNPC.GetComponent<EntityInventory>());
-            NPCs.Add(npcData);
+        NPCs = new List<CharData>();
+        foreach (var gameChar in gameChars) {
+            Debug.Log("Saving NPC " + gameChar);
+            var charData = new CharData();
+            charData.id = gameChar.name;
+            charData.active = gameChar.activeSelf;
+            charData.pos = new float[] { gameChar.transform.position.x, gameChar.transform.position.y, gameChar.transform.position.z };
+            charData.charData = PartyData.LoadCharData(gameChar.name, gameChar.transform.position, gameChar.transform.rotation.eulerAngles, gameChar.GetComponent<Character>(), gameChar.GetComponent<CharStats>(), gameChar.GetComponent<EntityInventory>());
+            NPCs.Add(charData);
         }
 
         Containers = new List<EntityInventorySaveData>();
@@ -66,11 +66,11 @@ public class SceneSaveData
     {
         // Used for setting NPCs to either Active or inactive, but everything else is null so it keeps default
         // Useful for establishing save states
-        NPCs = new List<NPCData>();
+        NPCs = new List<CharData>();
         foreach (var gameNPC in activeNPCs)
         {
             Debug.Log("Saving active NPC " + gameNPC);
-            var npcData = new NPCData();
+            var npcData = new CharData();
             npcData.id = gameNPC;
             npcData.active = true;
             NPCs.Add(npcData);
@@ -78,7 +78,7 @@ public class SceneSaveData
         foreach (var gameNPC in inactiveNPCs)
         {
             Debug.Log("Saving inactive NPC " + gameNPC);
-            var npcData = new NPCData();
+            var npcData = new CharData();
             npcData.id = gameNPC;
             npcData.active = false;
             NPCs.Add(npcData);

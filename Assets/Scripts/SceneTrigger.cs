@@ -28,23 +28,14 @@ public class SceneTrigger : MonoBehaviour
         }
     }
 
-    //private void OnTriggerStay(Collider other)
-    //{
-    //    if (other.gameObject.GetComponent<PartyMember>() != null && !SceneLoader.Instance.SceneLoaded(sceneName))
-    //    {
-    //        Debug.Log("Inside scene trigger " + sceneName);
-    //    }
-    //}
-
-    private void OnTriggerExit(Collider other)  // TODO: what if some players still in scene?
-    {  // TODO: not triggered if movement happens during "pause"
-        Debug.Log("TEst Exit scene trigger " + sceneName);
+    private void OnTriggerExit(Collider other) 
+    {
+        Debug.Log("Test Exit scene trigger " + sceneName);
         if (other.gameObject.GetComponent<PartyMember>() != null && SceneLoader.Instance.SceneLoaded(sceneName))
         {
             Debug.Log("Exit scene trigger " + sceneName + " by member " + other);
             Debug.Log("Agent: " + other.name); 
-            //SceneLoader.Instance.SceneObjectManagers.Keys.ForEach(Console.WriteLine);
-            StartCoroutine(SceneLoader.Instance.DeactivateSubscene(sceneName));
+            StartCoroutine(SceneLoader.Instance.SafeSceneHandler());  // Check all scenes
         }
     }
 }

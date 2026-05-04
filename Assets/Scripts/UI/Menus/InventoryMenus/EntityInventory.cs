@@ -58,7 +58,7 @@ public class EntityInventory : MonoBehaviour
             int stack = i < initInvStacks.Count ? initInvStacks[i] : 1;
             inventory.Add(new InventoryStack(initInv[i], stack));
         }
-        //TODO: allow set init equipment
+        //TODO: allow set init equipment (different fields for each slot)
     }
 
     public void LoadFromSaveData(EntityInventorySaveData saveData)
@@ -127,6 +127,7 @@ public class EntityInventory : MonoBehaviour
             equipment[equipSlot] = null;
         }
         return leftover;  // TODO: drop leftover equipment on the ground if no room
+        // TODO: possibly alternatively - special handling of looting equipment (for both visual avatar and reviving allies) instead of auto dequip
     }
 
     public InventoryData GetEquipment(ItemType type)

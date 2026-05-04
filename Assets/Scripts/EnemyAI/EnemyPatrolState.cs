@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class EnemyPatrolState: IdleState
 {
-    //private MoveToClick mover;
     private int pathIndex = 0;
     private Enemy enemy;
-    public EnemyPatrolState(Enemy npc, NPCStateMachine enemyStateMachine, List<SelectionData> actions) : base(npc, enemyStateMachine, actions)
+    public EnemyPatrolState(Enemy npc, CharStateMachine enemyStateMachine, List<SelectionData> actions) : base(npc, enemyStateMachine, actions)
     {
         //mover = enemy.mover;
         enemy = npc;
@@ -34,13 +33,9 @@ public class EnemyPatrolState: IdleState
     {
         base.FrameUpdate();
         if (!enemy.mover.IsMoving() && enemy.PathMarkers.Count > 0) {
-            //Debug.Log("Not moving");
-            //Debug.Log(enemy.gameObject.name);
             pathIndex = (pathIndex + 1) % enemy.PathMarkers.Count;
-            //Debug.Log(pathIndex);
             enemy.mover.SetDestination(enemy.PathMarkers[pathIndex].transform.position);
         }
-        //Debug.Log("Moving");
 
 
         if (enemy.isAggroed)

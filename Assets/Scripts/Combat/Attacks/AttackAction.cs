@@ -10,7 +10,7 @@ public class AttackAction : InteractionAction
     public StatVal modifier;
     public bool precisionAttack;
 
-    public AttackAction(int attackCost, int damageDie, StatVal modifier, bool precisionAttack = false, string name = "", Sprite icon = null, float range = 0f, NPC actor = null, Selectable target = null) : base(name: name, icon: icon, range: range, actor: actor, target: target)
+    public AttackAction(int attackCost, int damageDie, StatVal modifier, bool precisionAttack = false, string name = "", Sprite icon = null, float range = 0f, Character actor = null, Selectable target = null) : base(name: name, icon: icon, range: range, actor: actor, target: target)
     {
         this.attackCost = attackCost;
         this.damageDie = damageDie;
@@ -20,14 +20,10 @@ public class AttackAction : InteractionAction
 
     public override bool CheckValidTarget(Selectable target)
     {
-        Debug.Log("Attack actor: " + actor);
-        Debug.Log("Attack target: " + target);
-        Debug.Log("Attack cost: " + attackCost);
-        Debug.Log("AP: " + CombatManager.Instance.ActionPoints);
         if (target == null) return false;
         if (attackCost > CombatManager.Instance.ActionPoints) return false;
         var dist = Vector3.Distance(actor.gameObject.transform.position, target.gameObject.transform.position);
-        if (target.GetComponent<NPC>() != null && dist < range)
+        if (target.GetComponent<Character>() != null && dist < range)
         {
             return Utils.LineOfSight(actor.gameObject, target.gameObject);
         }
@@ -36,7 +32,7 @@ public class AttackAction : InteractionAction
 
     public override IEnumerator UseAbility()
     {
-        var victim = target.GetComponent<NPC>();
+        var victim = target.GetComponent<Character>();
         var damage = Random.Range(1, damageDie);
 
         CombatManager.Instance.LockAction();

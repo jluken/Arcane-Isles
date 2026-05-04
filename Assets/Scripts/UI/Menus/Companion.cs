@@ -67,7 +67,6 @@ public class Companion : PartyMember
         for (int i = 0; i < playerLevel; i++)
         {
             var stat = companionData.statList[i];
-            Debug.Log("Build companion skill: " + stat);
             charStats.SetStat(stat, charStats.GetRawStat(stat) + 1);
         }
         charStats.setDerivedStats();

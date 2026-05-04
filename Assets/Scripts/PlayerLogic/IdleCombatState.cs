@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class IdleCombatState: NPCState
+public class IdleCombatState: CharState
 {
-    public IdleCombatState(NPC npc, NPCStateMachine playerStateMachine, List<SelectionData> actions) : base(npc, playerStateMachine, actions)
+    public IdleCombatState(Character npc, CharStateMachine playerStateMachine, List<SelectionData> actions) : base(npc, playerStateMachine, actions)
     {
     }
 
@@ -15,13 +15,14 @@ public class IdleCombatState: NPCState
 
     public override void EnterState()
     {
-        npc.mover.StopMoving();
-        npc.mover.agent.avoidancePriority = 50;
+        character.mover.StopMoving();
+        character.mover.PlantFeet();
         base.EnterState();
     }
 
     public override void ExitState()
     {
+        character.mover.DefaultAvoidance();
         base.ExitState();
     }
 
@@ -35,9 +36,14 @@ public class IdleCombatState: NPCState
         base.PhysicsUpdate();
     }
 
-    public override void SetActiveNPC()
+    public override void SetActiveChar()
     {
-        npcStateMachine.ChangeState(npc.ActiveCombatState);
+        charStateMachine.ChangeState(character.ActiveCombatState);
+    }
+
+    public override void EndCombat()
+    {
+        charStateMachine.ChangeState(character.IdleState);
     }
 
 }

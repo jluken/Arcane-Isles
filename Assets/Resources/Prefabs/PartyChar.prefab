@@ -101,6 +101,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &2791125492793316898
 CapsuleCollider:
@@ -253,8 +254,8 @@ MonoBehaviour:
   interactRad: {fileID: 5291401286409416802}
   reach: 1
   dialogue: []
-  defaultAttacks:
-  - {fileID: 11400000, guid: d5faf3d8bffe252418b31ff386c31de9, type: 2}
+  defaultWeapon: {fileID: 11400000, guid: 807636dd5ec75ee49921f094702773b9, type: 2}
+  combatantType: 3
 --- !u!114 &6779921500756101515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,23 +270,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   charImage: {fileID: 0}
   charName: 
-  xp: 0
-  health: 0
-  magick: 0
+  gender: X
+  level: 1
   vigor: 0
   finesse: 0
   psyche: 0
   intimidation: 0
   athletics: 0
-  melee: 0
-  endurance: 0
+  survival: 0
+  repair: 0
   guile: 0
   precision: 0
   sleightOfHand: 0
   stealth: 0
   persuasion: 0
-  survival: 0
-  perception: 0
+  physick: 0
+  insight: 0
   arcana: 0
 --- !u!114 &7325310414240330390
 MonoBehaviour:
@@ -301,6 +301,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   containerId: 
   maxInv: 40
+  initInv: []
+  initInvStacks: 
   hasEquip: 1
   money: 0
   merchant: 0
@@ -392,6 +394,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1496533476883626739
 GameObject:
@@ -481,6 +484,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &5784636907324270220
 GameObject:
@@ -570,6 +574,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7213913064752735173
 GameObject:
@@ -661,6 +666,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &1538206839969068861
 CapsuleCollider:

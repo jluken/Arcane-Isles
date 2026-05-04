@@ -2,7 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public class StatMenu : MonoBehaviour  //TODO: used?
+public class StatMenu : MonoBehaviour  //TODO: will probably be deprecated once char page updated [UI]
 {
 
     public TMP_Text playerName;

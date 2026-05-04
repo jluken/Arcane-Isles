@@ -10,10 +10,10 @@ public class EventHandler : MonoBehaviour
         Instance = this;
     }
 
-    public delegate void CharEvent(NPC npc);
+    public delegate void CharEvent(Character npc);
     public event CharEvent deathEvent;
 
-    public void TriggerDeathEvent(NPC npc)
+    public void TriggerDeathEvent(Character npc)
     {
         deathEvent?.Invoke(npc);
     }

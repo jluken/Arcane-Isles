@@ -18,14 +18,6 @@ public class PauseMenuScript : MenuScreen
 
     void Update()
     {
-        //if (ui.GetComponent<UIScript>().UIActive && !menuOpen && Input.GetKeyDown(KeyCode.Escape))
-        //{
-        //    ActivateMenu();
-        //}
-        //else if (menuOpen && Input.GetKeyDown(KeyCode.Escape))
-        //{
-        //    DeactivateMenu();
-        //}
     }
 
     public override void DeactivateMenu()
@@ -67,10 +59,10 @@ public class PauseMenuScript : MenuScreen
 
     public void Save()
     {
-        UIController.Instance.ActivateSaveMenu();
+        UIController.Instance.ActivateSaveMenu();  // TODO: disable during combat
     }
 
-    public void Load() // TODO: Implement full Save Menu/system
+    public void Load()
     {
         UIController.Instance.ActivateLoadMenu();
     }

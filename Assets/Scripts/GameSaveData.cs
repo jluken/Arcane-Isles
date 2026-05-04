@@ -11,5 +11,5 @@ public class GameSaveData
     public string levelName;
     public Dictionary<string, SceneSaveData> SceneData;
     public string dialogData;
-
+    public float gameTime;
 }

@@ -28,7 +28,7 @@ public class CharacterMenu : MenuScreen
 
     public int availPoints;
 
-    private NPC currChar;
+    private Character currChar;
 
 
     //private CharStats charStats;
@@ -45,7 +45,6 @@ public class CharacterMenu : MenuScreen
 
     public override void DeactivateMenu()
     {
-        Debug.Log("Deactivate char menu");
         CharMenu.SetActive(false);
         UIActive = false;
     }

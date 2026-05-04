@@ -5,7 +5,7 @@ public class InteractionAction : AbilityAction
 {
     protected Selectable target;
 
-    public InteractionAction(string name = "", Sprite icon = null, float range = 0f, NPC actor = null, Selectable target = null) : base(name: name, icon: icon, range: range, actor: actor)
+    public InteractionAction(string name = "", Sprite icon = null, float range = 0f, Character actor = null, Selectable target = null) : base(name: name, icon: icon, range: range, actor: actor)
     {
         if (target != null) SetTarget(target);
     }

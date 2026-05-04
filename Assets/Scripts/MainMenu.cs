@@ -18,7 +18,7 @@ public class MainMenu : MenuScreen
         UIController.Instance.ActivateSettings();
     }
 
-    public void Load() // TODO: Implement proper save menu/system
+    public void Load()
     {
         UIController.Instance.ActivateLoadMenu();
     }

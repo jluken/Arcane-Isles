@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActiveCombatState: NPCState
+public class ActiveCombatState: CharState
 {
-    public ActiveCombatState(NPC npc, NPCStateMachine npcStateMachine, List<SelectionData> actions) : base(npc, npcStateMachine, actions)
+    public ActiveCombatState(Character npc, CharStateMachine npcStateMachine, List<SelectionData> actions) : base(npc, npcStateMachine, actions)
     {
     }
 
@@ -16,7 +16,6 @@ public class ActiveCombatState: NPCState
 
     public override void EnterState()
     {
-        npc.mover.agent.avoidancePriority = 80; // TODO: store these priorities somewhere
         base.EnterState();
     }
 
@@ -37,7 +36,12 @@ public class ActiveCombatState: NPCState
 
     public override void SetIdle()
     {
-        npcStateMachine.ChangeState(npc.IdleCombatState);
+        charStateMachine.ChangeState(character.IdleCombatState);
+    }
+
+    public override void EndCombat()
+    {
+        charStateMachine.ChangeState(character.ActiveState);
     }
 
     public override void MoveTo(Vector3 destination)

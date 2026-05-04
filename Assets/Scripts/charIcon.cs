@@ -9,7 +9,7 @@ public class charIcon : MonoBehaviour
     public Image healthBar;
     public TMP_Text Health;
 
-    private NPC iconChar;
+    private Character iconChar;
     private bool partyIcon;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -18,7 +18,7 @@ public class charIcon : MonoBehaviour
         
     }
 
-    public void UpdateIcon(NPC npcChar, bool isPartyIcon = false)
+    public void UpdateIcon(Character npcChar, bool isPartyIcon = false)
     {
         iconChar = npcChar;
         partyIcon = isPartyIcon;
@@ -36,7 +36,7 @@ public class charIcon : MonoBehaviour
 
         if (npcChar.IsActive)
         {
-            // TODO: For UI stage: highlight selected party member(s)
+            // TODO: For UI stage: highlight selected party member(s) [UI]
         }
     }
 

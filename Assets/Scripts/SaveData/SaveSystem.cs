@@ -54,6 +54,7 @@ public static class SaveSystem
         gameSaveData.levelName = sceneLoader.GetLevelName();
         gameSaveData.SceneData = sceneLoader.GetAllSceneData();
         gameSaveData.dialogData = PersistentDataManager.GetSaveData();
+        gameSaveData.gameTime = GameData.Instance.gameTime;
         gameSaveData.saveName = saveName;
         gameSaveData.saveTime = DateTime.Now.ToString("MM/dd/yyyy h:mm tt");
 

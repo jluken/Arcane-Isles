@@ -60364,7 +60364,6 @@ GameObject:
   - component: {fileID: 1753009377}
   - component: {fileID: 1753009376}
   - component: {fileID: 1753009375}
-  - component: {fileID: 1753009374}
   m_Layer: 5
   m_Name: RollButton
   m_TagString: Untagged
@@ -60392,19 +60391,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -420}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1753009374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1753009372}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30abf3088feab184eb50a401e24e6a75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skillManager: {fileID: 0}
 --- !u!114 &1753009375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60448,19 +60434,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1753009376}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1753009374}
-        m_TargetAssemblyTypeName: rollButton, Assembly-CSharp
-        m_MethodName: RollClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1753009376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67639,7 +67613,6 @@ GameObject:
   - component: {fileID: 1975987338}
   - component: {fileID: 1975987337}
   - component: {fileID: 1975987336}
-  - component: {fileID: 1975987335}
   m_Layer: 5
   m_Name: SkillCheckCanvas
   m_TagString: Untagged
@@ -67647,30 +67620,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1975987335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1975987334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79b6523c97042534c973eba215490c12, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skillMenu: {fileID: 1350541313}
-  checkDesc: {fileID: 986874377}
-  modifierText: {fileID: 949090638}
-  diceFaces:
-  - {fileID: 21300000, guid: 2e33d25c977e3414baf701f05d4e3cff, type: 3}
-  - {fileID: 21300000, guid: 18c3884f2796a044c9d3aa608cb817f9, type: 3}
-  - {fileID: 21300000, guid: ffb31298cbe86264491307e5d2f1d9e0, type: 3}
-  - {fileID: 21300000, guid: 2417151b8990aa84e959eae73e05b7a3, type: 3}
-  - {fileID: 21300000, guid: 44f2da8db307fbf45802fd84c9a3639f, type: 3}
-  - {fileID: 21300000, guid: 4e2508b8a0cc2cb44aa6a91a262b517a, type: 3}
-  d1Face: {fileID: 7227723}
-  d2Face: {fileID: 1978632915}
 --- !u!222 &1975987336
 CanvasRenderer:
   m_ObjectHideFlags: 0

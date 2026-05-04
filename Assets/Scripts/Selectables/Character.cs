@@ -7,14 +7,15 @@ using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using static PartyData;
 
-public class NPC : Selectable  // TODO: rename to "Character" or something since it includes player characters
+public class Character : Selectable
 {
     public CharStats charStats => gameObject.GetComponent<CharStats>();
     public EntityInventory inventory => gameObject.GetComponent<EntityInventory>();
     public MoveToClick mover => gameObject.GetComponent<MoveToClick>();
 
-    public NPCInteract interactRad;
+    public CharInteract interactRad;
     public float reach = 1;
 
     public SelectionData talk;
@@ -23,14 +24,12 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
     public SelectionData startAttack;
     public SelectionData attack;
 
-    public NPCStateMachine StateMachine;
+    public CharStateMachine StateMachine;
     public ActiveState ActiveState;
     public IdleState IdleState;
     public ActiveCombatState ActiveCombatState;
     public IdleCombatState IdleCombatState;
     public DeadState DeadState;
-
-    public List<string> dialogue;
 
     public WeaponItem defaultWeapon;
 
@@ -67,26 +66,38 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
             immediateAction = TargetAttack
         };
         base.Awake();
-        SetStates(); // TODO: possibly move this and action definitions to Awake (but they have to come first)
+        SetStates();
     }
     public override void Start()
     {
-        interactRad.npc = this;
+        interactRad.character = this;
         interactRad.interactCollider.radius = reach;
 
         CombatManager.Instance.callToArms += SetToCombat;
+        CombatManager.Instance.setPeace += EndCombat;
         base.Start();
     }
 
     public void OnDestroy()
     {
         CombatManager.Instance.callToArms -= SetToCombat;
+        CombatManager.Instance.setPeace -= EndCombat;
+    }
+
+    public void LoadFromSaveData(CharSaveData charSaveData)
+    {
+        charStats.LoadFromSaveData(charSaveData.charStatData);
+        inventory.LoadFromSaveData(charSaveData.inventory);
+        mover.agent.Warp(new Vector3(charSaveData.pos[0], charSaveData.pos[1], charSaveData.pos[2]));
+        transform.rotation = Quaternion.identity * Quaternion.Euler(charSaveData.rot[0], charSaveData.rot[1], charSaveData.rot[2]);
+        Debug.Log("Loading State + " + charSaveData.stateName + " for " + charStats.charName);
+        LoadState(charSaveData.stateName);
     }
 
 
     public virtual void SetStates()
     {
-        StateMachine = new NPCStateMachine();
+        StateMachine = new CharStateMachine();
 
         var acts = new List<SelectionData>() { talk, inspectSelection, trade, recruit, startAttack };
         var combatActs = new List<SelectionData>() { attack, inspectSelection, combatMovement };
@@ -105,20 +116,20 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
     {
         switch (stateName)
         {
-            case "ActiveState":
+            case nameof(ActiveState):
                 StateMachine.ChangeState(ActiveState); break;
-            case "IdleState":
+            case nameof(IdleState):
                 StateMachine.ChangeState(IdleState); break;
-            case "ActiveCombatState":
+            case nameof(ActiveCombatState):
                 StateMachine.ChangeState(ActiveCombatState); break;
-            case "IdleCombatState":
+            case nameof(IdleCombatState):
                 StateMachine.ChangeState(IdleCombatState); break;
-            case "DeadState":
+            case nameof(DeadState):
                 StateMachine.ChangeState(DeadState); break;
         }
     }
 
-    public string StateName() => nameof(StateMachine.CurrentPlayerState);
+    public string StateName() => StateMachine.CurrentPlayerState.stateName;
 
     public override List<SelectionData> Actions()
     {
@@ -146,9 +157,7 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
 
     public void takeDamage(int rawDamage)
     {
-        Debug.Log("raw damage: " + rawDamage);
         var totalArmor = inventory.GetEquipmentArmor();
-        Debug.Log("armor: " + totalArmor);
         charStats.updateHealth(-1 * Math.Max(rawDamage - totalArmor, 0));
     }
 
@@ -169,18 +178,17 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
 
     public virtual void SetToCombat()
     {
-        Debug.Log("Set to Combat: " + charStats.charName);
         StateMachine.CurrentPlayerState.EnterCombat();
     }
 
     public virtual void EndCombat()
     {
-        StateMachine.ChangeState(IdleState);
+        StateMachine.CurrentPlayerState.EndCombat();
     }
 
-    public virtual void SetActiveNPC()
+    public virtual void SetActiveChar()
     {
-        StateMachine.CurrentPlayerState.SetActiveNPC();
+        StateMachine.CurrentPlayerState.SetActiveChar();
     }
 
     public virtual void SetIdle()
@@ -190,8 +198,6 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
 
     public virtual void Die()
     {
-        //CombatManager.Instance.RemoveCombatant(this);
-        //SceneLoader.Instance.SceneObjectManagers[gameObject.scene.name].RemoveNPC(this);
         foreach (var equipSlot in inventory.equipment.Keys) inventory.Dequip(equipSlot);
         StateMachine.ChangeState(DeadState);
         EventHandler.Instance.TriggerDeathEvent(this);
@@ -199,7 +205,7 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
 
     public void BringIntoCombat()
     {
-        CombatManager.Instance.InitiateCombat(new List<NPC> { this });
+        CombatManager.Instance.InitiateCombat(new List<Character> { this });
     }
 
     public List<AbilityAction> GetActions()
@@ -215,27 +221,25 @@ public class NPC : Selectable  // TODO: rename to "Character" or something since
 
 public class Talk : Interaction
 {
-    public override void Interact(NPC npc, Selectable interactable)
+    public override void Interact(Character npc, Selectable interactable)
     {
-        if (interactable.GetComponent<NPC>() == null) { Debug.LogError("Can only talk to NPCs"); }
-        //UIController.Instance.ActivateDialog(npc.dialogue, npc.charStats.charImage);
-        //DialogueManager.StartConversation("TestConvo1");
-        DialogueInterface.Instance.StartPlayerConversation("TestConvo1", npc, interactable.GetComponent<NPC>());
+        if (interactable.GetComponent<Character>() == null) { Debug.LogError("Can only talk to NPCs"); }
+        DialogueInterface.Instance.StartPlayerConversation("TestConvo1", npc, interactable.GetComponent<Character>());
     }
 }
 
 public class Trade : Interaction
 {
-    public override void Interact(NPC npc, Selectable interactable)
+    public override void Interact(Character npc, Selectable interactable)
     {
-        if (interactable.GetComponent<NPC>() == null) { Debug.LogError("Can only trade with NPCs"); }
-        UIController.Instance.ActivateTradeScreen(interactable.GetComponent<NPC>().inventory);
+        if (interactable.GetComponent<Character>() == null) { Debug.LogError("Can only trade with NPCs"); }
+        UIController.Instance.ActivateTradeScreen(interactable.GetComponent<Character>().inventory);
     }
 }
 
 public class Recruit : Interaction
 {
-    public override void Interact(NPC npc, Selectable interactable)
+    public override void Interact(Character npc, Selectable interactable)
     {
         if (interactable.GetComponent<Companion>() == null) { Debug.LogError("Can only recruit Companions"); }
         // TODO: Add restrictions to NPC recruiting when more specific follower details are created

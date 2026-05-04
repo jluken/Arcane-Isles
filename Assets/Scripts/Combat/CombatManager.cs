@@ -5,19 +5,24 @@ using System.Data;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
 using UnityEngine.TextCore.Text;
+using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class CombatManager : MonoBehaviour
 {
-    public static CombatManager Instance { get; private set; }  // TODO: include this stuff in save data
+    public static CombatManager Instance { get; private set; }
 
     public bool combatActive { get; private set; } = false ;
 
     public event Action callToArms;
+    public event Action setPeace;
+
+    public event Action combatStatUpdate;
 
     public struct InitiativeEntry
     {
-        public NPC npc;
+        public Character character;
         public int initiative;
         public CombatantType type;
     }
@@ -32,7 +37,7 @@ public class CombatManager : MonoBehaviour
 
     public List<InitiativeEntry> combatantInitiative;
 
-    public NPC activeCombatant;
+    public Character activeCombatant;
     public AbilityAction currentAction;
     private int initiativeTurn;
 
@@ -42,25 +47,22 @@ public class CombatManager : MonoBehaviour
     public Sprite runIcon;
     public AbilityAction defaultRun;
 
+    private InputActionMap uiActions;
+
     void Awake()
     {
         Instance = this;
         combatantInitiative = new List<InitiativeEntry>();
-        Debug.Log("active combatant null");
         activeCombatant = null;
 
         defaultRun = new MoveToPoint("run", runIcon);
+        uiActions = InputSystem.actions.FindActionMap("UI");
     }
 
     public void Start()
     {
         EventHandler.Instance.deathEvent += RemoveCombatant;
-        PartyController.Instance.updatePartyEvent += SetInitiativeDisplay;
-    }
-
-    public void Update()
-    {
-        //Debug.Log("New Frame");
+        uiActions.FindAction("Cancel").performed += (sender) => UnsetAction();
     }
 
     public List<InitiativeEntry> enemies => combatantInitiative.Where(entry => entry.type == CombatantType.Enemy).ToList();
@@ -68,36 +70,36 @@ public class CombatManager : MonoBehaviour
 
     public bool IsPartyTurn => combatActive && combatantInitiative[initiativeTurn].type == CombatantType.Party;
 
-    public int GetCurrentAP(NPC npc)
+    public int GetCurrentAP(Character character)
     {
-        if (!combatActive || activeCombatant != npc) return 0;
+        if (!combatActive || activeCombatant != character) return 0;
         return ActionPoints;
     }
 
-    public void insertIntoInitiative(NPC character, CombatantType type)
+    public void insertIntoInitiative(Character character, CombatantType type)
     {
-        if (combatantInitiative.Any(entry => entry.npc == character)) return;
-        var initiative = Dice.SkillCheck(6, character.charStats.finesse);
+        if (combatantInitiative.Any(entry => entry.character == character)) return;
+        var initiative = Dice.SkillCheck(6, character.charStats.GetCurrStat(CharStats.StatVal.finesse));
 
         int idx = 0;
         while (idx < combatantInitiative.Count)
         {
             if (initiative > combatantInitiative[idx].initiative) break;
-            if (initiative == combatantInitiative[idx].initiative && character.charStats.finesse > combatantInitiative[idx].npc.charStats.finesse) break;
+            if (initiative == combatantInitiative[idx].initiative && character.charStats.GetCurrStat(CharStats.StatVal.finesse) > combatantInitiative[idx].character.charStats.GetCurrStat(CharStats.StatVal.finesse)) break;
             idx++;
         }
-        combatantInitiative.Insert(idx, new InitiativeEntry() { npc=character, initiative=initiative, type=type });
-        SetInitiativeDisplay();
+        combatantInitiative.Insert(idx, new InitiativeEntry() { character=character, initiative=initiative, type=type });
+        combatStatUpdate.Invoke();
     }
 
-    private void SetInitiativeDisplay()
+    public List<Character> GetInitiativeOrder()
     {
-        var initiativeNPCs = combatantInitiative.Select(e => e.npc).ToList();
-        var currentList = initiativeNPCs.Skip(initiativeTurn).Concat(initiativeNPCs.Take(initiativeTurn)).ToList();
-        DefaultUI.Instance.ListInitiatives(currentList);
+        var initiativeChars = combatantInitiative.Select(e => e.character).ToList();
+        var currentList = initiativeChars.Skip(initiativeTurn).Concat(initiativeChars.Take(initiativeTurn)).ToList();
+        return currentList;
     }
 
-    public void InitiateCombat(List<NPC> initialCombatants = null)
+    public void InitiateCombat(List<Character> initialCombatants = null)
     {
         if (combatActive) return;
         combatActive = true ;
@@ -106,47 +108,41 @@ public class CombatManager : MonoBehaviour
         {
             partyMember.SetToCombat();
         }
-        foreach (var combatant in initialCombatants ?? Enumerable.Empty<NPC>())
+        foreach (var combatant in initialCombatants ?? Enumerable.Empty<Character>())
         {
             combatant.SetToCombat();
         }
 
         callToArms.Invoke();
 
-        //var fightingEnemies = SceneLoader.Instance.GetCurrentSceneManagers().Values.SelectMany(m => m.npcs).Where(npc => npc.GetComponent<Enemy>() != null).Select(npc => npc.GetComponent<Enemy>()).ToList();
-        //foreach (var enemy in fightingEnemies)  //TODO: possibly make this (and end combat) an event where every entity handles their own state (and reports to the combat manager)
-        //{
-        //    enemy.SetToCombat(); // TODO: check what enemies are out of "range"
-        //    insertIntoInitiative(enemy, CombatantType.Enemy);
-        //}
-        //foreach (var partyMember in PartyController.Instance.party)
-        //{
-        //    partyMember.SetToCombat();
-        //    insertIntoInitiative(partyMember, CombatantType.Party);
-        //}
-
         initiativeTurn = 0;
         SetCombatant(initiativeTurn);
     }
 
-    public void EndCombat(bool gameOver = false)  
+    public bool CheckForCombatEnd()
+    {
+        if (!combatantInitiative.Any(entry => entry.character == PartyController.Instance.playerChar) || 
+            !combatantInitiative.Any(entry => entry.type == CombatantType.Enemy)) { 
+            EndCombat(); 
+            return true; 
+        }
+        return false;
+    }
+
+    public void EndCombat()
     {
         Debug.Log("End Combat");
-        foreach (var combatant in combatantInitiative)
-        {
-            combatant.npc.EndCombat();
-        }
-        if (!gameOver) UIController.Instance.ActivateDefaultScreen(); // TODO: Make trigger an event that will handle the update to UI
+        setPeace.Invoke();
         combatActive = false;
         SelectionController.Instance.playerUnderControl = true;
+        combatStatUpdate.Invoke();
     }
 
     public void NextTurn()
     {
         Debug.Log("Next Turn");
-        if (!combatantInitiative.Any(entry => entry.npc == PartyController.Instance.playerChar)) { EndCombat(true); return; }  // TODO: handle ui and override states better
-        if (!combatantInitiative.Any(entry => entry.type == CombatantType.Enemy)) { EndCombat(); return; }
-        int currInitTurn = combatantInitiative.IndexOf(combatantInitiative.Where(entry => entry.npc == activeCombatant).FirstOrDefault());
+        if (CheckForCombatEnd()) return;
+        int currInitTurn = combatantInitiative.IndexOf(combatantInitiative.Where(entry => entry.character == activeCombatant).FirstOrDefault());
         initiativeTurn = (currInitTurn + 1) % combatantInitiative.Count;
         if (initiativeTurn == 0) NewRound();
 
@@ -156,9 +152,8 @@ public class CombatManager : MonoBehaviour
 
     private void SetCombatant(int turn)
     {
-        Debug.Log("New combatant");
-        activeCombatant = combatantInitiative[turn].npc;
-        activeCombatant.SetActiveNPC();
+        activeCombatant = combatantInitiative[turn].character;
+        activeCombatant.SetActiveChar();
         turnTravel = 0;
         ActionPoints = activeCombatant.charStats.GetCurrStat(CharStats.StatVal.actionPoints);
         bool isEnemy = combatantInitiative[turn].type == CombatantType.Enemy;
@@ -166,15 +161,14 @@ public class CombatManager : MonoBehaviour
         camScript.Instance.TrackObj(activeCombatant.gameObject);
         SelectionController.Instance.playerUnderControl = combatantInitiative[turn].type == CombatantType.Party;
         if (isEnemy)
-        {
-            Debug.Log("Enemy Turn");
+        { 
             activeCombatant.GetComponent<Enemy>().TakeAction();
         }
         else if (SelectionController.Instance.playerUnderControl)
         {
             PartyController.Instance.SelectChar(activeCombatant.GetComponent<PartyMember>());
         }
-        SetInitiativeDisplay();
+        combatStatUpdate.Invoke();
     }
 
     private void NewRound()
@@ -186,13 +180,11 @@ public class CombatManager : MonoBehaviour
 
     public void SetCurrentAction(AbilityAction action)
     {
-        Debug.Log("Set Action");
         currentAction = action;
     }
 
     public void AttackTarget(Selectable target)
     {
-        Debug.Log("attack target with action " + currentAction);
         if(currentAction == null) currentAction = activeCombatant.GetDefaultAttack();
         currentAction.SetActor(activeCombatant);
         currentAction.SetTarget(target);
@@ -201,7 +193,6 @@ public class CombatManager : MonoBehaviour
 
     public void TargetPoint(Vector3 target)
     {
-        Debug.Log("Target Point");
         currentAction ??= defaultRun;
         currentAction.SetActor(activeCombatant);
         currentAction.SetTarget(target);
@@ -210,18 +201,14 @@ public class CombatManager : MonoBehaviour
 
     public void UseCombatAbility(AbilityAction action)
     {
-        Debug.Log("Use Combat Ability " + action);
         if(inAction && activeCombatant.mover.IsMoving()) activeCombatant.mover.StopMoving(); // Movement can be overridden 
         if (!inAction)
         {
-            Debug.Log("Inaction pass");
-            Debug.Log("action actor " + action.actor);
             if (action != null && action.CheckValidAction())
             {
-                Debug.Log("valid action");
                 var prev = SelectionController.Instance.playerUnderControl;
                 SelectionController.Instance.playerUnderControl = false;
-                // TODO: grey out buttons as well
+                // TODO: grey out buttons as well [UI]
                 StartCoroutine(action.UseAbility());
                 //SpendActionPoints(currentAction.UseAbility(activeCombatant, target));
                 SelectionController.Instance.playerUnderControl = prev;
@@ -233,9 +220,11 @@ public class CombatManager : MonoBehaviour
 
     public void LogTravel(NavMeshAgent agent, float dist)
     {
-        int prevPipTravel = (int)Math.Floor(turnTravel);
+        Debug.Log("Log Travel with agent " + agent + " and active combtant " + activeCombatant.mover.agent);
+        int prevPipTravel = (int)Math.Floor(turnTravel / activeCombatant.charStats.runModifier);
         turnTravel += dist;
-        if (agent == activeCombatant.mover.agent && (int)Math.Floor(turnTravel) > prevPipTravel) SpendActionPoints(1); // TODO: update with specific stat modifiers
+        Debug.Log("Log Travel with turn travel " + turnTravel + " and run modifier " + activeCombatant.charStats.runModifier);
+        if (agent == activeCombatant.mover.agent && (int)Math.Floor(turnTravel / activeCombatant.charStats.runModifier) > prevPipTravel) SpendActionPoints(1);
         if (ActionPoints == 0) activeCombatant.mover.StopMoving();
     }
 
@@ -249,22 +238,23 @@ public class CombatManager : MonoBehaviour
         inAction = false;
     }
 
-    public void RemoveCombatant(NPC npc)
+    public void RemoveCombatant(Character npc)
     {
         Debug.Log("Death event: remove npc " + npc);
-        if (!combatantInitiative.Any(entry => entry.npc == npc)) return;
+        if (!combatantInitiative.Any(entry => entry.character == npc)) return;
         if (activeCombatant == npc) NextTurn();
-        combatantInitiative.Remove(combatantInitiative.Where(entry => entry.npc == npc).FirstOrDefault());
+        combatantInitiative.Remove(combatantInitiative.Where(entry => entry.character == npc).FirstOrDefault());
         ResetInitiative();
+        CheckForCombatEnd();
     }
 
     public void ResetInitiative()
     {
         for (int i = 0; i < combatantInitiative.Count; i++)
         {
-            combatantInitiative[i] = new InitiativeEntry() { npc = combatantInitiative[i].npc, initiative = i, type = combatantInitiative[i].type };
+            combatantInitiative[i] = new InitiativeEntry() { character = combatantInitiative[i].character, initiative = i, type = combatantInitiative[i].type };
         }
-        initiativeTurn = combatantInitiative.Where(entry => entry.npc == activeCombatant).FirstOrDefault().initiative;
+        initiativeTurn = combatantInitiative.Where(entry => entry.character == activeCombatant).FirstOrDefault().initiative;
     }
 
     public void SpendActionPoints(int cost)
@@ -277,14 +267,13 @@ public class CombatManager : MonoBehaviour
 
     public bool CheckActionPoints(int cost)
     {
-        Debug.Log("Check AP: " + cost + " " + ActionPoints);
         return !combatActive || cost <= ActionPoints;
     }
 
     public void UnsetAction()
     {
         currentAction = null;
-        //TODO: call this if esc and update UI
+        combatStatUpdate.Invoke();
     }
 
 }

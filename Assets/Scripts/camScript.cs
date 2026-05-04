@@ -11,10 +11,10 @@ public class camScript : MonoBehaviour
 
     private GameObject trackedObj;
 
-    public float scrollSpeed = 0.002f; // Set camera movement speed.
+    public float scrollSpeed = 0.0015f; // Set camera movement speed.
     public float zoomSpeed = 0.1f; // Set camera movement speed.
+    public float maxCamDist = 40f;
     private Camera cam; // Reference to camera.
-   // private Camera iconCam; // Used to view icons
     private Transform ct;
 
     private float xTilt = 37.5f;
@@ -30,7 +30,6 @@ public class camScript : MonoBehaviour
     void Start()
     {
         cam = GetComponent<Camera>(); // Access player's Rigidbody.
-        //iconCam = GameObject.Find("IconCamera").GetComponent<Camera>();
         ct = cam.transform;
         Camera.main.orthographic = true;
         ct.rotation = Quaternion.identity * Quaternion.Euler(xTilt, yRot, 0);
@@ -68,13 +67,13 @@ public class camScript : MonoBehaviour
             Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
             Vector3 movement = ((screenUp * moveDirection.y) + (screenRight * moveDirection.x));
 
-            if (inBounds && (movement != Vector3.zero || mouseScroll.y != 0)) MoveCamera(movement, mouseScroll.y);
+            var distFromPlayer = Vector3.Distance(ct.position, PartyController.Instance.selectedPartyMember.transform.position);
+            if (inBounds && (movement != Vector3.zero || mouseScroll.y != 0) && distFromPlayer <= maxCamDist) MoveCamera(movement, mouseScroll.y);
         }
     }
 
     public void MoveCamera(Vector3 direction, float zoom)
     {
-        //TODO: limit distance from player for scrolling (to avoid seeing unloaded content), or possibly load based on camera
         StopTracking();
         Vector3 movement = direction * scrollSpeed * cam.orthographicSize;
 
@@ -83,10 +82,9 @@ public class camScript : MonoBehaviour
         cam.orthographicSize -= zoom * zoomSpeed;
         cam.orthographicSize = Math.Max(cam.orthographicSize, 2.0f);
         cam.orthographicSize = Math.Min(cam.orthographicSize, 5.0f);
-        //iconCam.orthographicSize = cam.orthographicSize;
     }
 
-    public void CenterCamera(Vector3 position)  // TODO: make private? Only call Track Obj?
+    public void CenterCamera(Vector3 position)
     {
         var tiltDownRad = Math.PI * xTilt / 180.0;
         var rotRad = Math.PI * yRot / 180.0;

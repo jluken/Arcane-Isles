@@ -5,7 +5,7 @@ public class AwareRad : MonoBehaviour
     public Enemy enemy;
 
 
-    void OnTriggerStay(Collider other)  // TODO: figure out "hiding" logic and when they should be "forgotten"/when effect take place (check player hide status?)
+    void OnTriggerStay(Collider other)  // TODO: figure out "hiding" logic and when they should be "forgotten"/when effect take place (check player hide status?) [Stealth]
     {
         if (enemy.isAggroed && other.gameObject.GetComponent<PartyMember>() != null && !enemy.AwarePlayers.Contains(other.gameObject))
         {

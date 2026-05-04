@@ -41,7 +41,7 @@ public class ItemScript : Selectable
 
     public class PickUp : Interaction
     {
-        public override void Interact(NPC npc, Selectable interactable)
+        public override void Interact(Character npc, Selectable interactable)
         {
             if (interactable.GetComponent<ItemScript>() == null) { Debug.LogError("Can only Pick up droppable items"); }
             var droppable = interactable.GetComponent<ItemScript>();
@@ -49,7 +49,7 @@ public class ItemScript : Selectable
             droppable.stackSize = leftOver;
             if (droppable.stackSize <= 0)
             {
-                SceneLoader.Instance.SceneObjectManagers[droppable.gameObject.scene.name].DeleteDroppedObject(droppable.gameObject);
+                SceneLoader.Instance.GetCurrentSceneManager(droppable.gameObject).DeleteDroppedObject(droppable.gameObject);
             }
         }
     }

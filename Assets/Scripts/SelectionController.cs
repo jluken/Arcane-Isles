@@ -50,7 +50,7 @@ public class SelectionController : MonoBehaviour
     {
         if (!playerUnderControl || CombatManager.Instance.inAction || UIController.Instance.PauseTime()) return;
         RaycastHit hit;
-        LayerMask layerMask = LayerMask.GetMask("Barrier"); // TODO: maybe detect selectable specifically instead of ignoring barrier
+        LayerMask layerMask = LayerMask.GetMask("Barrier");
 
         bool objectPoint = Physics.Raycast(Camera.main.ScreenPointToRay(MousePosition()), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject();
         pointedObject = objectPoint ? hit.transform.gameObject : null;
@@ -101,7 +101,7 @@ public class SelectionController : MonoBehaviour
             if (selectionData.setSelect)
             {
                 Select(selectionData.selectable); 
-                PartyController.Instance.GoTo(selectionData.selectable.transform.position);
+                PartyController.Instance.GoTo(selectionData.selectable);
             }
             if (selectionData.interaction != null) selectionData.selectable.SetInteractAction(selectionData.interaction);
         }
@@ -111,7 +111,6 @@ public class SelectionController : MonoBehaviour
     {
         Deselect();
         selectedItem = selectable;
-        //PartyController.Instance.GoTo(selectable.transform.position);  // TODO: if selectable standpoint, set here with absolute values
     }
 
     public void Deselect()

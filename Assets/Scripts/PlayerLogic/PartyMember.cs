@@ -1,12 +1,8 @@
-using NUnit.Framework;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
 
 //[RequireComponent(typeof(PartyMember))]
-public class PartyMember : NPC
+public class PartyMember : Character
 {
     public virtual bool mainChar { get; } = false;
 
@@ -46,12 +42,6 @@ public class PartyMember : NPC
         base.Start();
     }
 
-    //public override List<SelectionData> Actions()
-    //{
-    //    var acts = new List<SelectionData>() { setPlayer, talk, CanFollow() ? stay : follow};
-    //    return acts;
-    //}
-
     public override void SetStates()
     {
         base.SetStates();
@@ -75,12 +65,18 @@ public class PartyMember : NPC
     public void Stay()
     {
         stayPut = true;
+        var acts = new List<SelectionData>() { setPlayer, talk, follow };
+        ActiveState = new ActiveState(this, StateMachine, acts);
+        IdleState = new IdleState(this, StateMachine, acts);
     }
 
     public void Follow()
     {
         stayPut = false;
-        // TODO: Immediately catch up with the leader (when switch to more complex follow logic)
+        var acts = new List<SelectionData>() { setPlayer, talk, stay };
+        ActiveState = new ActiveState(this, StateMachine, acts);
+        IdleState = new IdleState(this, StateMachine, acts);
+        mover.Follow(PartyController.Instance.selectedPartyMember);
     }
 
     public bool CanFollow()
@@ -106,15 +102,4 @@ public class PartyMember : NPC
         StateMachine.ChangeState(DeadState);
         EventHandler.Instance.TriggerDeathEvent(this);
     }
-
-    //public override void SetToCombat()
-    //{
-    //    parentPartyMember.SetToCombat();
-    //}
-
-    //public override void EndCombat()
-    //{
-    //    parentPartyMember.EndCombat();
-    //}
-
 }
