@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static CharStats;
 
 [CreateAssetMenu(fileName = "Fists", menuName = "Scriptable Objects/Fists")]
 public class Fists : WeaponItem
@@ -9,11 +10,11 @@ public class Fists : WeaponItem
 
     public override AbilityAction DefaultAttack()
     {
-        return new AttackAction(name: "Punch", icon: punchIcon, range: 1.5f, damageDie: 4, attackCost: 4, modifier: CharStats.StatVal.survival);
+        return new AttackAction(name: "Punch", icon: punchIcon, range: 1.5f, damageDie: 4, attackCost: 4, modifier: StatVal.survival);
     }
 
     public override List<AbilityAction> ItemActions()
     {
-        return new List<AbilityAction>() { new AttackAction(name: "Punch", icon: punchIcon, range: 1.5f, damageDie: 4, attackCost: 4, modifier: CharStats.StatVal.survival) };
+        return new List<AbilityAction>() { new AttackAction(name: "Punch", icon: punchIcon, range: 1.5f, damageDie: 4, attackCost: 4, modifier: StatVal.survival) };
     }
 }

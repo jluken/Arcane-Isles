@@ -4399,7 +4399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54d155ca90d88f64c89c0d325182c724, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  charImage: {fileID: 21300000, guid: 21e47bd350797b149a83247837da5c2f, type: 3}
+  charImage: {fileID: 21300000, guid: 49cea4d82c4819d439e5b56256978565, type: 3}
   charName: Stephen
   gender: X
   level: 1

@@ -48,7 +48,6 @@ public class OpenClose : Interaction
         if (interactable.GetComponent<doorway>() == null) { Debug.LogError("Trying to open/close a non-door"); }
         var door = interactable.GetComponent<doorway>();
         door.open = !door.open;
-        Debug.Log(door.open);
         door.doorObject.SetActive(!door.open);
     }
 }

@@ -90,7 +90,6 @@ public class Selectable : MonoBehaviour
 
     public virtual void Interact(Character npc)
     {
-        Debug.Log("Interact: " + this.name + interactAction);
         interactAction?.Interact(npc, this);
         SelectionController.Instance.Deselect();
         UnsetInteraction();
