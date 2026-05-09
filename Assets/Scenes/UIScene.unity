@@ -16423,6 +16423,8 @@ MonoBehaviour:
   ActionPointBar: {fileID: 542331282}
   pipPrefab: {fileID: 51132009749277144, guid: 6fb5b2ce13133ca4495a4a2ef7c53c1b, type: 3}
   fullPip: {fileID: 21300000, guid: 1a805597ba229cd498100752e200473b, type: 3}
+  prepPip: {fileID: 21300000, guid: fa51fa2fe9ce67242a8546958e4d825e, type: 3}
+  errPip: {fileID: 21300000, guid: 5ab6ce1c3e24575418db3421a5c3f1b0, type: 3}
   chatWindowScroll: {fileID: 1205858778}
   chatWindowContent: {fileID: 410882781}
   portraitPanel: {fileID: 308062280}

@@ -6,7 +6,7 @@ public class PointAction : AbilityAction
     protected Vector3 target;
     protected Selectable targetObject;
 
-    public PointAction(string name, Sprite icon,  Character actor, float range = 0f, Vector3 point = new Vector3()) : base(name: name, icon: icon, range: range, actor: actor)
+    public PointAction(string name, Sprite icon,  Character actor, float range = -1f, Vector3 point = new Vector3()) : base(name: name, icon: icon, range: range, actor: actor)
     {
         SetTarget(point);
     }
@@ -28,6 +28,11 @@ public class PointAction : AbilityAction
         throw new System.NotImplementedException();
     }
 
+    public override int GetActionCost()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public override void SetTarget(Vector3 point)
     {
         targetObject = null;
@@ -38,5 +43,10 @@ public class PointAction : AbilityAction
     {
         targetObject = newTarget;
         target = newTarget.transform.position;
+    }
+
+    public override void DisplayTarget()
+    {
+        //No default display action for point actions
     }
 }

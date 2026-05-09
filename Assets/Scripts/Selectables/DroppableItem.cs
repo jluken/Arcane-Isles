@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 public class ItemScript : Selectable
@@ -23,6 +24,17 @@ public class ItemScript : Selectable
     //{
 
     //}
+
+    public override void StartHover()
+    {
+        GetComponent<Outline>().enabled = true;
+        GetComponent<Outline>().OutlineColor = Color.white;
+    }
+
+    public override void EndHover()
+    {
+        GetComponent<Outline>().enabled = false;
+    }
 
     public override List<SelectionData> Actions()
     {

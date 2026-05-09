@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using static UnityEngine.EventSystems.EventTrigger;
 //ing UnityEngine.UIElements;
 
-public class CombatUI : MenuScreen
+public class CombatUI : MenuScreen  // TODO: used?
 {
     public static CombatUI Instance { get; private set; }
 

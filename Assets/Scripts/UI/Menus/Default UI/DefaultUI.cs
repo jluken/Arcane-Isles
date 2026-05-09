@@ -22,11 +22,14 @@ public class DefaultUI : MenuScreen
     private List<GameObject> initiativeIcons;
 
     private List<GameObject> actionButtons;
+    private List<AbilityAction> buttonActions;
 
     public GameObject ActionPointBar;
     private List<GameObject> ActionPointPips;
     public GameObject pipPrefab;
     public Sprite fullPip;
+    public Sprite prepPip;
+    public Sprite errPip;
 
     public GameObject chatWindowScroll;
     public GameObject chatWindowContent;
@@ -50,6 +53,7 @@ public class DefaultUI : MenuScreen
         //charStats = player.GetComponent<CharStats>();
         //charStats.updateStatEvent += UpdateStats;
         actionButtons = new List<GameObject>();
+        buttonActions = new List<AbilityAction>();
         initiativeIcons = new List<GameObject>();
         ActionPointPips = new List<GameObject>();
 
@@ -92,8 +96,11 @@ public class DefaultUI : MenuScreen
 
     public void UpdateActions(Character selectedNPC)
     {
+        FillActionPoints(selectedNPC);
+        if (buttonActions.Select(x => x.actionName).SequenceEqual(selectedNPC.GetActions().Select(x=>x.actionName))) return;
         foreach (GameObject but in actionButtons) Destroy(but);
         actionButtons.Clear();
+        buttonActions.Clear();
         if (!CombatManager.Instance.IsPartyTurn)
         {
             ActionMenu.SetActive(false);
@@ -110,9 +117,9 @@ public class DefaultUI : MenuScreen
                 actionButtons.LastOrDefault().GetComponent<Button>().image.sprite = action.icon;
                 actionButtons.LastOrDefault().GetComponent<Button>().onClick.AddListener(() => CombatManager.Instance.SetCurrentAction(action));
                 if (selectedNPC != PartyController.Instance.activePartyMember) actionButtons.LastOrDefault().GetComponent<Button>().interactable = false;
+                buttonActions.Add(action);
             }
         }
-        FillActionPoints(selectedNPC);
     }
 
     public void UpdateChatUI(List<string> latestChatLog)
@@ -145,10 +152,13 @@ public class DefaultUI : MenuScreen
         ActionPointPips.Clear();
         if (!PartyController.Instance.party.Contains(selectedNPC)) return;
         var currentAP = CombatManager.Instance.GetCurrentAP(selectedNPC);
-        for(int i = 0; i < selectedNPC.charStats.GetCurrStat(CharStats.StatVal.actionPoints); i++)
+        var prepAP = CombatManager.Instance.GetCurrentOnDeckAP(selectedNPC);
+        for (int i = 0; i < selectedNPC.charStats.GetCurrStat(CharStats.StatVal.actionPoints); i++)
         {
             ActionPointPips.Add(Instantiate(pipPrefab, ActionPointBar.transform));
-            if (i < currentAP) ActionPointPips.LastOrDefault().GetComponent<Image>().sprite = fullPip;
+            if (currentAP < prepAP && i < currentAP) ActionPointPips.LastOrDefault().GetComponent<Image>().sprite = errPip;
+            else if (i < (currentAP- prepAP)) ActionPointPips.LastOrDefault().GetComponent<Image>().sprite = fullPip;
+            else if (i < currentAP) ActionPointPips.LastOrDefault().GetComponent<Image>().sprite = prepPip;
         }
     }
 

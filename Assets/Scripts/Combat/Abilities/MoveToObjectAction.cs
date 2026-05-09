@@ -1,4 +1,5 @@
 using NUnit.Framework.Internal;
+using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -11,19 +12,7 @@ public class MoveToObject : InteractionAction
 
     protected float PathDist(Character actor, Selectable target)
     {
-        var path = actor.mover.PathToPoint(target.transform.position);
-
-        if (SelectionController.Instance.selectedItem == target && path != null) {  // Will stop prior to actually reaching the target object
-            RaycastHit hit;
-            Vector3 penultCorner = path.corners[^2];
-            var rayDirection = path.corners[^1] - penultCorner;
-            if (Physics.Raycast(penultCorner, rayDirection, out hit))
-            {
-                path = actor.mover.PathToPoint(hit.transform.position);
-            }
-            return MoveToClick.PathDist(path) - actor.reach;
-        }
-
+        var path = actor.mover.PathToObj(target);
         return MoveToClick.PathDist(path);
     }
 
@@ -34,8 +23,7 @@ public class MoveToObject : InteractionAction
 
     public override bool CheckValidTarget(Selectable target)
     {
-        var inRange = Mathf.CeilToInt(PathDist(actor, target) / actor.charStats.runModifier) <= CombatManager.Instance.ActionPoints;
-        return !actor.mover.pathLocked && inRange;
+        return !actor.mover.pathLocked;
     }
 
     public override IEnumerator UseAbility()
@@ -43,9 +31,23 @@ public class MoveToObject : InteractionAction
         var cost = PathDist(actor, target);
         actor.mover.SetDestination(target);
 
+        CombatManager.Instance.LockAction(this);
         while (actor.mover.IsMoving())
         {
             yield return null; // Wait for the next frame
         }
+        //Debug.Log("Done moving moveToObj");
+        CombatManager.Instance.FinishAction();  // handled by StopAction?
+    }
+
+    public override int GetActionCost()
+    {
+        Debug.Log("Move to obj path dist: " + PathDist(actor, target));
+        return Mathf.CeilToInt(PathDist(actor, target) / actor.charStats.runModifier);
+    }
+
+    public override void DisplayTarget()
+    {
+        if (CheckValidAction()) actor.mover.DrawTo(target);
     }
 }

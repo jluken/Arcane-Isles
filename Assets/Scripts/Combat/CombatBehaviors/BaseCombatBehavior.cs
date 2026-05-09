@@ -14,11 +14,17 @@ public class BaseCombatBehavior : ScriptableObject
     }
 
     public IEnumerator CombatTurn(Character attacker) {
+        CombatManager.Instance.UncarveTargets();
+        yield return null;
+        yield return new WaitForSeconds(0.5f);
         while (CanAct(attacker))
         {
             Debug.Log("Do new action");
             yield return DoNextAction(attacker);
         }
+        CombatManager.Instance.RecarveTargets();
+        yield return null;
+        yield return new WaitForSeconds(0.5f);
         CombatManager.Instance.NextTurn();
         yield return null;
     }
@@ -48,7 +54,7 @@ public class BaseCombatBehavior : ScriptableObject
         Character closest = null;
         foreach(var target in CombatManager.Instance.Allies)
         {
-            var path = attacker.GetComponent<MoveToClick>().PathToPoint(target.character.transform.position);
+            var path = attacker.GetComponent<MoveToClick>().PathToObj(target.character);
             var dist = path != null ? MoveToClick.PathDist(path) : Mathf.Infinity;
             if (dist < minDist)
             {

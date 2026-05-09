@@ -19,7 +19,7 @@ public static class SaveSystem
     public static void AutoSave()
     {
         int prevAutoSaveNum = PlayerPrefs.GetInt(autoSaveSlot, 0);
-        int newAutoNum = (prevAutoSaveNum + 1) % autoSaves;
+        int newAutoNum = (prevAutoSaveNum) % autoSaves;
         string autosaveName = "Autosave " + (newAutoNum + 1);
         SaveGame(autosaveName);
         PlayerPrefs.SetInt(autoSaveSlot, newAutoNum);

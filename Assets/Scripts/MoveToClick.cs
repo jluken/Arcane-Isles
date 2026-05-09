@@ -10,11 +10,10 @@ using UnityEngine.AI;
 public class MoveToClick : MonoBehaviour
 {
     public NavMeshAgent agent => GetComponent<NavMeshAgent>();
+    public NavMeshObstacle obstacle => GetComponent<NavMeshObstacle>();
 
     public float activateDist = 1.0f;
-    private GameObject destMarkerPrefab;
-    private GameObject destMarker;
-    public bool useMarker = false;
+    private bool useMarker => PartyController.Instance.activePartyMember != null && agent == PartyController.Instance.activePartyMember.mover.agent;
     public bool controlled = false;
     public bool pathLocked { private set; get; }
 
@@ -29,13 +28,16 @@ public class MoveToClick : MonoBehaviour
 
     private Vector3 lastPoint;
 
+    public bool planted { private set; get; }
+
     void Start()
     {
+        Debug.Log("Start MTC");
         startedMoving = false;
         pathLocked = false;
         followTarget = null;
         stopCount = 0;
-        destMarkerPrefab = Resources.Load<GameObject>("Prefabs/Destination");
+        planted = false;
 
         if (controlled) SelectionController.Instance.deselectEvent += StopMoving;
     }
@@ -53,9 +55,11 @@ public class MoveToClick : MonoBehaviour
             else if(distToTarget > followDist) SetDestination(followTarget);
         }
 
+        if(IsMoving() && useMarker && CombatManager.Instance.combatActive) DrawPath(AgentPath());
+
         if (!agent.pathPending)
         {
-            if (!startedMoving && agent.velocity.sqrMagnitude > movingThreshold) { startedMoving = true; stopCount = 0; }
+            if (!startedMoving && agent.velocity.sqrMagnitude > movingThreshold) { startedMoving = true; stopCount = 0;}
             if (agent.hasPath && agent.velocity.sqrMagnitude <= movingThreshold) //stuck
             {
                 stopCount++;
@@ -72,8 +76,8 @@ public class MoveToClick : MonoBehaviour
         }
         if (startedMoving && CombatManager.Instance.combatActive)
         {
-            CombatManager.Instance.LogTravel(agent, Vector3.Distance(agent.transform.position, lastPoint));
-            lastPoint = agent.transform.position;
+            CombatManager.Instance.LogTravel(agent, Vector3.Distance(Utils.GroundPoint(agent.gameObject), lastPoint));
+            lastPoint = Utils.GroundPoint(agent.gameObject);
         }
     }
 
@@ -83,6 +87,11 @@ public class MoveToClick : MonoBehaviour
         NavMeshHit hit;
         if(NavMesh.SamplePosition(dest, out hit, 5.0f, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path)) return path;
         else return null;
+    }
+
+    public NavMeshPath PathToObj(Selectable target)
+    {
+        return PathToPoint(PointNearObject(target));
     }
 
     public static float PathDist(NavMeshPath path)
@@ -121,9 +130,20 @@ public class MoveToClick : MonoBehaviour
         followTarget = leader;
     }
 
-    public void PlantFeet() { agent.avoidancePriority = 0; }
+    public void PlantFeet() {
+        planted = true;
+        agent.avoidancePriority = 0;
+        agent.enabled = false;
+        obstacle.enabled = true;
+        obstacle.carving = true;
+    }
 
-    public void DefaultAvoidance() { agent.avoidancePriority = 50; }
+    public void DefaultAvoidance() {
+        planted = false;
+        obstacle.enabled = false;
+        agent.enabled = true;
+        agent.avoidancePriority = 50;
+    }
 
     public Vector3 PointNearObject(Selectable target)
     {
@@ -155,20 +175,48 @@ public class MoveToClick : MonoBehaviour
         if (pathLocked) return;
         var path = PathToPoint(dest);
         if (path != null) agent.SetPath(path);
-        lastPoint = agent.transform.position;
-        Destroy(destMarker);
-        if (useMarker) destMarker = Instantiate(destMarkerPrefab, agent.destination, destMarkerPrefab.transform.rotation);
+        lastPoint = Utils.GroundPoint(agent.gameObject);
+        if(useMarker) NavLine.Instance.DisableMarker();
+        if (useMarker && PathDist(path) > 0) NavLine.Instance.SetMarker(dest);
+    }
+
+    public void DrawTo(Selectable target)
+    {
+        if (target == null) Debug.LogError("Cannot draw path to null target");
+        DrawTo(PointNearObject(target));
+    }
+
+    public void DrawTo(Vector3 dest)
+    {
+        var path = PathToPoint(dest);
+        if (path != null) DrawPath(path);
+    }
+
+    private void DrawPath(NavMeshPath path)
+    {
+        var apDist = CombatManager.Instance.GetMaxPath();
+        var splitPoint = PointAlongPath(path, apDist);
+        var validPath = PathToPoint(splitPoint);
+        if (useMarker) NavLine.Instance.DrawPath(validPath, path);
     }
 
     public void StopMoving()
     {
         pathLocked = false;
-        agent.isStopped = true;
-        agent.ResetPath();
-        lastPoint = agent.transform.position;
+        if (agent.enabled)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+        }
+        lastPoint = Utils.GroundPoint(agent.gameObject);
         startedMoving = false;
-        Destroy(destMarker);
+        if (useMarker)
+        {
+            NavLine.Instance.DisableMarker();
+            NavLine.Instance.DisableLine();
+        }
         stopCount = 0;
+        CombatManager.Instance.FinishAction();  // Necessary for action to register as finished before next frame
     }
 
     public void OnDisable()

@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class AoeAttackAction : PointAction
 {
@@ -22,7 +23,6 @@ public class AoeAttackAction : PointAction
     public override bool CheckValidTarget(Vector3 target)
     {
         Debug.Log("Check AOE valid");
-        if (attackCost > CombatManager.Instance.ActionPoints) return false;
         var dist = Vector3.Distance(actor.gameObject.transform.position, target);
         Debug.Log("dist: " + dist + " out of " + range);
         if (dist < range)
@@ -46,12 +46,24 @@ public class AoeAttackAction : PointAction
         }
         var damage = Random.Range(1, damageDie);
 
-        CombatManager.Instance.LockAction();
+        CombatManager.Instance.LockAction(this);
         CombatManager.Instance.SpendActionPoints(attackCost);
         if(weaponAttack) actor.inventory.UseWeapon();
         yield return new WaitForSeconds(1.0f);
         foreach(Character victim in victims) victim.takeDamage(damage);
         CombatManager.Instance.FinishAction();
         yield break;
+    }
+
+    public override int GetActionCost()
+    {
+        return attackCost;
+    }
+
+    public override void DisplayTarget()
+    {
+        CombatManager.Instance.abilityEffectMarker.SetActive(true);
+        CombatManager.Instance.abilityEffectMarker.transform.position = target + new Vector3(0, 1, 0);
+        CombatManager.Instance.abilityEffectMarker.GetComponent<DecalProjector>().size = new Vector3(radius * 2, radius * 2, 3f);
     }
 }

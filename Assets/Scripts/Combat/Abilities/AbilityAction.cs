@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using static CharStats;
 
 public abstract class AbilityAction
@@ -10,7 +11,7 @@ public abstract class AbilityAction
 
     public Character actor;
 
-    public AbilityAction(string name="", Sprite icon = null, float range=0f, Character actor=null)
+    public AbilityAction(string name="", Sprite icon = null, float range=-1f, Character actor=null)
     {
         actionName = name;
         this.icon = icon;
@@ -27,7 +28,21 @@ public abstract class AbilityAction
 
     public abstract void SetTarget(Selectable target);
 
+    public abstract void DisplayTarget();
+
     public abstract bool CheckValidAction();
 
     public abstract IEnumerator UseAbility();
+
+    public abstract int GetActionCost();
+
+    public bool CanUseAbility()
+    {
+        return CheckValidAction() && GetActionCost() <= CombatManager.Instance.GetCurrentAP(actor);
+    }
+
+    public static bool RunningAction(AbilityAction action)
+    {
+        return action is MoveToPoint || action is MoveToObject;
+    }
 }

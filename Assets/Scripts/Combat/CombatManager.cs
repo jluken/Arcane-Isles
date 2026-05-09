@@ -2,10 +2,12 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO.Pipes;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.TextCore.Text;
 using static UnityEngine.InputSystem.DefaultInputActions;
 
@@ -13,7 +15,7 @@ public class CombatManager : MonoBehaviour
 {
     public static CombatManager Instance { get; private set; }
 
-    public bool combatActive { get; private set; } = false ;
+    public bool combatActive { get; private set; } = false;
 
     public event Action callToArms;
     public event Action setPeace;
@@ -43,9 +45,15 @@ public class CombatManager : MonoBehaviour
 
     private float turnTravel;
     public int ActionPoints { get; private set; }
+    public int OnDeckActionPoints { get; private set; }
 
     public Sprite runIcon;
     public AbilityAction defaultRun;
+    public Texture2D targetCursor;
+    public Texture2D attackCursor;
+
+    public GameObject abilityRangeMarker;
+    public GameObject abilityEffectMarker;
 
     private InputActionMap uiActions;
 
@@ -54,6 +62,7 @@ public class CombatManager : MonoBehaviour
         Instance = this;
         combatantInitiative = new List<InitiativeEntry>();
         activeCombatant = null;
+        currentAction = null;
 
         defaultRun = new MoveToPoint("run", runIcon);
         uiActions = InputSystem.actions.FindActionMap("UI");
@@ -76,6 +85,17 @@ public class CombatManager : MonoBehaviour
         return ActionPoints;
     }
 
+    public int GetCurrentOnDeckAP(Character character)
+    {
+        if (!combatActive || activeCombatant != character) return 0;
+        return OnDeckActionPoints;
+    }
+
+    public float GetMaxPath()
+    {
+        return GetCurrentAP(activeCombatant) * activeCombatant.charStats.runModifier;
+    }
+
     public void insertIntoInitiative(Character character, CombatantType type)
     {
         if (combatantInitiative.Any(entry => entry.character == character)) return;
@@ -88,7 +108,7 @@ public class CombatManager : MonoBehaviour
             if (initiative == combatantInitiative[idx].initiative && character.charStats.GetCurrStat(CharStats.StatVal.finesse) > combatantInitiative[idx].character.charStats.GetCurrStat(CharStats.StatVal.finesse)) break;
             idx++;
         }
-        combatantInitiative.Insert(idx, new InitiativeEntry() { character=character, initiative=initiative, type=type });
+        combatantInitiative.Insert(idx, new InitiativeEntry() { character = character, initiative = initiative, type = type });
         combatStatUpdate.Invoke();
     }
 
@@ -99,10 +119,31 @@ public class CombatManager : MonoBehaviour
         return currentList;
     }
 
+    private Dictionary<Character, bool> prevCarveouts;
+
+    public void UncarveTargets()
+    {
+        prevCarveouts = new Dictionary<Character, bool>();
+        foreach (var target in combatantInitiative)
+        {
+            prevCarveouts.Add(target.character, target.character.mover.planted);
+            target.character.mover.DefaultAvoidance();
+        }
+    }
+
+    public void RecarveTargets()
+    {
+        foreach (var target in prevCarveouts)
+        {
+            if (target.Value == true) target.Key.mover.PlantFeet();
+        }
+        prevCarveouts = new Dictionary<Character, bool>();
+    }
+
     public void InitiateCombat(List<Character> initialCombatants = null)
     {
         if (combatActive) return;
-        combatActive = true ;
+        combatActive = true;
         combatantInitiative = new List<InitiativeEntry>();
         foreach (var partyMember in PartyController.Instance.party)
         {
@@ -121,10 +162,10 @@ public class CombatManager : MonoBehaviour
 
     public bool CheckForCombatEnd()
     {
-        if (!combatantInitiative.Any(entry => entry.character == PartyController.Instance.playerChar) || 
-            !combatantInitiative.Any(entry => entry.type == CombatantType.Enemy)) { 
-            EndCombat(); 
-            return true; 
+        if (!combatantInitiative.Any(entry => entry.character == PartyController.Instance.playerChar) ||
+            !combatantInitiative.Any(entry => entry.type == CombatantType.Enemy)) {
+            EndCombat();
+            return true;
         }
         return false;
     }
@@ -161,7 +202,7 @@ public class CombatManager : MonoBehaviour
         camScript.Instance.TrackObj(activeCombatant.gameObject);
         SelectionController.Instance.playerUnderControl = combatantInitiative[turn].type == CombatantType.Party;
         if (isEnemy)
-        { 
+        {
             activeCombatant.GetComponent<Enemy>().TakeAction();
         }
         else if (SelectionController.Instance.playerUnderControl)
@@ -176,10 +217,20 @@ public class CombatManager : MonoBehaviour
         GameData.Instance.gameTime += 10;
     }
 
-    public bool inAction { private set; get; }
+    private AbilityAction executingAction;
+
+    public bool InAction() {
+        return executingAction != null;
+    }
+
+    public bool Running()
+    {
+        return AbilityAction.RunningAction(executingAction);
+    }
 
     public void SetCurrentAction(AbilityAction action)
     {
+        Debug.Log("Set current action to " + action.actionName);
         currentAction = action;
     }
 
@@ -201,14 +252,23 @@ public class CombatManager : MonoBehaviour
 
     public void UseCombatAbility(AbilityAction action)
     {
-        if(inAction && activeCombatant.mover.IsMoving()) activeCombatant.mover.StopMoving(); // Movement can be overridden 
-        if (!inAction)
+        if (InAction() && Running())
         {
-            if (action != null && action.CheckValidAction())
+            // TODO: this might never get called due to deselect triggering first
+            Debug.Log("Stop running for retarget");
+            activeCombatant.mover.StopMoving(); // Movement can be overridden 
+            Debug.Log("Finish action for retarget");
+            FinishAction();
+        }
+        if (!InAction())
+        {
+            if (action != null && (action.CanUseAbility() || (AbilityAction.RunningAction(action)  && action.CheckValidAction())))
             {
                 var prev = SelectionController.Instance.playerUnderControl;
                 SelectionController.Instance.playerUnderControl = false;
                 // TODO: grey out buttons as well [UI]
+                LockAction(action);
+                Debug.Log("Starting action: " + action);
                 StartCoroutine(action.UseAbility());
                 //SpendActionPoints(currentAction.UseAbility(activeCombatant, target));
                 SelectionController.Instance.playerUnderControl = prev;
@@ -218,24 +278,74 @@ public class CombatManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        //Debug.Log("Current Action is null? + " + (currentAction == null ? "true" : "false"));
+        //Debug.Log("Current Action: " + (currentAction == null ? "null" : currentAction.actionName));
+    }
+
+    public void PrepAttackTarget(Selectable target) // TODO: duplicate code
+    {   
+        var tempAction = currentAction;
+        if (currentAction == null) tempAction = activeCombatant.GetDefaultAttack();
+        tempAction.SetActor(activeCombatant);
+        tempAction.SetTarget(target);
+        UpdateCombatDisplay(tempAction);
+    }
+
+    public void PrepTargetPoint(Vector3 target) // TODO: duplicate code
+    {
+        var tempAction = currentAction;
+        tempAction ??= defaultRun;
+        tempAction.SetActor(activeCombatant);
+        tempAction.SetTarget(target);
+        UpdateCombatDisplay(tempAction);
+    }
+
+    public void UpdateCombatDisplay(AbilityAction action)
+    {
+        //Disable display fx to start
+        abilityEffectMarker.SetActive(false);
+        NavLine.Instance.DisableLine();
+        
+        if (InAction() || action == null)
+        {
+            OnDeckActionPoints = 0; // Don't show AP cost while acting
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        }
+        else if (!InAction())
+        {
+            OnDeckActionPoints = action.CheckValidAction() ? action.GetActionCost() : 0;
+            action.DisplayTarget();
+        }
+        var rangeAction = action != null ? action : currentAction;  // TODO: put this in the action itself, or special since it doesn't require point target?
+        if (!InAction() && rangeAction != null && rangeAction.range > 0)
+        {
+            abilityRangeMarker.SetActive(true);
+            abilityRangeMarker.transform.position = activeCombatant.transform.position + new Vector3(0, 1, 0);
+            abilityRangeMarker.GetComponent<DecalProjector>().size = new Vector3(rangeAction.range * 2, rangeAction.range * 2, 3f);
+        }
+        else abilityRangeMarker.SetActive(false);
+        if(!InAction() && rangeAction != null) rangeAction.DisplayTarget();
+        combatStatUpdate.Invoke();
+    }
+
     public void LogTravel(NavMeshAgent agent, float dist)
     {
-        Debug.Log("Log Travel with agent " + agent + " and active combtant " + activeCombatant.mover.agent);
         int prevPipTravel = (int)Math.Floor(turnTravel / activeCombatant.charStats.runModifier);
         turnTravel += dist;
-        Debug.Log("Log Travel with turn travel " + turnTravel + " and run modifier " + activeCombatant.charStats.runModifier);
         if (agent == activeCombatant.mover.agent && (int)Math.Floor(turnTravel / activeCombatant.charStats.runModifier) > prevPipTravel) SpendActionPoints(1);
         if (ActionPoints == 0) activeCombatant.mover.StopMoving();
     }
 
-    public void LockAction()
+    public void LockAction(AbilityAction action)
     {
-        inAction = true;
+        executingAction = action;
     }
 
     public void FinishAction()
     {
-        inAction = false;
+        executingAction = null;
     }
 
     public void RemoveCombatant(Character npc)

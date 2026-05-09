@@ -44,10 +44,15 @@ public class ActiveCombatState: CharState
         charStateMachine.ChangeState(character.ActiveState);
     }
 
+    public override void EnterCombat()
+    {
+        // Do nothing
+    }
+
     public override void MoveTo(Vector3 destination)
     {
         Debug.Log("Combat move");
         Debug.Log("active combatant: " + CombatManager.Instance.activeCombatant);
-        CombatManager.Instance.UseCombatAbility(new MoveToPoint("Move", null, CombatManager.Instance.activeCombatant, destination));
+        CombatManager.Instance.TargetPoint(destination);
     }
 }

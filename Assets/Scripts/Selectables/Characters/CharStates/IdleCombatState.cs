@@ -46,4 +46,9 @@ public class IdleCombatState: CharState
         charStateMachine.ChangeState(character.IdleState);
     }
 
+    public override void EnterCombat()
+    {
+        // Do nothing
+    }
+
 }

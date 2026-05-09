@@ -84,6 +84,7 @@ public class Selectable : MonoBehaviour
         SelectionController.Instance.deselectEvent += UnsetInteraction;
         itemPopUpPrefab = Resources.Load<GameObject>("Prefabs/ItemPopup");
         selectMenu = ItemSelectMenu.Instance;
+        EndHover();
 
         displayRoutine = DisplayText();
     }
@@ -96,10 +97,17 @@ public class Selectable : MonoBehaviour
         //isActive = true;
     }
 
-    public void HoverDisplay()
+    public virtual void StartHover()
     {
-        //Debug.Log("Hover over object " + gameObject.name);
-        //TODO: highlight object - possibly use asset if can't find way to "outline" in 3D [UI]
+        GetComponent<NavMeshObstacle>().carving = false;
+        GetComponent<Outline>().enabled = true;
+        GetComponent<Outline>().OutlineColor = Color.white;
+    }
+
+    public virtual void EndHover()
+    {
+        GetComponent<NavMeshObstacle>().carving = true;
+        GetComponent<Outline>().enabled = false;
     }
 
     public void Select()

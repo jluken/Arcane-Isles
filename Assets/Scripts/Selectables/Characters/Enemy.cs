@@ -3,6 +3,7 @@ using PixelCrushers.DialogueSystem;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
 
 public class Enemy : Character
@@ -33,6 +34,12 @@ public class Enemy : Character
 
         combatantType = CombatManager.CombatantType.Enemy;
         base.Start();
+    }
+
+    public override void StartHover()
+    {
+        base.StartHover();
+        GetComponent<Outline>().OutlineColor = Color.red;
     }
 
     public override void SetToCombat()

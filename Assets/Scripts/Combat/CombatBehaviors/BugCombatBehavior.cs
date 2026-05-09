@@ -8,7 +8,7 @@ public class BugCombatBehavior : BaseCombatBehavior
 {
     private AttackAction Bite = new AttackAction(attackCost: 4, damageDie: 3, modifier: CharStats.StatVal.survival, name: "bite", icon: null, range: 1.5f);
     private MoveToObject MoveTo = new MoveToObject(name: "bite", icon: null, range: float.PositiveInfinity);
-    private MoveToPoint MoveTowards = new MoveToPoint("bite", null);
+    //private MoveToPoint MoveTowards = new MoveToPoint("bite", null);
 
     public override Character ChooseTarget(Character attacker)
     {
@@ -21,15 +21,20 @@ public class BugCombatBehavior : BaseCombatBehavior
         if (CombatManager.Instance.ActionPoints == 0) return false;
         Character target = ChooseTarget(attacker);
         if(target == null) return false;
-        var inBiteRange = false;
-        var dist = Vector3.Distance(attacker.gameObject.transform.position, target.gameObject.transform.position);
-        if (target.GetComponent<Character>() != null && dist < 1)
-        {
-            inBiteRange = Utils.LineOfSight(attacker.gameObject, target.gameObject);
-        }
         Bite.SetActor(attacker);
-        if (inBiteRange && !Bite.CheckValidTarget(target)) return false;
-        return true;
+        Bite.SetTarget(target);
+        return Bite.CanUseAbility() || !Bite.CheckValidAction();
+
+
+        //var inBiteRange = false;
+        //var dist = Vector3.Distance(attacker.gameObject.transform.position, target.gameObject.transform.position);
+        //if (target.GetComponent<Character>() != null && dist < Bite.range)
+        //{
+        //    inBiteRange = Utils.LineOfSight(attacker.gameObject, target.gameObject);
+        //}
+        //Bite.SetActor(attacker);
+        //if (inBiteRange && !Bite.CheckValidTarget(target)) return false;
+        //return true;
     }
 
     public override IEnumerator DoNextAction(Character attacker)
@@ -39,30 +44,27 @@ public class BugCombatBehavior : BaseCombatBehavior
         target.Select();
 
         Bite.SetActor(attacker);
+        Bite.SetTarget(target);
         MoveTo.SetActor(attacker);
-        MoveTowards.SetActor(attacker);
-
-        var inBiteRange = false;
-        var dist = Vector3.Distance(attacker.gameObject.transform.position, target.gameObject.transform.position);
-        if (target.GetComponent<Character>() != null && dist < 1)
-        {
-            inBiteRange =  Utils.LineOfSight(attacker.gameObject, target.gameObject);
-        }
+        MoveTo.SetTarget(target);
+        //MoveTowards.SetActor(attacker);
 
 
-        if (Bite.CheckValidTarget(target))
+        if (Bite.CanUseAbility())
         {
             yield return BugBite(target);
         }
-        else if (MoveTo.CheckValidTarget(target))
+        else if (!Bite.CheckValidAction() && MoveTo.CheckValidAction())  // Can be outside of AP and just get as close as possible
         {
+            Debug.Log("Movetotarget");
             yield return MoveToTarget(target);
         }
-        else if (inBiteRange)
-        {
-            yield return MoveTowardsTarget(target.transform.position);
-        }
-        while (CombatManager.Instance.inAction) yield return null;
+        //else if (!inBiteRange)  // TODO: better movement logic here
+        //{
+        //    Debug.Log("Movetowardstarget");
+        //    yield return MoveTowardsTarget(target.transform.position);
+        //}
+        while (CombatManager.Instance.InAction()) yield return null;
     }
 
     public IEnumerator BugBite(Character target)
@@ -77,18 +79,19 @@ public class BugCombatBehavior : BaseCombatBehavior
     {
         Debug.Log("Bug Move To");
         MoveTo.SetTarget(target);
+        
         CombatManager.Instance.UseCombatAbility(MoveTo);
         //while (CombatManager.Instance.inAction) yield return null;
         yield break;
     }
 
-    public IEnumerator MoveTowardsTarget(Vector3 targetPos)
-    {
-        MoveTowards.SetTarget(targetPos);
-        CombatManager.Instance.UseCombatAbility(MoveTowards);
-        //while (CombatManager.Instance.inAction) yield return null;
-        yield break;
-    }
+    //public IEnumerator MoveTowardsTarget(Vector3 targetPos)
+    //{
+    //    MoveTowards.SetTarget(targetPos);
+    //    CombatManager.Instance.UseCombatAbility(MoveTowards);
+    //    //while (CombatManager.Instance.inAction) yield return null;
+    //    yield break;
+    //}
 
     //private IEnumerator HandleNextTarget(NPC attacker, NPC target)
     //{

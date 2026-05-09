@@ -131,6 +131,12 @@ public class Character : Selectable
 
     public string StateName() => StateMachine.CurrentPlayerState.stateName;
 
+    public override void StartHover()
+    {
+        base.StartHover();
+        GetComponent<Outline>().OutlineColor = Color.yellow;
+    }
+
     public override List<SelectionData> Actions()
     {
         //Debug.Log("Get Actions from " + charStats.charName + " at state " + StateMachine.CurrentPlayerState);

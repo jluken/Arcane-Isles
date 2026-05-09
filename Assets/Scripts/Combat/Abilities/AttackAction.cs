@@ -20,7 +20,6 @@ public class AttackAction : InteractionAction
     public override bool CheckValidTarget(Selectable target)
     {
         if (target == null) return false;
-        if (attackCost > CombatManager.Instance.ActionPoints) return false;
         var dist = Vector3.Distance(actor.gameObject.transform.position, target.gameObject.transform.position);
         if (target.GetComponent<Character>() != null && dist < range)
         {
@@ -34,7 +33,7 @@ public class AttackAction : InteractionAction
         var victim = target.GetComponent<Character>();
         var damage = Random.Range(1, damageDie);
 
-        CombatManager.Instance.LockAction();
+        CombatManager.Instance.LockAction(this);
         CombatManager.Instance.SpendActionPoints(attackCost); // account for floating point and wiggle room
         yield return new WaitForSeconds(1.0f);
 
@@ -46,5 +45,17 @@ public class AttackAction : InteractionAction
         else if (hitCalc >= 0) victim.takeDamage(damage);
         CombatManager.Instance.FinishAction();
         yield break;
+    }
+
+    public override int GetActionCost()
+    {
+        return attackCost;
+    }
+
+    public override void DisplayTarget()
+    {
+        if (CanUseAbility()) Cursor.SetCursor(CombatManager.Instance.attackCursor, Vector2.zero, CursorMode.Auto);
+        else if (target != null) Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);  // TODO: create grey out attack cursor
+        else Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
     }
 }

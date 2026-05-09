@@ -48,32 +48,47 @@ public class SelectionController : MonoBehaviour
 
     void Update()
     {
-        if (!playerUnderControl || CombatManager.Instance.inAction || UIController.Instance.PauseTime()) return;
+        if (UIController.Instance.PauseTime()) return;
         RaycastHit hit;
         LayerMask layerMask = LayerMask.GetMask("Barrier");
 
         bool objectPoint = Physics.Raycast(Camera.main.ScreenPointToRay(MousePosition()), out hit, 100, ~layerMask, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject();
-        pointedObject = objectPoint ? hit.transform.gameObject : null;
-        pointSpot = hit.point;
-        pointedObject?.GetComponent<Selectable>()?.HoverDisplay();
+        
+        if (objectPoint)
+        {
+            if (pointedObject != hit.transform.gameObject)
+            {
+                if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().EndHover();
+                pointedObject = hit.transform.gameObject;
+                if (pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().StartHover();
+            }
+            pointSpot = hit.point;
+        }
+        else
+        {
+            if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().EndHover();
+            pointedObject = null;        
+        }
+        HandleHover();
     }
 
     private void HandleClick(bool leftClick)
     {
         if (UIController.Instance.PauseTime()) return;
-        if (pointedObject?.GetComponent<groundScript>() != null)
+        if (pointedObject != null && pointedObject.GetComponent<groundScript>() != null)
         {
             if (leftClick && PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
             {
                 if (CombatManager.Instance.currentAction == null)
                 {
+                    Debug.Log("Deselect on point " + pointSpot);
                     Deselect();
                     PartyController.Instance.GoTo(pointSpot);
                 }
                 else CombatManager.Instance.TargetPoint(pointSpot);
             }
         }
-        else if (pointedObject?.GetComponent<Selectable>() != null)
+        else if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null)
         {
             var pointedSelectable = pointedObject.GetComponent<Selectable>();
             var actions = pointedSelectable.Actions();
@@ -89,12 +104,59 @@ public class SelectionController : MonoBehaviour
         }
     }
 
+    private void HandleHover() // TODO: cleanup
+    {
+        if (UIController.Instance.PauseTime()) return;
+        if (CombatManager.Instance.combatActive && PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
+        {
+            if (pointedObject != null && (pointedObject.GetComponent<groundScript>() != null || pointedObject.GetComponent<Selectable>() != null))
+            {
+                var mainChar = PartyController.Instance.selectedPartyMember;
+                //if ((CombatManager.Instance.currentAction == null || CombatManager.Instance.currentAction == CombatManager.Instance.defaultRun) && !mainChar.mover.IsMoving())
+                //{
+                //    if (pointedObject.GetComponent<groundScript>() != null) mainChar.mover.DrawTo(pointSpot);
+                //    else mainChar.mover.DrawTo(pointedObject.GetComponent<Selectable>());
+                //}
+                if (pointedObject.GetComponent<groundScript>() != null) CombatManager.Instance.PrepTargetPoint(pointSpot);
+                else CombatManager.Instance.PrepAttackTarget(pointedObject.GetComponent<Selectable>());
+                //else CombatManager.Instance.TargetPoint(pointSpot);
+            }
+            else CombatManager.Instance.UpdateCombatDisplay(null);
+        }
+        else CombatManager.Instance.UpdateCombatDisplay(null);
+        //if (pointedObject != null && pointedObject.GetComponent<groundScript>() != null)
+        //{
+        //    if (PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
+        //    {
+        //        var mainChar = PartyController.Instance.selectedPartyMember;
+        //        if (CombatManager.Instance.currentAction == null && !mainChar.mover.IsMoving())
+        //        {
+        //            mainChar.mover.DrawTo(pointSpot);
+        //        }
+        //        //else CombatManager.Instance.TargetPoint(pointSpot);
+        //    }
+        //}
+        //else if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null)
+        //{
+        //    if (PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
+        //    {
+        //        var mainChar = PartyController.Instance.selectedPartyMember;
+        //        if (CombatManager.Instance.currentAction == null && !mainChar.mover.IsMoving())
+        //        {
+        //            mainChar.mover.DrawTo(pointedObject.GetComponent<Selectable>());
+        //        }
+        //        //else CombatManager.Instance.TargetPoint(pointSpot);
+        //    }
+        //}
+    }
+
     public Vector2 MousePosition() => Mouse.current is not null ? Mouse.current.position.value : new Vector2(Screen.width / 2, Screen.height / 2);
 
     public Vector2 MouseScroll() => Mouse.current is not null ? Mouse.current.scroll.value : new Vector2();
 
     public void InitiateSelection(SelectionData selectionData)
     {
+        if (CombatManager.Instance.InAction() && !CombatManager.Instance.Running()) return;  // Can't select while combat busy
         if (selectionData.immediateAction != null) selectionData.immediateAction.Invoke();
         if (selectionData.selectable != null)
         {

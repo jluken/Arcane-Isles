@@ -100,6 +100,7 @@ public class SceneLoader : MonoBehaviour
 
     public void DeactivateLevel(LevelManager level)
     {
+        SaveSystem.AutoSave();
         foreach (string sceneName in level.levelScenes) { StartCoroutine(DeactivateSubscene(sceneName)); }
         SceneManager.UnloadSceneAsync(level.LevelName); ;
     }
@@ -117,7 +118,7 @@ public class SceneLoader : MonoBehaviour
         var spawnPoints = PartyController.Instance.GetPartyLoc();
         var activateScenes = levelManager.sceneTriggers.Where(trigger => spawnPoints.Any(spawnPoint => trigger.GetComponent<Collider>().bounds.Contains(spawnPoint))).ToList();
         var activateSceneNames = activateScenes.Select(trigger => trigger.GetComponent<SceneTrigger>().sceneName).ToList();
-        if (activateSceneNames.Any(activateScene => !SceneObjectManagers.ContainsKey(activateScene))) UIController.Instance.ActivateLoadingScreen();
+        //if (activateSceneNames.Any(activateScene => !SceneObjectManagers.ContainsKey(activateScene))) UIController.Instance.ActivateLoadingScreen();
 
         while (activateSceneNames.Any(sceneName => !SceneObjectManagers.ContainsKey(sceneName))) yield return null;
 

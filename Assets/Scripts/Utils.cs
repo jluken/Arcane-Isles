@@ -23,4 +23,12 @@ public class Utils
         int barrier = LayerMask.NameToLayer("Barrier");
         return !Physics.Linecast(origin.transform.position, target, barrier);
     }
+
+    public static Vector3 GroundPoint(GameObject obj)
+    {
+        Renderer rend = obj.GetComponent<Renderer>();
+        Vector3 center = rend.bounds.center;
+
+        return new Vector3(center.x, rend.bounds.min.y, center.z);
+    }
 }
