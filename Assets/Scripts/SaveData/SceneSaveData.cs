@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -50,16 +49,12 @@ public class SceneSaveData
         foreach (var gameGroundObj in gameGroundObjs)
         {
             var groundScript = gameGroundObj.GetComponent<ItemScript>();
-            Debug.Log("ground item " + gameGroundObj);
             var groundObjData = new GroundObjData();
-            Debug.Log("ground item script " + groundScript);
-            Debug.Log("ground item data " + groundScript.itemData);
             groundObjData.itemName = groundScript.itemData.itemName;
             groundObjData.count = groundScript.stackSize;
             groundObjData.pos = new float[] { gameGroundObj.transform.position.x, gameGroundObj.transform.position.y, gameGroundObj.transform.position.z };
             groundObjs.Add(groundObjData);
         }
-        Debug.Log("SceneSave4");
     }
 
     public SceneSaveData(List<string> activeNPCs, List<string> inactiveNPCs)

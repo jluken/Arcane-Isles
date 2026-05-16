@@ -12,7 +12,7 @@ public class SceneObjectManager : MonoBehaviour
     public List<GameObject> GroundObjects;
 
 
-    protected virtual void Awake()
+    protected virtual void Start()
     {
         SceneLoader.Instance.AddSceneManager(this);
         SceneSaveData sceneData = SceneLoader.Instance.GetSceneData(sceneName);
@@ -59,11 +59,6 @@ public class SceneObjectManager : MonoBehaviour
             newItem.GetComponent<ItemScript>().stackSize = groundObj.count;
             GroundObjects.Add(newItem);
         }
-    }
-
-    public void Start()
-    {
-        //EventHandler.Instance.deathEvent += RemoveNPC;
     }
 
     public void AddDroppedObject(string itemName)

@@ -12,6 +12,7 @@ public class SceneLoader : MonoBehaviour
 
     public static SceneLoader Instance { get; private set; }
 
+    private Dictionary<string, LevelSaveData> LevelData;
     private LevelManager levelManager;
 
     private Dictionary<string, SceneSaveData> SceneData;
@@ -35,9 +36,18 @@ public class SceneLoader : MonoBehaviour
         NewGame();
     }
 
-    public void SetLevel(LevelManager newManager)
+    public void SetLevel(LevelManager newManager)  // Called from level activation
     {
         levelManager = newManager;
+    }
+
+    public LevelSaveData GetLevelData(string levelName)
+    {
+        if (LevelData.ContainsKey(levelName))
+        {
+            return LevelData[levelName];
+        }
+        else return null;
     }
 
     public string GetLevelName()
@@ -48,6 +58,14 @@ public class SceneLoader : MonoBehaviour
     public LevelManager GetLevel()
     {
         return levelManager;
+    }
+
+    public Dictionary<string, LevelSaveData> GetAllLevelData()
+    {
+        var totalLevelData = LevelData.ToDictionary(entry => entry.Key, entry => entry.Value);
+        var currentLevel = GetLevel();
+        totalLevelData[currentLevel.LevelName] = new LevelSaveData(currentLevel.visRegions);
+        return totalLevelData;
     }
 
     public SceneObjectManager GetCurrentSceneManager(GameObject obj)
@@ -101,6 +119,7 @@ public class SceneLoader : MonoBehaviour
     public void DeactivateLevel(LevelManager level)
     {
         SaveSystem.AutoSave();
+        LevelData[level.LevelName] = new LevelSaveData(level.visRegions);
         foreach (string sceneName in level.levelScenes) { StartCoroutine(DeactivateSubscene(sceneName)); }
         SceneManager.UnloadSceneAsync(level.LevelName); ;
     }
@@ -179,12 +198,14 @@ public class SceneLoader : MonoBehaviour
         if (levelManager != null) DeactivateLevel(levelManager);
         levelManager = null;
         SceneObjectManagers = new Dictionary<string, SceneObjectManager>();
+        LevelData = new Dictionary<string, LevelSaveData>();
         SceneData = new Dictionary<string, SceneSaveData>();
     }
 
     public IEnumerator LoadFromData(GameSaveData saveData)
     {
         ResetData();
+        LevelData = saveData.LevelData;
         SceneData = saveData.SceneData;
         PersistentDataManager.ApplySaveData(saveData.dialogData);
         GameData.Instance.gameTime = saveData.gameTime;

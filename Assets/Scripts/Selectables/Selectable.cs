@@ -22,6 +22,8 @@ public class Selectable : MonoBehaviour
     private GameObject itemPopUpPrefab;
     private GameObject itemPopUp;
 
+    private string layerName;
+
     //private void Awake()
     //{
 
@@ -84,9 +86,16 @@ public class Selectable : MonoBehaviour
         SelectionController.Instance.deselectEvent += UnsetInteraction;
         itemPopUpPrefab = Resources.Load<GameObject>("Prefabs/ItemPopup");
         selectMenu = ItemSelectMenu.Instance;
+        layerName = LayerMask.LayerToName(gameObject.layer);
         EndHover();
 
         displayRoutine = DisplayText();
+    }
+
+    public virtual void Update()
+    {
+        if (SceneLoader.Instance.GetLevel().InsideInvisibleRegion(transform.position)) gameObject.layer = LayerMask.NameToLayer("Invisible"); //GetComponent<MeshRenderer>().enabled = false;  // TODO: possibly replace this with more elegant render blocker in mask
+        else gameObject.layer = LayerMask.NameToLayer(layerName);// GetComponent<MeshRenderer>().enabled = true;
     }
 
     public virtual void Interact(Character npc)
@@ -101,6 +110,7 @@ public class Selectable : MonoBehaviour
     {
         GetComponent<NavMeshObstacle>().carving = false;
         GetComponent<Outline>().enabled = true;
+        GetComponent<Outline>().OutlineWidth = 1;
         GetComponent<Outline>().OutlineColor = Color.white;
     }
 

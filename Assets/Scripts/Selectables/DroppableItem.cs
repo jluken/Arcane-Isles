@@ -19,15 +19,10 @@ public class ItemScript : Selectable
         //Debug.Log("Droppable started");
     }
 
-    // Update is called once per frame
-    //void Update()
-    //{
-
-    //}
-
     public override void StartHover()
     {
-        GetComponent<Outline>().enabled = true;
+        GetComponent<Outline>().enabled = true; // TODO: refactor out repeated code (while still keeping carveout separate)
+        GetComponent<Outline>().OutlineWidth = 1;
         GetComponent<Outline>().OutlineColor = Color.white;
     }
 

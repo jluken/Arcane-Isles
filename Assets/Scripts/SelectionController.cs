@@ -60,7 +60,7 @@ public class SelectionController : MonoBehaviour
             {
                 if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().EndHover();
                 pointedObject = hit.transform.gameObject;
-                if (pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().StartHover();
+                //if (pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().StartHover();
             }
             pointSpot = hit.point;
         }
@@ -74,14 +74,13 @@ public class SelectionController : MonoBehaviour
 
     private void HandleClick(bool leftClick)
     {
-        if (UIController.Instance.PauseTime()) return;
+        if (UIController.Instance.PauseTime() || (SceneLoader.Instance.GetLevel() != null && SceneLoader.Instance.GetLevel().InsideBlockedRegion(pointSpot))) return;
         if (pointedObject != null && pointedObject.GetComponent<groundScript>() != null)
         {
             if (leftClick && PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
             {
                 if (CombatManager.Instance.currentAction == null)
                 {
-                    Debug.Log("Deselect on point " + pointSpot);
                     Deselect();
                     PartyController.Instance.GoTo(pointSpot);
                 }
@@ -91,12 +90,14 @@ public class SelectionController : MonoBehaviour
         else if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null)
         {
             var pointedSelectable = pointedObject.GetComponent<Selectable>();
+            var invisible = SceneLoader.Instance.GetLevel().InsideInvisibleRegion(pointedObject.transform.position);
             var actions = pointedSelectable.Actions();
             if (leftClick)
             {
-                InitiateSelection(actions[0]);
+                if (invisible) PartyController.Instance.GoTo(pointedObject.GetComponent<Selectable>());
+                else InitiateSelection(actions[0]);
             }
-            else
+            else if (!invisible)
             {
                 if (CombatManager.Instance.combatActive) CombatManager.Instance.UnsetAction();
                 UIController.Instance.ActivateItemSelect(MousePosition(), actions);
@@ -106,7 +107,8 @@ public class SelectionController : MonoBehaviour
 
     private void HandleHover() // TODO: cleanup
     {
-        if (UIController.Instance.PauseTime()) return;
+        if (UIController.Instance.PauseTime() || (SceneLoader.Instance.GetLevel() != null && SceneLoader.Instance.GetLevel().InsideBlockedRegion(pointSpot))) return;
+        if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().StartHover();
         if (CombatManager.Instance.combatActive && PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
         {
             if (pointedObject != null && (pointedObject.GetComponent<groundScript>() != null || pointedObject.GetComponent<Selectable>() != null))

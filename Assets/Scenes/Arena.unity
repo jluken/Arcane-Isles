@@ -301,7 +301,7 @@ GameObject:
   - component: {fileID: 387626985}
   - component: {fileID: 387626986}
   - component: {fileID: 387626987}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Bug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -516,7 +516,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveToClick
   activateDist: 1
-  useMarker: 0
   controlled: 0
   movingThreshold: 0.1
 --- !u!114 &387626985
@@ -815,7 +814,7 @@ GameObject:
   - component: {fileID: 483860956}
   - component: {fileID: 483860955}
   - component: {fileID: 483860958}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: AggroRad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -941,7 +940,7 @@ GameObject:
   - component: {fileID: 569477739}
   - component: {fileID: 569477738}
   - component: {fileID: 569477741}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: AwareRad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1371,7 +1370,7 @@ GameObject:
   - component: {fileID: 1172947728}
   - component: {fileID: 1172947730}
   - component: {fileID: 1172947731}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: InteractRad
   m_TagString: Untagged
   m_Icon: {fileID: 0}

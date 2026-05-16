@@ -63,6 +63,6 @@ public class NavLine : MonoBehaviour
     public void SetMarker(Vector3 position)
     {
         destMarker.SetActive(true);
-        destMarker.transform.position = position + new Vector3(0,1,0);
+        destMarker.transform.position = position; // + new Vector3(0,1,0); // for when using projector
     }
 }

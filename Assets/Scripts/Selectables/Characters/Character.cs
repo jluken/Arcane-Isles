@@ -78,6 +78,12 @@ public class Character : Selectable
         base.Start();
     }
 
+    public override void Update()
+    {
+        StateMachine.CurrentPlayerState.FrameUpdate();
+        base.Update();
+    }
+
     public void OnDestroy()
     {
         CombatManager.Instance.callToArms -= SetToCombat;
@@ -134,6 +140,7 @@ public class Character : Selectable
     public override void StartHover()
     {
         base.StartHover();
+        GetComponent<Outline>().OutlineWidth = 1;
         GetComponent<Outline>().OutlineColor = Color.yellow;
     }
 
@@ -170,11 +177,6 @@ public class Character : Selectable
     public void TargetAttack()
     {
         CombatManager.Instance.AttackTarget(this);
-    }
-
-    void Update()
-    {
-        StateMachine.CurrentPlayerState.FrameUpdate();
     }
 
     private void FixedUpdate()

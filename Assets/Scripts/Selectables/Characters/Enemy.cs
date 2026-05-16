@@ -39,6 +39,7 @@ public class Enemy : Character
     public override void StartHover()
     {
         base.StartHover();
+        GetComponent<Outline>().OutlineWidth = 1;
         GetComponent<Outline>().OutlineColor = Color.red;
     }
 

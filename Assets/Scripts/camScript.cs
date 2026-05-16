@@ -67,7 +67,7 @@ public class camScript : MonoBehaviour
             Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
             Vector3 movement = ((screenUp * moveDirection.y) + (screenRight * moveDirection.x));
 
-            var distFromPlayer = Vector3.Distance(ct.position, PartyController.Instance.selectedPartyMember.transform.position);
+            var distFromPlayer = Vector3.Distance(ct.position, PartyController.Instance.selectedPartyMember.transform.position);  // TODO: maybe just restrict to bounds of level map
             if (inBounds && (movement != Vector3.zero || mouseScroll.y != 0) && distFromPlayer <= maxCamDist) MoveCamera(movement, mouseScroll.y);
         }
     }

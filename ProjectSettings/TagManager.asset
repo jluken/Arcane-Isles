@@ -23,9 +23,9 @@ TagManager:
   - Ground
   - Selectable
   - Icon
-  - 
-  - 
-  - 
+  - VFX
+  - NPC
+  - Invisible
   - 
   - 
   - 
@@ -50,4 +50,5 @@ TagManager:
   m_RenderingLayers:
   - Default
   - Ground
+  - Player
   m_MigratedRenderPipelines: []

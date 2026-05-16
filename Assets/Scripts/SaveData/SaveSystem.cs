@@ -52,6 +52,7 @@ public static class SaveSystem
         GameSaveData gameSaveData = new GameSaveData();
         gameSaveData.partyData = partyData;
         gameSaveData.levelName = sceneLoader.GetLevelName();
+        gameSaveData.LevelData = sceneLoader.GetAllLevelData();
         gameSaveData.SceneData = sceneLoader.GetAllSceneData();
         gameSaveData.dialogData = PersistentDataManager.GetSaveData();
         gameSaveData.gameTime = GameData.Instance.gameTime;

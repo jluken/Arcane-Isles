@@ -1,7 +1,8 @@
-using System.Collections.Generic;
 using System;
-using UnityEngine;
+using System.Collections.Generic;
 using System.Linq;
+using Unity.VectorGraphics;
+using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
@@ -18,19 +19,47 @@ public class LevelManager : MonoBehaviour
 
     public List<GameObject> sceneTriggers;
 
-    void Awake()
+    public List<VisRegion> visRegions;
+
+    void Start()
     {
         SceneLoader.Instance.SetLevel(this);
+
+        LevelSaveData levelData = SceneLoader.Instance.GetLevelData(LevelName);
+        if (levelData == null) { return; } // Nothing loaded; keep default values
+
+        foreach (VisRegion region in visRegions)
+        {
+            var regionSaveData = levelData.Regions.FirstOrDefault(reg => reg.regionName == region.name);
+            if (regionSaveData.regionName != null)
+            {
+                region.LoadFromSaveData(regionSaveData);
+            }
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 
     public List<Vector3> GetSpawnPoints(int idx)
     {
         return spawns[idx].spawnPoints.Select(obj => obj.transform.position).ToList();
+    }
+
+    public bool InsideBlockedRegion(Vector3 point)
+    {
+        foreach (var region in visRegions)  // TODO: combin into double Any()
+        {
+            if (region.regionState == VisRegion.RegionState.Undiscovered && region.ClickBlockers.Any(blocker => blocker.activeSelf && blocker.GetComponent<Collider>().bounds.Contains(point))) return true;
+        }
+        return false;
+    }
+
+    public bool InsideInvisibleRegion(Vector3 point)
+    {
+        foreach (var region in visRegions)  // TODO: combin into double Any()
+        {
+            if (region.regionState != VisRegion.RegionState.Visible && region.ClickBlockers.Any(blocker => blocker.activeSelf && blocker.GetComponent<Collider>().bounds.Contains(point))) return true;
+        }
+        return false;
     }
 }

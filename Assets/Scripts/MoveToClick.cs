@@ -69,7 +69,7 @@ public class MoveToClick : MonoBehaviour
                     StopMoving();
                 }
             }
-            else if (!agent.hasPath && startedMoving && agent.velocity.sqrMagnitude <= movingThreshold) // finished
+            else if (!agent.hasPath && startedMoving && agent.velocity.sqrMagnitude <= movingThreshold) // finished //TODO: also stop if never got to start moving after some amount of time
             {
                 StopMoving();
             }
