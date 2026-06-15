@@ -30,7 +30,7 @@ public class EntityInventorySaveData
         }
 
         hasEquip = entInv.hasEquip;
-        foreach (KeyValuePair<ItemType, InventoryData> kvp in entInv.equipment)
+        foreach (KeyValuePair<EntityInventory.EquipmentInvType, InventoryData> kvp in entInv.equipment)
         {
             equipment[kvp.Key.ToString()] = kvp.Value == null ? "" : kvp.Value.name;
         }

@@ -2,8 +2,8 @@ using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Windows.Speech;
 using static InventoryData;
 
 public class EntityInventory : MonoBehaviour
@@ -15,6 +15,18 @@ public class EntityInventory : MonoBehaviour
     // For the purposes of setting initial inventory through editor
     public List<InventoryData> initInv;
     public List<int> initInvStacks;
+
+    public InventoryData initHoldMainHand;
+    public InventoryData initHoldOffHand;
+    public InventoryData initTorso;
+    public InventoryData initCoat;
+    public InventoryData initHead;
+    public InventoryData initFace;
+    public InventoryData initLegs;
+    public InventoryData initBoots;
+    public InventoryData initNecklace;
+    public InventoryData initHands;
+    //public InventoryData initLeftHand;
 
     public struct InventoryStack
     {
@@ -33,13 +45,62 @@ public class EntityInventory : MonoBehaviour
     public bool hasEquip;
 
 
-    public Dictionary<ItemType, InventoryData> equipment = new Dictionary<ItemType, InventoryData>() { // todo: make InventoryStack to allow for holding "stack" of stuff like bomb?
-        { ItemType.headwear, null},
-        { ItemType.armor, null},
-        { ItemType.weapon, null},
-        { ItemType.boots, null}
+    public enum EquipmentInvType
+    {
+        holdMainHand,
+        holdOffHand,
+        torso,
+        coat,
+        head,
+        face,
+        legs,
+        boots,
+        neck,
+        hands,
+        //leftHand,
+        na
     };
-    // TODO: head, body, legs, boots, overcoat/cape, gloves, necklace, ringx2, handx2
+
+    public static Dictionary<EquipmentInvType, HashSet<ItemType>> equippables = new() {
+        { EquipmentInvType.holdMainHand, new () { ItemType.weapon, ItemType.consumable, ItemType.misc } },
+        { EquipmentInvType.holdOffHand, new () { ItemType.consumable, ItemType.misc } }, // TODO: feat that lets you put some weapons in offhand (cheaper AP than two mainhand attacks)
+        { EquipmentInvType.torso, new () { ItemType.torso } },
+        { EquipmentInvType.coat, new () { ItemType.coat } },
+        { EquipmentInvType.head, new () { ItemType.headwear } },
+        { EquipmentInvType.face, new () { ItemType.face } },
+        { EquipmentInvType.legs, new () { ItemType.legwear } },
+        { EquipmentInvType.boots, new () { ItemType.footwear } },
+        { EquipmentInvType.neck, new () { ItemType.neckwear } },
+        { EquipmentInvType.hands, new () { ItemType.handwear } },
+        //{ EquipmentInvType.leftHand, new () { ItemType.handwear } }
+    };
+
+    public static Dictionary<ItemType, List<EquipmentInvType>> defaultEquipSlot = new()
+    {
+        { ItemType.weapon, new() { EquipmentInvType.holdMainHand } }, // TODO: add offhand when perk is on
+        { ItemType.torso, new() { EquipmentInvType.torso } },
+        { ItemType.coat, new() { EquipmentInvType.coat } },
+        { ItemType.headwear, new() { EquipmentInvType.head } },
+        { ItemType.face, new() { EquipmentInvType.face } },
+        { ItemType.legwear, new() { EquipmentInvType.legs } },
+        { ItemType.footwear, new() { EquipmentInvType.boots } },
+        { ItemType.neckwear, new() { EquipmentInvType.neck } },
+        { ItemType.handwear, new() { EquipmentInvType.hands } }
+    };
+
+    public Dictionary<EquipmentInvType, InventoryData> equipment = new Dictionary<EquipmentInvType, InventoryData>() {
+        { EquipmentInvType.holdMainHand, null },
+        { EquipmentInvType.holdOffHand, null },
+        { EquipmentInvType.torso, null },
+        { EquipmentInvType.coat, null },
+        { EquipmentInvType.head, null },
+        { EquipmentInvType.face, null },
+        { EquipmentInvType.legs, null },
+        { EquipmentInvType.boots, null },
+        { EquipmentInvType.neck, null },
+        { EquipmentInvType.hands, null },
+        //{ EquipmentInvType.leftHand, null }
+    };
 
     public int money;
     public bool merchant;
@@ -52,13 +113,23 @@ public class EntityInventory : MonoBehaviour
     public void SetInitInventory()
     {
         if (initInv.Count > maxInv) Debug.LogError("Present inventory greater than maximum");
-        inventory = new List<InventoryStack>();
+        ClearInventory();
         for (int i = 0; i < initInv.Count; i++)
         {
             int stack = i < initInvStacks.Count ? initInvStacks[i] : 1;
             inventory.Add(new InventoryStack(initInv[i], stack));
         }
-        //TODO: allow set init equipment (different fields for each slot)
+        equipment[EquipmentInvType.holdMainHand] = initHoldMainHand;
+        equipment[EquipmentInvType.holdOffHand] = initHoldOffHand;
+        equipment[EquipmentInvType.torso] = initTorso;
+        equipment[EquipmentInvType.coat] = initCoat;
+        equipment[EquipmentInvType.head] = initHead;
+        equipment[EquipmentInvType.face] = initFace;
+        equipment[EquipmentInvType.legs] = initLegs;
+        equipment[EquipmentInvType.boots] = initBoots;
+        equipment[EquipmentInvType.neck] = initNecklace;
+        equipment[EquipmentInvType.hands] = initHands;
+        //equipment[EquipmentInvType.leftHand] = initLeftHand;
     }
 
     public void LoadFromSaveData(EntityInventorySaveData saveData)
@@ -73,7 +144,7 @@ public class EntityInventory : MonoBehaviour
         hasEquip = saveData.hasEquip;
         foreach (KeyValuePair<string, string> kvp in saveData.equipment)
         {
-            if(!Enum.TryParse(kvp.Key, out ItemType equipType)) Debug.LogError("Invalid equipment type " + kvp.Key);
+            if(!Enum.TryParse(kvp.Key, out EquipmentInvType equipType)) Debug.LogError("Invalid equipment type " + kvp.Key);
             equipment[equipType] = kvp.Value == "" ? null : Resources.Load<InventoryData>("Scriptables/" + kvp.Value);
         }
 
@@ -87,10 +158,10 @@ public class EntityInventory : MonoBehaviour
         SetInventory(idx, currStack.type, currStack.count + change);
     }
 
-    public void UseWeapon()
+    public void UseMainWeapon()
     {
-        if (equipment[ItemType.weapon] != null && equipment[ItemType.weapon].consumeOnUse) {
-            SetEquipment(ItemType.weapon, null); // TODO: possibly automatically draw from inventory if present
+        if (equipment[EquipmentInvType.holdMainHand] != null && equipment[EquipmentInvType.holdMainHand].consumeOnUse) {
+            SetEquipment(EquipmentInvType.holdMainHand, null);
         }
     }
 
@@ -111,13 +182,28 @@ public class EntityInventory : MonoBehaviour
         return inventory[idx];
     }
 
-    public void SetEquipment(ItemType type, InventoryData itemData)
+    public InventoryData SwapOutEquipment(InventoryData inv)
+    {
+        if (!defaultEquipSlot.ContainsKey(inv.itemType)) return inv;
+        var targetSlot = defaultEquipSlot[inv.itemType][0];
+        if (equipment[targetSlot] != null) {  // Check to see if any of the alt slots are open, otherwise just use primary
+            for (int i = 1; i < defaultEquipSlot[inv.itemType].Count; i++) {
+                var altSlot = defaultEquipSlot[inv.itemType][i];
+                if (equipment[altSlot] == null) { targetSlot = altSlot; break; }
+            }
+        }
+        var retInv = GetEquipment(targetSlot);
+        SetEquipment(targetSlot, inv);
+        return retInv;
+    }
+
+    public void SetEquipment(EquipmentInvType type, InventoryData itemData)
     {
         Debug.Log("Set Equipment type " + type + " to " + itemData);
         equipment[type] = itemData;
     }
 
-    public InventoryData Dequip(ItemType equipSlot)
+    public void Dequip(EquipmentInvType equipSlot)
     {
         InventoryData leftover = null;
         if (equipment.ContainsKey(equipSlot) && equipment[equipSlot] != null)
@@ -126,11 +212,10 @@ public class EntityInventory : MonoBehaviour
             if (extra > 0) leftover = equipment[equipSlot];
             equipment[equipSlot] = null;
         }
-        return leftover;  // TODO: drop leftover equipment on the ground if no room
-        // TODO: possibly alternatively - special handling of looting equipment (for both visual avatar and reviving allies) instead of auto dequip
+        leftover.DropItem(transform.position);
     }
 
-    public InventoryData GetEquipment(ItemType type)
+    public InventoryData GetEquipment(EquipmentInvType type)
     {
         return equipment[type];
     }
@@ -138,7 +223,7 @@ public class EntityInventory : MonoBehaviour
     public Dictionary<CharStats.StatVal, int> GetEquipmentStatMods()
     {
         var modifiers = new Dictionary<CharStats.StatVal, int>();
-        foreach (ItemType type in equipment.Keys)
+        foreach (EquipmentInvType type in equipment.Keys)
         {
             if (equipment[type] == null) continue;
             foreach (var equipStat in equipment[type].equipStats)
@@ -153,7 +238,7 @@ public class EntityInventory : MonoBehaviour
     public int GetEquipmentArmor()
     {
         var dt = 0;
-        foreach (ItemType type in equipment.Keys)
+        foreach (EquipmentInvType type in equipment.Keys)
         {
             if (equipment[type] == null) continue;
             dt += equipment[type].dt;
@@ -204,17 +289,34 @@ public class EntityInventory : MonoBehaviour
         }
     }
 
+    public void DropAllInventory()
+    {
+        foreach (var equipSlot in equipment.Keys) Dequip(equipSlot);
+        foreach (var stack in inventory)
+        {
+            stack.type.DropItem(transform.position, stack.count);
+        }
+        ClearInventory();
+    }
+
+    public void ClearInventory()
+    {
+        inventory = new List<InventoryStack>();
+
+        foreach (EquipmentInvType equippable in Enum.GetValues(typeof(EquipmentInvType))) equipment[equippable] = null;
+    }
+
     public float getTotalWeight()
     {
         var invWeight = Enumerable.Range(0, inventory.Count).Where(i => GetInventory(i).count > 0).Select(i => GetInventory(i).type.weight * GetInventory(i).count).Sum();
-        foreach (ItemType type in equipment.Keys) if (GetEquipment(type) != null) invWeight += GetEquipment(type).weight;
+        foreach (EquipmentInvType type in equipment.Keys) if (GetEquipment(type) != null) invWeight += GetEquipment(type).weight;
         return invWeight;
     }
 
     public float getEquippedWeight()
     {
         var weight = 0f;
-        foreach (ItemType type in equipment.Keys)
+        foreach (EquipmentInvType type in equipment.Keys)
         {
             if (equipment[type] == null) continue;
             weight += equipment[type].weight;
@@ -225,8 +327,8 @@ public class EntityInventory : MonoBehaviour
     public int getTotalValue()
     {
         var invVal = Enumerable.Range(0, inventory.Count).Where(i => GetInventory(i).count > 0).Select(i => GetInventory(i).type.price * GetInventory(i).count).Sum();
-        foreach (ItemType type in equipment.Keys) if (GetEquipment(type) != null) invVal += GetEquipment(type).price;
-        Debug.Log("Total value for " + this + ": " + invVal + money);
+        foreach (EquipmentInvType type in equipment.Keys) if (GetEquipment(type) != null) invVal += GetEquipment(type).price;
+        Debug.Log("Total value for " + this + ": " + (invVal + money));
         return invVal + money;
     }
 }

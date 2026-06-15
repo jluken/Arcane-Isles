@@ -94,7 +94,7 @@ public class Selectable : MonoBehaviour
 
     public virtual void Update()
     {
-        if (SceneLoader.Instance.GetLevel().InsideInvisibleRegion(transform.position)) gameObject.layer = LayerMask.NameToLayer("Invisible"); //GetComponent<MeshRenderer>().enabled = false;  // TODO: possibly replace this with more elegant render blocker in mask
+        if (SceneLoader.Instance.GetLevel() != null && SceneLoader.Instance.GetLevel().InsideInvisibleRegion(transform.position)) gameObject.layer = LayerMask.NameToLayer("Invisible"); //GetComponent<MeshRenderer>().enabled = false;  // TODO: possibly replace this with more elegant render blocker in mask
         else gameObject.layer = LayerMask.NameToLayer(layerName);// GetComponent<MeshRenderer>().enabled = true;
     }
 
@@ -118,11 +118,6 @@ public class Selectable : MonoBehaviour
     {
         GetComponent<NavMeshObstacle>().carving = true;
         GetComponent<Outline>().enabled = false;
-    }
-
-    public void Select()
-    {
-        SelectionController.Instance.Select(this);
     }
 
     public void SetInteractAction(Interaction activeAct)
@@ -156,7 +151,7 @@ public class Selectable : MonoBehaviour
         itemPopUp.GetComponent<TMP_Text>().text = description;
         itemPopUp.SetActive(true);
         yield return new WaitForSeconds(3);
-        Destroy(itemPopUp);// TODO: fade out animation? [UI]
+        Destroy(itemPopUp);  // TODO: fade out animation? [UI]
     }
 }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using static CharStats;
@@ -31,7 +32,7 @@ public class AttackAction : InteractionAction
     public override IEnumerator UseAbility()
     {
         var victim = target.GetComponent<Character>();
-        var damage = Random.Range(1, damageDie);
+        var damage = Dice.RollDie(damageDie);
 
         CombatManager.Instance.LockAction(this);
         CombatManager.Instance.SpendActionPoints(attackCost); // account for floating point and wiggle room
@@ -40,9 +41,17 @@ public class AttackAction : InteractionAction
         var diceRoll = Dice.RollDie(6) + Dice.RollDie(6);
         var hitCalc = (precisionAttack ? actor.charStats.GetCurrStat(StatVal.precision) : actor.charStats.GetCurrStat(StatVal.finesse)) + diceRoll - (victim.charStats.GetCurrStat(StatVal.finesse) + 6);
         bool crit = diceRoll == 12 || Dice.RollDie(12) <= hitCalc;
-        bool hit = (precisionAttack ? actor.charStats.GetCurrStat(StatVal.precision) : actor.charStats.GetCurrStat(StatVal.finesse)) + diceRoll >= victim.charStats.GetCurrStat(StatVal.finesse) + 6;
-        if(crit) victim.charStats.updateHealth(-1 * damage); // bypass armor
-        else if (hitCalc >= 0) victim.takeDamage(damage);
+        if (crit)
+        {
+            damage = (int)Math.Floor(damage * 1.5f);
+            victim.charStats.updateHealth(-1 * damage); // bypass armor
+            DialogueInterface.Instance.LogLine(actor.charStats.charName + " critically hits " + victim.charStats.charName + " for " + damage);
+        }
+        else if (hitCalc >= 0) {
+            victim.takeDamage(damage);
+            DialogueInterface.Instance.LogLine(actor.charStats.charName + " hits " + victim.charStats.charName + " for " + damage);
+        }
+        else DialogueInterface.Instance.LogLine(actor.charStats.charName + " misses.");
         CombatManager.Instance.FinishAction();
         yield break;
     }
@@ -55,7 +64,7 @@ public class AttackAction : InteractionAction
     public override void DisplayTarget()
     {
         if (CanUseAbility()) Cursor.SetCursor(CombatManager.Instance.attackCursor, Vector2.zero, CursorMode.Auto);
-        else if (target != null) Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);  // TODO: create grey out attack cursor
+        else if (target != null) Cursor.SetCursor(CombatManager.Instance.attackCursorNull, Vector2.zero, CursorMode.Auto);
         else Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
     }
 }

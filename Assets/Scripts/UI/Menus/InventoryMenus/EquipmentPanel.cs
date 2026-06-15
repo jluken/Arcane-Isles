@@ -1,25 +1,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static EntityInventory;
 using static InventoryData;
 
 public class EquipmentPanel : InventoryPanel
 {
-    private Dictionary<ItemType, EquipmentSlot> equipMapping;
+    private Dictionary<EquipmentInvType, EquipmentSlot> equipMapping;
 
-    public EquipmentSlot HeadSlot;
-    public EquipmentSlot ArmorSlot;
-    public EquipmentSlot WeaponSlot;
-    public EquipmentSlot BootSlot;
+    public EquipmentSlot holdMainHand;
+    public EquipmentSlot holdOffHand;
+    public EquipmentSlot torso;
+    public EquipmentSlot coat;
+    public EquipmentSlot head;
+    public EquipmentSlot face;
+    public EquipmentSlot legs;
+    public EquipmentSlot boot;
+    public EquipmentSlot neck;
+    public EquipmentSlot hands;
+    //public EquipmentSlot leftHand;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
-        equipMapping = new Dictionary<ItemType, EquipmentSlot>()  //TODO: more slots
+        equipMapping = new Dictionary<EquipmentInvType, EquipmentSlot>()
         {
-            { ItemType.headwear, HeadSlot },
-            { ItemType.armor, ArmorSlot },
-            { ItemType.weapon, WeaponSlot },
-            { ItemType.boots, BootSlot }
+            { EquipmentInvType.holdMainHand, holdMainHand },
+            { EquipmentInvType.holdOffHand, holdOffHand },
+            { EquipmentInvType.torso, torso },
+            { EquipmentInvType.coat, coat },
+            { EquipmentInvType.head, head },
+            { EquipmentInvType.face, face },
+            { EquipmentInvType.legs, legs },
+            { EquipmentInvType.boots, boot },
+            { EquipmentInvType.neck, neck },
+            { EquipmentInvType.hands, hands },
+           // { EquipmentInvType.leftHand, leftHand }
         };
     }
 
@@ -32,8 +47,9 @@ public class EquipmentPanel : InventoryPanel
     {
         inventory = entityinventory;
         ClearInventory();
-        foreach(KeyValuePair < ItemType, EquipmentSlot > kvp in equipMapping)
+        foreach(KeyValuePair <EquipmentInvType, EquipmentSlot > kvp in equipMapping)
         {
+            kvp.Value.slotID = (int)kvp.Key;
             kvp.Value.slotPanel = this;
             kvp.Value.dragMatches = dragMatches;
             var equipData = inventory.GetEquipment(kvp.Key);
@@ -44,7 +60,7 @@ public class EquipmentPanel : InventoryPanel
     public override void ClearInventory()
     {
         DeselectPanelSlots();
-        foreach (KeyValuePair<ItemType, EquipmentSlot> kvp in equipMapping) kvp.Value.ClearItem(true, false);
+        foreach (KeyValuePair<EquipmentInvType, EquipmentSlot> kvp in equipMapping) kvp.Value.ClearItem(true, false);
     }
 
     public override void DeselectPanelSlots()

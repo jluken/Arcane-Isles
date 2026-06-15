@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [CreateAssetMenu(fileName = "InventoryData", menuName = "Scriptable Objects/InventoryData")]
 public class InventoryData : ScriptableObject
@@ -12,7 +12,7 @@ public class InventoryData : ScriptableObject
     [TextArea]
     public string description;
     public Sprite sprite;
-    public GameObject itemPrefab; //TODO: hold scripts for droppable, usable/equippable
+    public GameObject itemPrefab;
     public int price;
     public float weight;
 
@@ -28,13 +28,16 @@ public class InventoryData : ScriptableObject
     {
         consumable,
         weapon,
-        armor,
+        torso,
+        coat,
         headwear,
-        boots,
+        face,
+        legwear,
+        footwear,
+        neckwear,
+        handwear,
         misc
     };
-
-    public static readonly ItemType[] equipmentTypes = new ItemType[] { ItemType.weapon, ItemType.boots, ItemType.armor, ItemType.headwear};
 
     // TODO: some of these should be moved to child classes of specific types
 
@@ -64,10 +67,15 @@ public class InventoryData : ScriptableObject
     //    this.sprite = sprite;
     //}
 
-    public void DropItem(Vector3 location)
+    public void DropItem(Vector3 location, int amount = 1)
     {
-        // TODO: call from inventory button that deletes as well
-        Instantiate(itemPrefab, location, Quaternion.identity);
+
+        var dropped = Instantiate(itemPrefab, location, Quaternion.identity);
+        dropped.GetComponent<DroppableItem>().itemData = this;
+        dropped.GetComponent<DroppableItem>().stackSize = amount;
+        
+        var sceneName = SceneLoader.Instance.ScenesByLoc(location)[0];
+        SceneLoader.Instance.SceneObjectManagers[sceneName].AddDroppedObject(dropped, location);
     }
 
     public virtual AbilityAction DefaultAttack()

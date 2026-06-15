@@ -15,13 +15,13 @@ public class UnrecruitedState : IdleState
 
     public override void EnterState()
     {
-        character.mover.PlantFeet();
+        //character.mover.PlantFeet();
         base.EnterState();
     }
 
     public override void ExitState()
     {
-        character.mover.DefaultAvoidance();
+        //character.mover.DefaultAvoidance();
         base.ExitState();
     }
 

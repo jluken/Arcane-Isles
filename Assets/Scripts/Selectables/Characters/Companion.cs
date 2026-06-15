@@ -46,6 +46,7 @@ public class Companion : PartyMember
     {
         ActivateCompanion();
         SetIdle();
+        StartCoroutine(mover.DefaultAvoidanceAsync());
         recruited = true;
     }
 

@@ -140,7 +140,6 @@ public class Character : Selectable
     public override void StartHover()
     {
         base.StartHover();
-        GetComponent<Outline>().OutlineWidth = 1;
         GetComponent<Outline>().OutlineColor = Color.yellow;
     }
 
@@ -152,16 +151,21 @@ public class Character : Selectable
 
     public List<AbilityAction> GetWeaponAbilities()
     {
-        var weapon = inventory.GetEquipment(InventoryData.ItemType.weapon);
-        if (weapon == null) return new List<AbilityAction>(defaultWeapon.ItemActions());
-        var abilities =  new List<AbilityAction>(weapon.ItemActions());
-        foreach ( var action in abilities) { action.SetActor(this); }
-        return abilities;
+        var totalAbilities = new List<AbilityAction>();
+        var mainWeapon = inventory.GetEquipment(EntityInventory.EquipmentInvType.holdMainHand);
+        if (mainWeapon == null) totalAbilities.AddRange(defaultWeapon.ItemActions());
+        else totalAbilities.AddRange(mainWeapon.ItemActions());
+        var offWeapon = inventory.GetEquipment(EntityInventory.EquipmentInvType.holdOffHand);
+        if (offWeapon != null) totalAbilities.AddRange(offWeapon.ItemActions());
+        foreach ( var action in totalAbilities) { action.SetActor(this); }
+        return totalAbilities;
     }
+
+    // TODO: get magic abilities + innate abilities
 
     public AbilityAction GetDefaultAttack()
     {
-        var weapon = inventory.GetEquipment(InventoryData.ItemType.weapon);
+        var weapon = inventory.GetEquipment(EntityInventory.EquipmentInvType.holdMainHand);
         if (weapon == null || weapon.DefaultAttack() == null) return defaultWeapon.DefaultAttack();
         var attack = weapon.DefaultAttack();
         attack.SetActor(this);
@@ -171,7 +175,8 @@ public class Character : Selectable
     public void takeDamage(int rawDamage)
     {
         var totalArmor = inventory.GetEquipmentArmor();
-        charStats.updateHealth(-1 * Math.Max(rawDamage - totalArmor, 0));
+        var damage = Math.Max(rawDamage - totalArmor, 0);
+        charStats.updateHealth(-1 * damage);
     }
 
     public void TargetAttack()
@@ -208,6 +213,7 @@ public class Character : Selectable
     {
         foreach (var equipSlot in inventory.equipment.Keys) inventory.Dequip(equipSlot);
         StateMachine.ChangeState(DeadState);
+        StartCoroutine(mover.PlantFeetAsync());
         EventHandler.Instance.TriggerDeathEvent(this);
     }
 
@@ -240,8 +246,8 @@ public class Trade : Interaction
 {
     public override void Interact(Character npc, Selectable interactable)
     {
-        if (interactable.GetComponent<Character>() == null) { Debug.LogError("Can only trade with NPCs"); }
-        UIController.Instance.ActivateTradeScreen(interactable.GetComponent<Character>().inventory);
+        if (interactable.GetComponent<Merchant>() == null) { Debug.LogError("Can only trade with MerchantNPCs"); }
+        UIController.Instance.ActivateTradeScreen(interactable.GetComponent<Merchant>(), interactable.GetComponent<Merchant>().isBuying);
     }
 }
 

@@ -72,9 +72,9 @@ public class CharStats : MonoBehaviour
 
     public Dictionary<StatVal, int> statMap = new Dictionary<StatVal, int>(); // current vals 
 
-    private static List<StatVal> Attributes = new List<StatVal>() { StatVal.vigor, StatVal.finesse, StatVal.psyche};
+    public static List<StatVal> Attributes = new List<StatVal>() { StatVal.vigor, StatVal.finesse, StatVal.psyche};
 
-    private static Dictionary<StatVal, StatVal> Skills = new Dictionary<StatVal, StatVal>() { //Skills with their determining Attribute
+    private static Dictionary<StatVal, StatVal> SkillAttrMap = new Dictionary<StatVal, StatVal>() { //Skills with their determining Attribute
         { StatVal.athletics, StatVal.vigor },
         { StatVal.survival, StatVal.vigor },
         { StatVal.repair, StatVal.vigor },
@@ -89,7 +89,9 @@ public class CharStats : MonoBehaviour
         { StatVal.physick, StatVal.psyche },
     };
     public static bool IsAttribute(StatVal statVal) => Attributes.Contains(statVal);
-    public static bool IsSkill(StatVal stat) => Skills.Keys.Contains(stat);
+
+    public static List<StatVal> Skills => SkillAttrMap.Keys.ToList();
+    public static bool IsSkill(StatVal stat) => SkillAttrMap.Keys.Contains(stat);
 
     private Dictionary<int, (StatVal, int)> modifiers = new Dictionary<int, (StatVal, int)>(); // id: (stat, amount)
     private Dictionary<int, float> modifierTimeouts = new Dictionary<int, float>(); // id: (stat, endTime)
@@ -146,10 +148,11 @@ public class CharStats : MonoBehaviour
 
     private int maxHealth => 10 + GetCurrStat(StatVal.level) * GetCurrStat(StatVal.vigor);
     private int maxMagick => GetCurrStat(StatVal.level) + 2 * GetCurrStat(StatVal.arcana);
-    private int actionPoints => 10 + (2 * GetCurrStat(StatVal.finesse));
+    private int actionPoints => 6 + GetCurrStat(StatVal.finesse);
     private int dodge => GetCurrStat(StatVal.finesse) + 6;
 
     public float runModifier => GetCurrStat(StatVal.athletics) / 3.0f;
+    public float barterModifier => GetCurrStat(StatVal.persuasion) / 6.0f;
 
     public void setDerivedStats()
     {
@@ -195,15 +198,20 @@ public class CharStats : MonoBehaviour
         maxBars();
     }
 
+    public int GetTotalSkillPoints()
+    {
+        return Skills.Sum(s => GetRawStat(s));
+    }
+
     public int GetCurrStat(StatVal stat, bool includeMods = true)
     {
         int premod = 0;
-        if (Skills.ContainsKey(stat)) premod = GetCurrStat(Skills[stat]) + statMap[stat];  // Skills combine with their parent attribute
+        if (SkillAttrMap.ContainsKey(stat)) premod = GetCurrStat(SkillAttrMap[stat]) + statMap[stat];  // Skills combine with their parent attribute
         else premod = statMap[stat];
         return premod + (includeMods ? currStatMods(stat) : 0);
     }
 
-    public static StatVal GetSkillAbility(StatVal stat) => Skills[stat];
+    public static StatVal GetSkillAbility(StatVal stat) => SkillAttrMap[stat];
 
     public int GetRawStat(StatVal stat) => statMap[stat];
 
@@ -260,7 +268,7 @@ public class CharStats : MonoBehaviour
         PartyController.Instance.UpdateParty();
     }
 
-    public void ResetSkills() { foreach (var skill in Skills.Keys) statMap[skill] = 0; }
+    public void ResetSkills() { foreach (var skill in SkillAttrMap.Keys) statMap[skill] = 0; }
 
     public int currStatMods(StatVal stat)
     {

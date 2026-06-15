@@ -24,7 +24,7 @@ public class NavLine : MonoBehaviour
         errLine.positionCount = 0;
     }
 
-    public void DrawPath(NavMeshPath validPath, NavMeshPath fullPath)  // TODO: refactor indexing
+    public void DrawPath(NavMeshPath validPath, NavMeshPath fullPath)
     {
         var fullLength = MoveToClick.PathDist(fullPath);
         var anyValid = MoveToClick.PathDist(validPath) > 0;
@@ -42,10 +42,12 @@ public class NavLine : MonoBehaviour
         for (int i = 0; i < totalPoints; i++)
         {
             var onValid = i < validPath.corners.Length;
-            var corner = onValid ? validPath.corners[i] : bothLines ? fullPath.corners[i - 1] : fullPath.corners[i];
+            var corner = onValid ? validPath.corners[i] : bothLines ? fullPath.corners[i - 1] : fullPath.corners[i];  // "- 1" on bothLines error segment because double count shared corner
             if(anyValid && onValid) validLine.SetPosition(i, corner);
-            var errIdx = i - (validPath.corners.Length - 1);
-            if(anyErr && (i == validPath.corners.Length - 1 || !onValid)) errLine.SetPosition(errIdx, corner);
+
+            var lastValidIdx = validPath.corners.Length - 1;
+            var errIdx = i - lastValidIdx;
+            if(anyErr && (i == lastValidIdx || !onValid)) errLine.SetPosition(errIdx, corner);
         }
     }
 

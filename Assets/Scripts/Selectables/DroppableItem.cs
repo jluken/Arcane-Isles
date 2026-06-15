@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class ItemScript : Selectable
+public class DroppableItem : Selectable
 {
 
     [SerializeField]
@@ -19,16 +19,17 @@ public class ItemScript : Selectable
         //Debug.Log("Droppable started");
     }
 
-    public override void StartHover()
-    {
-        GetComponent<Outline>().enabled = true; // TODO: refactor out repeated code (while still keeping carveout separate)
-        GetComponent<Outline>().OutlineWidth = 1;
-        GetComponent<Outline>().OutlineColor = Color.white;
-    }
+    //public override void StartHover()
+    //{
+    //    base.StartHover();
+    //    GetComponent<NavMeshObstacle>().carving = false;
+    //    GetComponent<Outline>().OutlineColor = Color.white;
+    //}
 
     public override void EndHover()
     {
-        GetComponent<Outline>().enabled = false;
+        base.EndHover();
+        GetComponent<NavMeshObstacle>().carving = false;  // Droppables never carve
     }
 
     public override List<SelectionData> Actions()
@@ -50,8 +51,8 @@ public class ItemScript : Selectable
     {
         public override void Interact(Character npc, Selectable interactable)
         {
-            if (interactable.GetComponent<ItemScript>() == null) { Debug.LogError("Can only Pick up droppable items"); }
-            var droppable = interactable.GetComponent<ItemScript>();
+            if (interactable.GetComponent<DroppableItem>() == null) { Debug.LogError("Can only Pick up droppable items"); }
+            var droppable = interactable.GetComponent<DroppableItem>();
             int leftOver = npc.inventory.AddNewItem(droppable.itemData, droppable.stackSize);
             droppable.stackSize = leftOver;
             if (droppable.stackSize <= 0)

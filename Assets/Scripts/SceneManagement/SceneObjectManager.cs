@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SceneObjectManager : MonoBehaviour
 {
@@ -56,15 +57,15 @@ public class SceneObjectManager : MonoBehaviour
         {
             var newItem = Instantiate(Resources.Load<GameObject>("Prefabs/" + groundObj.itemName), gameObject.transform);
             newItem.transform.position = new Vector3(groundObj.pos[0], groundObj.pos[1], groundObj.pos[2]);
-            newItem.GetComponent<ItemScript>().stackSize = groundObj.count;
+            newItem.GetComponent<DroppableItem>().stackSize = groundObj.count;
             GroundObjects.Add(newItem);
         }
     }
 
-    public void AddDroppedObject(string itemName)
+    public void AddDroppedObject(GameObject obj, Vector3 loc)
     {
-        var newItem = Instantiate(Resources.Load<GameObject>("Prefabs/" + itemName), gameObject.transform);
-        GroundObjects.Add(newItem);
+        SceneManager.MoveGameObjectToScene(obj, SceneManager.GetSceneByName(sceneName));
+        GroundObjects.Add(obj);
     }
 
     public void DeleteDroppedObject(GameObject obj) { 

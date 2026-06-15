@@ -152,6 +152,24 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
 
     public void OnRightClick()
     {
+        if(itemData != null) UIController.Instance.ActivateMenuDropdown(SelectionController.MousePosition(), PartyController.Instance.selectedPartyMember.transform.position, this);
+    }
+
+    public void DropStack(Vector3 itemPos)
+    {
+        itemData.DropItem(itemPos, currentStack);
+        ClearItem(true, true);
+        slotPanel.UpdateEntity();
+    }
+
+    public void SplitOff(int amount)
+    {
+        if (amount >= currentStack) return;
+        var nextEmpty = slotPanel.NextEmpty();
+        if (nextEmpty == null) return;
+        RemoveItem(amount);
+        nextEmpty.AddItem(itemData, amount);
+        slotPanel.UpdateEntity();
     }
 
     public virtual void OnDrop(PointerEventData eventData) 
@@ -161,9 +179,9 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         GameObject dropped = eventData.pointerDrag;
         DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
         if (draggableItem.dragTargets != null && !draggableItem.dragTargets.Contains(slotPanel)) return;  // if a draggable has marked allowed panels then this must be in it to drag
-        if (draggableItem.sourceSlotType != InventoryData.ItemType.misc && currentStack > 0) // Will be swapping with a restricted slot
+        if (draggableItem.equipSlotType != EntityInventory.EquipmentInvType.na && currentStack > 0) // Will be swapping with a restricted slot
         {
-            if (draggableItem.inventoryData.itemType != draggableItem.sourceSlotType) return;
+            if (!EntityInventory.equippables[draggableItem.equipSlotType].Contains(draggableItem.inventoryData.itemType) ) return;
             if(draggableItem.parentBeforeDrag.gameObject.GetComponent<EquipmentSlot>() != null) // Will equip this item
             {
                 if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;

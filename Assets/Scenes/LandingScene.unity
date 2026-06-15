@@ -309,7 +309,7 @@ GameObject:
   - component: {fileID: 1183609901}
   - component: {fileID: 1183609902}
   - component: {fileID: 1183609903}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ToArena
   m_TagString: Untagged
   m_Icon: {fileID: 0}

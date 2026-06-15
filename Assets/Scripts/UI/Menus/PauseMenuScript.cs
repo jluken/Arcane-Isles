@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PauseMenuScript : MenuScreen
 {
@@ -10,6 +11,8 @@ public class PauseMenuScript : MenuScreen
     public static MenuScreen Instance;
 
     private bool menuOpen;
+
+    public Button saveButton;
 
     public void Awake()
     {
@@ -30,6 +33,9 @@ public class PauseMenuScript : MenuScreen
     {
         menu.SetActive(true);
         menuOpen = true;
+
+        if(CombatManager.Instance.combatActive) saveButton.interactable = false;
+        else saveButton.interactable = true;
     }
 
     public override bool IsActive()
@@ -59,7 +65,7 @@ public class PauseMenuScript : MenuScreen
 
     public void Save()
     {
-        UIController.Instance.ActivateSaveMenu();  // TODO: disable during combat
+        UIController.Instance.ActivateSaveMenu();
     }
 
     public void Load()

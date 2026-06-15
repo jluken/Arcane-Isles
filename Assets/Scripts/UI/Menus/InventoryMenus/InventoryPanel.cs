@@ -35,6 +35,11 @@ public class InventoryPanel : MonoBehaviour
         }
     }
 
+    public ItemSlot NextEmpty()
+    {
+        return InventorySlots.FirstOrDefault(slot => slot.itemData == null);
+    }
+
     public void SelectItem(InventoryData itemData, int slotId)
     {
         inventoryMenu.SelectItem(itemData, this, slotId);

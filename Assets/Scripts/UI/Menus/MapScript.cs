@@ -42,7 +42,7 @@ public class MapScript : MenuScreen
     void Update()
     {
         Vector2 moveDirection = InputSystem.actions.FindActionMap("UI").FindAction("Navigate").ReadValue<Vector2>();
-        float zoom = SelectionController.Instance.MouseScroll().y;
+        float zoom = SelectionController.MouseScroll().y;
 
         var mapRect = currentMapImage.GetComponent<RectTransform>();
         mapRect.localPosition = new Vector2(mapRect.localPosition.x - (panSpeed * moveDirection.x), mapRect.localPosition.y - (panSpeed * moveDirection.y));
@@ -101,6 +101,7 @@ public class MapScript : MenuScreen
         mapOpen = true;
 
         // TODO: create meaningful relationship between worldspace and map space(?)
+        Debug.Log("Map current level: " + (currentLevel == null ? "null" : currentLevel.LevelName));
         var worldWidth = currentLevel.levelDims[0];
         var worldHeight = currentLevel.levelDims[1];
         localMapImage.sprite = currentLevel.levelMap;

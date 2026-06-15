@@ -41,8 +41,7 @@ public class ItemSelectMenu : MenuScreen
 
     private void HandleClick()
     {
-        RaycastHit hit;
-        if (frameDelay && Physics.Raycast(Camera.main.ScreenPointToRay(SelectionController.Instance.MousePosition()), out hit, 100, -1, QueryTriggerInteraction.Ignore) && !EventSystem.current.IsPointerOverGameObject(-1))
+        if(frameDelay && EventSystem.current != null && !EventSystem.current.IsPointerOverGameObject())
         {
             UIController.Instance.CloseOverlays();
         }

@@ -7,6 +7,7 @@ using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static InventoryData;
 
@@ -22,7 +23,7 @@ public class PlayerInventoryMenu : InventoryMenu
 
     public Image itemDescriptionImage;
     public TMP_Text itemDescriptionNameText;
-    public TMP_Text itemDescriptionText;
+    public TMP_Text itemDescriptionText;  // TODO: figure out all info to display here - attacks/damage/range/radius/AP, price, weight, flavor/description of effect, duration, DT  (maybe display as a sort of note pinned to page)
     public Sprite emptySprite;
 
     private int selectedSlotId;
@@ -53,7 +54,7 @@ public class PlayerInventoryMenu : InventoryMenu
         {
             itemDescriptionImage.sprite = itemData.sprite;
             itemDescriptionNameText.text = itemData.itemName;
-            itemDescriptionText.text = itemData.description;
+            itemDescriptionText.text = itemData.description;  // TODO: get "fullText" which might differ based on type (BG3: 
         }
         selectedSlotId = slotID;
     }
@@ -85,7 +86,7 @@ public class PlayerInventoryMenu : InventoryMenu
             PartyController.Instance.selectedPartyMember.inventory.UpdateInvStack(slotId, -1);
             Debug.Log("post count " + PartyController.Instance.selectedPartyMember.inventory.inventory[slotId].count);
         }
-        else if (equipmentTypes.Contains(itemData.itemType))
+        else if (EntityInventory.defaultEquipSlot.ContainsKey(itemData.itemType))
         {
             var playerInventory = PartyController.Instance.selectedPartyMember.inventory;
             Debug.Log("Equipment type");
@@ -93,16 +94,16 @@ public class PlayerInventoryMenu : InventoryMenu
             {
                 Debug.Log("Equip from inventory");
                 if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;
-                var oldEquip = playerInventory.GetEquipment(itemData.itemType);
-                playerInventory.SetEquipment(itemData.itemType, itemData);
+                var oldEquip = playerInventory.SwapOutEquipment(itemData);
                 playerInventory.SetInventory(slotId, oldEquip);
                 CombatManager.Instance.SpendActionPoints(itemData.APCost);
             }
             else
             {
                 Debug.Log("De-equip");
-                var leftover = playerInventory.AddNewItem(playerInventory.GetEquipment(itemData.itemType));
-                if (leftover == 0) playerInventory.SetEquipment(itemData.itemType, null);
+                var clickedEquipSlot = (EntityInventory.EquipmentInvType)slotId;
+                var leftover = playerInventory.AddNewItem(playerInventory.GetEquipment(clickedEquipSlot));
+                if (leftover == 0) playerInventory.SetEquipment(clickedEquipSlot, null);
             }
         }
         ActivateMenu(); // Reactivate menu after resetting through entity data

@@ -138,7 +138,10 @@ public class PartyController : MonoBehaviour
     {
         Debug.Log("Add Companion " + companion);
         if (companion.mainChar && party.Count > 0) throw new Exception("There can only be one party leader");
-        if (party.Count == maxParty) return false; // TODO: when this returned, create pop up [UI]
+        if (party.Count == maxParty) {
+            DialogueInterface.Instance.LogLine("Your party is already full");
+            return false; 
+        }
         playerSlot = Math.Min(playerSlot, party.Count);
 
         party.Insert(playerSlot, companion);
@@ -172,7 +175,7 @@ public class PartyController : MonoBehaviour
 
     public void SelectChar(PartyMember player)
     {
-        selectedPartyMember.SetIdle();
+        if (selectedPartyMember != player) selectedPartyMember.SetIdle();  // Need check to avoid agent/obstacle race condition
         selectedPartyMember = player;
         selectedPartyMember.SetActiveChar();
         camScript.Instance.TrackObj(selectedPartyMember.gameObject);

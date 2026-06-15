@@ -7,6 +7,8 @@ using UnityEngine;
 public class Merchant : Character  // Making a type of NPC for now
 {
 
+    public bool isBuying;
+
     public override void Start()
     {
         base.Start();

@@ -556,7 +556,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 66133293}
-  - component: {fileID: 66133295}
   - component: {fileID: 66133294}
   m_Layer: 13
   m_Name: TopMesh
@@ -629,14 +628,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &66133295
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 66133292}
-  m_Mesh: {fileID: 0}
 --- !u!1 &108839350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1211,7 +1202,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 423269039}
-  - component: {fileID: 423269037}
   - component: {fileID: 423269038}
   m_Layer: 13
   m_Name: ViewMesh
@@ -1220,14 +1210,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!33 &423269037
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 423269036}
-  m_Mesh: {fileID: 0}
 --- !u!23 &423269038
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1455,7 +1437,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 508029298}
-  - component: {fileID: 508029296}
   - component: {fileID: 508029297}
   m_Layer: 7
   m_Name: ViewMesh
@@ -1464,14 +1445,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!33 &508029296
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 508029295}
-  m_Mesh: {fileID: 0}
 --- !u!23 &508029297
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1693,6 +1666,7 @@ MonoBehaviour:
   reach: 1
   defaultWeapon: {fileID: 0}
   combatantType: 3
+  isBuying: 1
 --- !u!114 &597588029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1744,6 +1718,16 @@ MonoBehaviour:
   maxInv: 40
   initInv: []
   initInvStacks: 
+  initHoldMainHand: {fileID: 0}
+  initHoldOffHand: {fileID: 0}
+  initTorso: {fileID: 0}
+  initCoat: {fileID: 0}
+  initHead: {fileID: 0}
+  initFace: {fileID: 0}
+  initLegs: {fileID: 0}
+  initBoots: {fileID: 0}
+  initNecklace: {fileID: 0}
+  initHands: {fileID: 0}
   hasEquip: 0
   money: 72
   merchant: 0
@@ -1829,7 +1813,7 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 256
-  viewMeshFilter: {fileID: 423269037}
+  viewMeshFilter: {fileID: 0}
   topMeshFilter: {fileID: 0}
   midMeshFilter: {fileID: 0}
 --- !u!136 &597588035
@@ -2311,9 +2295,19 @@ MonoBehaviour:
   initInv:
   - {fileID: 11400000, guid: 753089f0608df894da43bb8e801b1776, type: 2}
   - {fileID: 0}
-  - {fileID: 11400000, guid: e4f9a8221afe05d45ba395ff508066ac, type: 2}
+  - {fileID: 11400000, guid: 9e5872adcfb3a214192bf26b8092233e, type: 2}
   - {fileID: 0}
   initInvStacks: 0200000000000000
+  initHoldMainHand: {fileID: 0}
+  initHoldOffHand: {fileID: 0}
+  initTorso: {fileID: 0}
+  initCoat: {fileID: 0}
+  initHead: {fileID: 0}
+  initFace: {fileID: 0}
+  initLegs: {fileID: 0}
+  initBoots: {fileID: 0}
+  initNecklace: {fileID: 0}
+  initHands: {fileID: 0}
   hasEquip: 0
   money: 0
   merchant: 0
@@ -3225,7 +3219,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1122373583}
-  - component: {fileID: 1122373581}
   - component: {fileID: 1122373582}
   m_Layer: 7
   m_Name: TopMesh
@@ -3234,14 +3227,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!33 &1122373581
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122373580}
-  m_Mesh: {fileID: 0}
 --- !u!23 &1122373582
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3593,7 +3578,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1400828618}
-  - component: {fileID: 1400828620}
   - component: {fileID: 1400828619}
   m_Layer: 13
   m_Name: MidMesh
@@ -3666,14 +3650,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &1400828620
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1400828617}
-  m_Mesh: {fileID: 0}
 --- !u!1 &1433356185
 GameObject:
   m_ObjectHideFlags: 0
@@ -3926,6 +3902,16 @@ MonoBehaviour:
   maxInv: 40
   initInv: []
   initInvStacks: 
+  initHoldMainHand: {fileID: 0}
+  initHoldOffHand: {fileID: 0}
+  initTorso: {fileID: 0}
+  initCoat: {fileID: 0}
+  initHead: {fileID: 0}
+  initFace: {fileID: 0}
+  initLegs: {fileID: 0}
+  initBoots: {fileID: 0}
+  initNecklace: {fileID: 0}
+  initHands: {fileID: 0}
   hasEquip: 0
   money: 72
   merchant: 0
@@ -4011,7 +3997,7 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 256
-  viewMeshFilter: {fileID: 508029296}
+  viewMeshFilter: {fileID: 0}
   topMeshFilter: {fileID: 0}
   midMeshFilter: {fileID: 0}
 --- !u!136 &1511110438
@@ -5322,7 +5308,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1952343796}
-  - component: {fileID: 1952343794}
   - component: {fileID: 1952343795}
   m_Layer: 7
   m_Name: MidMesh
@@ -5331,14 +5316,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!33 &1952343794
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1952343793}
-  m_Mesh: {fileID: 0}
 --- !u!23 &1952343795
 MeshRenderer:
   m_ObjectHideFlags: 0

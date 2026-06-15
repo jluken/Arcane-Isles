@@ -15,16 +15,20 @@ public class TradingMenu : InventoryMenu
     public static TradingMenu Instance { get; private set; }
     public GameObject inventoryMenu;
     EntityInventory merchantInventory;
+    private Character merchant;
+    private bool buying;
 
     public InventoryPanel playerInventorySlots;
     public TMP_Text playerName;
+    public Image playerAvatar;
     public TMP_Text playerGold;
 
     public InventoryPanel merchantInventorySlots;
     public TMP_Text merchantName;
+    public Image merchantAvatar;
     public TMP_Text merchantGold;
 
-    public static int barterSlotNum = 10;
+    public static int barterSlotNum = 14;
     public EntityInventory playerBarterInv;
     public InventoryPanel playerBarterSlots;
     public EntityInventory merchantBarterInv;
@@ -91,9 +95,11 @@ public class TradingMenu : InventoryMenu
         merchantInventory = null;
     }
 
-    public void SetInventory(EntityInventory inventory = null)
+    public void SetInventory(EntityInventory inventory = null, Character merchant = null, bool isBuying = true)
     {
         merchantInventory = inventory;
+        this.merchant = merchant;
+        buying = isBuying;
     }
 
     public override void ActivateMenu()
@@ -105,10 +111,13 @@ public class TradingMenu : InventoryMenu
         var activePlayer = PartyController.Instance.selectedPartyMember;
         playerInventorySlots.PopulateInventory(activePlayer.inventory, new List<InventoryPanel>() { playerBarterSlots });
         playerName.text = activePlayer.charStats.charName;
-        playerGold.text = activePlayer.inventory.money.ToString();
+        playerAvatar.sprite = activePlayer.charStats.charImage;
 
         merchantInventorySlots.PopulateInventory(merchantInventory, new List<InventoryPanel>() { merchantBarterSlots });
+        merchantName.text = merchant != null ? merchant.charStats.charName : "";
+        merchantAvatar.sprite = merchant != null ? merchant.charStats.charImage : null; ;
 
+        playerBarterSlots.gameObject.SetActive(buying);
         playerBarterSlots.PopulateInventory(playerBarterInv, new List<InventoryPanel>() { playerInventorySlots });
 
         merchantBarterSlots.PopulateInventory(merchantBarterInv, new List<InventoryPanel>() { merchantInventorySlots });
@@ -118,7 +127,7 @@ public class TradingMenu : InventoryMenu
     public void UpdateText()
     {
         if (!IsActive()) return;
-        merchantName.text = ""; // TODO: Vis - display merchant char data?
+        playerGold.text = PartyController.Instance.selectedPartyMember.inventory.money.ToString();
         merchantGold.text = merchantInventory.money.ToString();
         playerBarterValueText.text = playerSaleVal().ToString();
         merchantBarterValueText.text = merchantSaleVal().ToString();
@@ -133,7 +142,7 @@ public class TradingMenu : InventoryMenu
     {
         Debug.Log("Trading activate");
         var playerInventory = PartyController.Instance.selectedPartyMember.inventory;
-        if (slotGroup == playerInventorySlots)
+        if (slotGroup == playerInventorySlots && buying)
         {
             Debug.Log("player slots");
             var grabbedInv = playerInventory.GetInventory(slotId);
@@ -174,7 +183,7 @@ public class TradingMenu : InventoryMenu
         selectedSlotId = slotID;
     }
 
-    public void Trade() // TODO: what if not enough space?
+    public void Trade()  // TODO: track "unique items" that need to be able to be bought back from someone (curio collector?) 
     {
         var playerInventory = PartyController.Instance.selectedPartyMember.GetComponent<EntityInventory>();
 
@@ -182,26 +191,35 @@ public class TradingMenu : InventoryMenu
 
         if ((playerCost >= 0 && playerCost <= playerInventory.money) ||
             (playerCost < 0 && playerCost <= merchantInventory.money)) {
-            merchantInventory.ConsumeInventory(playerBarterInv);
+            //merchantInventory.ConsumeInventory(playerBarterInv);
+            playerBarterInv.ClearInventory();
             playerInventory.ConsumeInventory(merchantBarterInv);
             playerInventory.money -= playerCost;
             merchantInventory.money += playerCost;
+
+            merchantBarterInv.DropAllInventory();  // If player has no space, drop on ground
         }  
+
         ActivateMenu();
     }
 
     private int playerSaleVal()
     {
         int baseVal = playerBarterInv.getTotalValue() / 2;
-        int modifier = 1;  // TODO: figure out how persuasion should affect sale and/or buy price
-        return baseVal * modifier;
+        float modifier = PartyController.Instance.selectedPartyMember.charStats.barterModifier;
+        Debug.Log("playersaleBaseVal: " + baseVal);
+        Debug.Log("modifier: " + modifier);
+        var minCoin = (baseVal * modifier) > 0 ? Math.Max(1, (baseVal * modifier)) : 0;
+        Debug.Log("minCoin: " + minCoin);
+        return Mathf.FloorToInt(minCoin);
     }
 
     private int merchantSaleVal()
     {
         int baseVal = merchantBarterInv.getTotalValue();
-        int modifier = 1;
-        return baseVal / modifier;
+        float modifier = PartyController.Instance.selectedPartyMember.charStats.barterModifier;
+        var minCoin = (baseVal * modifier) > 0 ? Math.Max(1, (baseVal * modifier)) : 0;
+        return Mathf.FloorToInt(minCoin);
     }
 
     public override void DeselectAllSlots()

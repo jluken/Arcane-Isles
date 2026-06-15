@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO.Pipes;
@@ -21,6 +22,7 @@ public class CombatManager : MonoBehaviour
     public event Action setPeace;
 
     public event Action combatStatUpdate;
+    public event Action combatActionUpdate;
 
     public struct InitiativeEntry
     {
@@ -51,6 +53,7 @@ public class CombatManager : MonoBehaviour
     public AbilityAction defaultRun;
     public Texture2D targetCursor;
     public Texture2D attackCursor;
+    public Texture2D attackCursorNull;
 
     public GameObject abilityRangeMarker;
     public GameObject abilityEffectMarker;
@@ -121,21 +124,32 @@ public class CombatManager : MonoBehaviour
 
     private Dictionary<Character, bool> prevCarveouts;
 
-    public void UncarveTargets()
+    public IEnumerator UncarveTargets()
     {
+        List<Coroutine> carvings = new List<Coroutine>();
         prevCarveouts = new Dictionary<Character, bool>();
         foreach (var target in combatantInitiative)
         {
             prevCarveouts.Add(target.character, target.character.mover.planted);
-            target.character.mover.DefaultAvoidance();
+            carvings.Add(StartCoroutine(target.character.mover.DefaultAvoidanceAsync()));
+        }
+
+        foreach (var carving in carvings)
+        {
+            yield return carving;
         }
     }
 
-    public void RecarveTargets()
+    public IEnumerator RecarveTargets()
     {
+        List<Coroutine> carvings = new List<Coroutine>();
         foreach (var target in prevCarveouts)
         {
-            if (target.Value == true) target.Key.mover.PlantFeet();
+            if (target.Value == true) carvings.Add(StartCoroutine(target.Key.mover.PlantFeetAsync()));
+        }
+        foreach (var carving in carvings)
+        {
+            yield return carving;
         }
         prevCarveouts = new Dictionary<Character, bool>();
     }
@@ -157,11 +171,16 @@ public class CombatManager : MonoBehaviour
         callToArms.Invoke();
 
         initiativeTurn = 0;
-        SetCombatant(initiativeTurn);
+        StartCoroutine(SetCombatant(initiativeTurn));
     }
 
     public bool CheckForCombatEnd()
     {
+        Debug.Log("Checking for combat end");
+        foreach (var initi in combatantInitiative)
+        {
+            Debug.Log(initi.character.name);
+        }
         if (!combatantInitiative.Any(entry => entry.character == PartyController.Instance.playerChar) ||
             !combatantInitiative.Any(entry => entry.type == CombatantType.Enemy)) {
             EndCombat();
@@ -183,18 +202,33 @@ public class CombatManager : MonoBehaviour
     {
         Debug.Log("Next Turn");
         if (CheckForCombatEnd()) return;
+        Debug.Log("Continuing with turn");
         int currInitTurn = combatantInitiative.IndexOf(combatantInitiative.Where(entry => entry.character == activeCombatant).FirstOrDefault());
         initiativeTurn = (currInitTurn + 1) % combatantInitiative.Count;
         if (initiativeTurn == 0) NewRound();
 
         activeCombatant.SetIdle();
-        SetCombatant(initiativeTurn);
+        StartCoroutine(SetCombatant(initiativeTurn));
     }
 
-    private void SetCombatant(int turn)
+    private IEnumerator SetCombatant(int turn)
     {
+        // Set all combatants into static obstacles
+        List<Coroutine> plants = new List<Coroutine>();
+        foreach (var target in combatantInitiative)
+        {
+            plants.Add(StartCoroutine(target.character.mover.PlantFeetAsync()));
+        }
+
+        foreach (var plant in plants)
+        {
+            yield return plant;
+        }
+        if (!combatActive) yield break;  // double check to see if combat ended dueing yields (eg player death)
         activeCombatant = combatantInitiative[turn].character;
         activeCombatant.SetActiveChar();
+        // Set active combatant into navmesh agent
+        yield return activeCombatant.mover.DefaultAvoidanceAsync();
         turnTravel = 0;
         ActionPoints = activeCombatant.charStats.GetCurrStat(CharStats.StatVal.actionPoints);
         bool isEnemy = combatantInitiative[turn].type == CombatantType.Enemy;
@@ -209,6 +243,7 @@ public class CombatManager : MonoBehaviour
         {
             PartyController.Instance.SelectChar(activeCombatant.GetComponent<PartyMember>());
         }
+        
         combatStatUpdate.Invoke();
     }
 
@@ -266,7 +301,6 @@ public class CombatManager : MonoBehaviour
             {
                 var prev = SelectionController.Instance.playerUnderControl;
                 SelectionController.Instance.playerUnderControl = false;
-                // TODO: grey out buttons as well [UI]
                 LockAction(action);
                 Debug.Log("Starting action: " + action);
                 StartCoroutine(action.UseAbility());
@@ -278,13 +312,7 @@ public class CombatManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        //Debug.Log("Current Action is null? + " + (currentAction == null ? "true" : "false"));
-        //Debug.Log("Current Action: " + (currentAction == null ? "null" : currentAction.actionName));
-    }
-
-    public void PrepAttackTarget(Selectable target) // TODO: duplicate code
+    public void PrepAttackTarget(Selectable target)
     {   
         var tempAction = currentAction;
         if (currentAction == null) tempAction = activeCombatant.GetDefaultAttack();
@@ -293,7 +321,7 @@ public class CombatManager : MonoBehaviour
         UpdateCombatDisplay(tempAction);
     }
 
-    public void PrepTargetPoint(Vector3 target) // TODO: duplicate code
+    public void PrepTargetPoint(Vector3 target)
     {
         var tempAction = currentAction;
         tempAction ??= defaultRun;
@@ -307,7 +335,11 @@ public class CombatManager : MonoBehaviour
         //Disable display fx to start
         abilityEffectMarker.SetActive(false);
         NavLine.Instance.DisableLine();
-        
+        if (action == null || action.actor == null || action.actor.mover.planted)
+        {
+            return;  // Disable combat calculations while mid state transition
+        }
+        var prevDeckAp = OnDeckActionPoints;
         if (InAction() || action == null)
         {
             OnDeckActionPoints = 0; // Don't show AP cost while acting
@@ -318,6 +350,8 @@ public class CombatManager : MonoBehaviour
             OnDeckActionPoints = action.CheckValidAction() ? action.GetActionCost() : 0;
             action.DisplayTarget();
         }
+        if(prevDeckAp != OnDeckActionPoints) combatActionUpdate.Invoke();
+
         var rangeAction = action != null ? action : currentAction;  // TODO: put this in the action itself, or special since it doesn't require point target?
         if (!InAction() && rangeAction != null && rangeAction.range > 0)
         {
@@ -327,7 +361,6 @@ public class CombatManager : MonoBehaviour
         }
         else abilityRangeMarker.SetActive(false);
         if(!InAction() && rangeAction != null) rangeAction.DisplayTarget();
-        combatStatUpdate.Invoke();
     }
 
     public void LogTravel(NavMeshAgent agent, float dist)
@@ -382,8 +415,11 @@ public class CombatManager : MonoBehaviour
 
     public void UnsetAction()
     {
-        currentAction = null;
-        combatStatUpdate.Invoke();
+        if(currentAction != null)
+        {
+            currentAction = null;
+            combatStatUpdate.Invoke();
+        }
     }
 
 }

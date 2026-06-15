@@ -16,7 +16,7 @@ public class SceneLoader : MonoBehaviour
     private LevelManager levelManager;
 
     private Dictionary<string, SceneSaveData> SceneData;
-    private Dictionary<string, SceneObjectManager> SceneObjectManagers;
+    public Dictionary<string, SceneObjectManager> SceneObjectManagers { get; private set; }
     private List<string> loadingScenes = new List<string>();
 
     private void Awake()
@@ -38,6 +38,7 @@ public class SceneLoader : MonoBehaviour
 
     public void SetLevel(LevelManager newManager)  // Called from level activation
     {
+        Debug.Log("Level set to " + newManager.LevelName);
         levelManager = newManager;
     }
 
@@ -146,6 +147,12 @@ public class SceneLoader : MonoBehaviour
         foreach (var scene in deadScenes) StartCoroutine(DeactivateSubscene(scene));
     }
 
+    public List<string> ScenesByLoc(Vector3 loc)
+    {
+        var scenes = levelManager.sceneTriggers.Where(trigger => trigger.GetComponent<Collider>().bounds.Contains(loc)).ToList();
+        return scenes.Select(trigger => trigger.GetComponent<SceneTrigger>().sceneName).ToList();
+    }
+
     private IEnumerator DeactivateSubscene(string sceneName)
     {
         if (SceneObjectManagers.ContainsKey(sceneName)) {
@@ -193,9 +200,14 @@ public class SceneLoader : MonoBehaviour
 
     private void ResetData()
     {
-        foreach (var character in PartyController.Instance.party) { character.charStats.setInitStats(true); character.inventory.SetInitInventory(); character.SetStates(); }  // initialize chars before manipulating
+        foreach (var character in PartyController.Instance.party) {
+            character.charStats.setInitStats(true); 
+            character.inventory.SetInitInventory(); 
+            StartCoroutine(character.mover.DefaultAvoidanceAsync()); 
+            character.SetStates(); }  // initialize chars before manipulating
         PartyController.Instance.DeactivateParty();
         if (levelManager != null) DeactivateLevel(levelManager);
+        Debug.Log("level manager reset");
         levelManager = null;
         SceneObjectManagers = new Dictionary<string, SceneObjectManager>();
         LevelData = new Dictionary<string, LevelSaveData>();
@@ -207,6 +219,7 @@ public class SceneLoader : MonoBehaviour
         ResetData();
         LevelData = saveData.LevelData;
         SceneData = saveData.SceneData;
+        Debug.Log("Load dialog saves: " + saveData.dialogData);
         PersistentDataManager.ApplySaveData(saveData.dialogData);
         GameData.Instance.gameTime = saveData.gameTime;
 

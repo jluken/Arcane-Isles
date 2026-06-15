@@ -11,13 +11,13 @@ public class CharCreateMenu : MenuScreen
 
     private bool active;
 
-    private int remainingPoints = 5;
+    private int remainingPoints = 2;
 
     private Dictionary<string, int> attrPoints = new Dictionary<string, int>()
     {
-        { "vigor", 1},
-        { "finesse", 1},
-        { "psyche", 1}
+        { "vigor", 3},
+        { "finesse", 3},
+        { "psyche", 3}
     };
 
     public TMP_InputField nameField;
@@ -59,6 +59,7 @@ public class CharCreateMenu : MenuScreen
         psycheTxt.text = attrPoints["psyche"].ToString();
     }
 
+    //TODO: possibly switch to bars like char page (maybe even show stats as well to let them know what it will affect), also possibly add descriptions of abilities (hover?)
     public void IncreaseAttr(string attr)
     {
         if (!attrPoints.ContainsKey(attr)) Debug.LogError("Invalid attribute " + attr);
@@ -76,6 +77,8 @@ public class CharCreateMenu : MenuScreen
         attrPoints[attr] -= 1;
         UpdateText();
     }
+
+    // TODO: show derived stats like HP, MP, and AC
 
     public void AssignAttributes()
     {

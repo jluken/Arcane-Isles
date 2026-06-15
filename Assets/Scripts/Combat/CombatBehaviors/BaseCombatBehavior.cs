@@ -14,16 +14,16 @@ public class BaseCombatBehavior : ScriptableObject
     }
 
     public IEnumerator CombatTurn(Character attacker) {
-        CombatManager.Instance.UncarveTargets();
-        yield return null;
+        yield return CombatManager.Instance.UncarveTargets();
+        //yield return null;
         yield return new WaitForSeconds(0.5f);
         while (CanAct(attacker))
         {
             Debug.Log("Do new action");
             yield return DoNextAction(attacker);
         }
-        CombatManager.Instance.RecarveTargets();
-        yield return null;
+        yield return CombatManager.Instance.RecarveTargets();
+        //yield return null;
         yield return new WaitForSeconds(0.5f);
         CombatManager.Instance.NextTurn();
         yield return null;

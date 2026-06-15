@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -31,7 +32,7 @@ public class DefaultUI : MenuScreen
     public Sprite prepPip;
     public Sprite errPip;
 
-    public GameObject chatWindowScroll;
+    public ScrollRect chatWindowScroll;
     public GameObject chatWindowContent;
 
     public GameObject portraitPanel;
@@ -59,7 +60,9 @@ public class DefaultUI : MenuScreen
 
         PartyController.Instance.updatePartyEvent += UpdateStats;
         DialogueInterface.Instance.updateChatLog += UpdateChatUI;
+        UpdateChatUI(new List<string>());
         CombatManager.Instance.combatStatUpdate += UpdateStats;
+        CombatManager.Instance.combatActionUpdate += UpdateActions;
     }
 
     public void SetScrollToBottom()
@@ -67,7 +70,7 @@ public class DefaultUI : MenuScreen
         chatWindowScroll.GetComponent<ScrollRect>().verticalNormalizedPosition = 0f;
     }
 
-    public void UpdateStats() 
+    public void UpdateStats()
     {
         var currentParty = PartyController.Instance.party;
         if (!UIActive) return;
@@ -81,43 +84,46 @@ public class DefaultUI : MenuScreen
                 charIcon.UpdateIcon(currentParty[i], true);
             }
         }
-        UpdateActions(PartyController.Instance.selectedPartyMember);
+        UpdateActions();
         UpdateInitiative();
     }
 
     public void ActivateCombat()
     {
         ActivateMenu();
-        NextTurnButton.gameObject.SetActive(true);
+        NextTurnButton.interactable = true;
         initiativeBar.SetActive(true);
         foreach (GameObject icon in initiativeIcons) Destroy(icon);
         initiativeIcons.Clear();
     }
 
-    public void UpdateActions(Character selectedNPC)
+    public void UpdateActions()
     {
+        var selectedNPC = PartyController.Instance.selectedPartyMember;
         FillActionPoints(selectedNPC);
-        if (buttonActions.Select(x => x.actionName).SequenceEqual(selectedNPC.GetActions().Select(x=>x.actionName))) return;
+        //if (buttonActions.Select(x => x.actionName).SequenceEqual(selectedNPC.GetActions().Select(x=>x.actionName))) return;
         foreach (GameObject but in actionButtons) Destroy(but);
         actionButtons.Clear();
         buttonActions.Clear();
         if (!CombatManager.Instance.IsPartyTurn)
         {
             ActionMenu.SetActive(false);
-            NextTurnButton.enabled = false;
+            NextTurnButton.interactable = false;
         }
         else
         {
             var actions = selectedNPC.GetActions();
             ActionMenu.SetActive(true);
-            NextTurnButton.enabled = CombatManager.Instance.combatActive;
+            NextTurnButton.interactable = CombatManager.Instance.combatActive;
             foreach (AbilityAction action in actions)
             {
-                actionButtons.Add(Instantiate(ActionButtonPrefab, ActionMenu.transform));
-                actionButtons.LastOrDefault().GetComponent<Button>().image.sprite = action.icon;
-                actionButtons.LastOrDefault().GetComponent<Button>().onClick.AddListener(() => CombatManager.Instance.SetCurrentAction(action));
-                if (selectedNPC != PartyController.Instance.activePartyMember) actionButtons.LastOrDefault().GetComponent<Button>().interactable = false;
+                var nextActionButton = Instantiate(ActionButtonPrefab, ActionMenu.transform);
+                actionButtons.Add(nextActionButton);
+                nextActionButton.GetComponent<Button>().image.sprite = action.icon;
+                nextActionButton.GetComponent<Button>().onClick.AddListener(() => CombatManager.Instance.SetCurrentAction(action));
+                if (selectedNPC != PartyController.Instance.activePartyMember) nextActionButton.GetComponent<Button>().interactable = false;
                 buttonActions.Add(action);
+                if(CombatManager.Instance.InAction()) nextActionButton.GetComponent<Button>().interactable = false;
             }
         }
     }
@@ -129,6 +135,13 @@ public class DefaultUI : MenuScreen
         {
             chatWindowContent.GetComponent<TextMeshProUGUI>().text += logEntry + "\n";
         }
+        StartCoroutine(DisplayNewText());
+    }
+
+    private IEnumerator DisplayNewText()
+    {
+        yield return new WaitForEndOfFrame();
+        chatWindowScroll.verticalNormalizedPosition = 0f;
     }
 
     public void UpdateInitiative()
@@ -182,7 +195,7 @@ public class DefaultUI : MenuScreen
         UIActive = true;
         portraitPanel.SetActive(true);
         UIBar.SetActive(true);
-        NextTurnButton.gameObject.SetActive(false);
+        NextTurnButton.interactable = false;
         initiativeBar.SetActive(false);
         UpdateStats();
         //TextMenu.SetActive(true);

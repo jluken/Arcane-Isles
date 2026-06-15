@@ -14,7 +14,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public InventoryData inventoryData;
     private UIController uiController;
     //private InventoryMenu invMenu;
-    public InventoryData.ItemType sourceSlotType;
+    public EntityInventory.EquipmentInvType equipSlotType;
 
     public List<InventoryPanel> dragTargets;
 
@@ -46,8 +46,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         var startSlot = parentBeforeDrag.gameObject.GetComponent<ItemSlot>();
         stackSize = startSlot.currentStack;
         inventoryData = startSlot.ClearItem();
-        if (startSlot.GetComponent<EquipmentSlot>() != null) sourceSlotType = startSlot.GetComponent<EquipmentSlot>().equipType;
-        else sourceSlotType = InventoryData.ItemType.misc;
+        if (startSlot.GetComponent<EquipmentSlot>() != null) equipSlotType = startSlot.GetComponent<EquipmentSlot>().equipType;
+        else equipSlotType = EntityInventory.EquipmentInvType.na;
 
         //invMenu.UpdateEntity();
         //invMenu.DeselectAllSlots();
@@ -57,7 +57,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         //Debug.Log("Dragging");
         if (!draggable) return;
-        transform.position = SelectionController.Instance.MousePosition();
+        transform.position = SelectionController.MousePosition();
     }
 
     public void OnEndDrag(PointerEventData eventData)

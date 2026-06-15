@@ -197,7 +197,7 @@ MonoBehaviour:
     - title: Name
       value: Alert
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Initial Value
       value: 
       type: 0
@@ -205,7 +205,7 @@ MonoBehaviour:
     - title: Description
       value: 
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
   - id: 2
     fields:
     - title: Name

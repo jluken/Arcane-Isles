@@ -10,6 +10,7 @@ public class GameData : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        Application.targetFrameRate = 60;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -22,5 +23,18 @@ public class GameData : MonoBehaviour
     void Update()
     {
         if (!CombatManager.Instance.combatActive) gameTime += Time.deltaTime;  // Time incremented by CombatManager during combat
+    }
+
+    public static string DateString(double time)  // TODO: make calendar system
+    {
+        var daysSinceStart = (int)(time / 86400);
+        var monthsSinceStart = daysSinceStart / 30;
+        var yearsSinceStart = monthsSinceStart / 12;
+
+        var year = 1 + yearsSinceStart;
+        var month = 1 + (monthsSinceStart % 12);
+        var day = 1 + (daysSinceStart % 30);
+
+        return "Month" + month + " " + day + ", " + year;
     }
 }

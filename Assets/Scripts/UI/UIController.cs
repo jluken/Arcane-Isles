@@ -2,15 +2,18 @@ using PixelCrushers.DialogueSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.TextCore.Text;
 //using UnityEngine.Device;
 
 public class UIController : MonoBehaviour
 {
     public static UIController Instance { get; private set; }
 
-    // static objetc declaration required to ensure existence before access in Start scripts
+    public TMP_FontAsset cursiveFont; // TODO: purchase Bonhomme Richard commercial license
+    public TMP_FontAsset printFont;
 
     //Scene pages - restricted interation and no buttons allowed. Time paused
     public MainMenu mainMenu;
@@ -38,6 +41,7 @@ public class UIController : MonoBehaviour
 
     // Special in-frame menu that does not pause - sticks around until custom condition
     public ItemSelectMenu itemSelectMenu;
+    public MenuDropdown menuDropdown;
 
     private List<MenuScreen> SceneScreens;
     private List<MenuScreen> LogbookMenus;
@@ -97,6 +101,7 @@ public class UIController : MonoBehaviour
         OverlayMenus.AddRange(InteractionMenus);
         OverlayMenus.AddRange(LogbookMenus);
         OverlayMenus.Add(itemSelectMenu);
+        OverlayMenus.Add(menuDropdown);
 
         AllMenus = new List<MenuScreen>();
         AllMenus.AddRange(SceneScreens);
@@ -105,6 +110,7 @@ public class UIController : MonoBehaviour
         AllMenus.AddRange(InteractionMenus);
         AllMenus.Add(defaultUI);
         AllMenus.Add(itemSelectMenu);
+        AllMenus.Add(menuDropdown);
 
         uiActions = InputSystem.actions.FindActionMap("UI");
         screenKeyCodes = new Dictionary<string, MenuScreen>
@@ -144,10 +150,10 @@ public class UIController : MonoBehaviour
     private void HandleCancel()
     {
         bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking;
-        if (OverlayMenus.Any(menu => menu.IsActive())) CloseOverlays();
-        else if (!noButtonMenus) pauseScreenScript.ActivateMenu();
+        if (OverlayMenus.Any(menu => menu.IsActive())) ActivateDefaultScreen();
+        else if (!noButtonMenus) ActivatePauseMenu();
     }
-    private void HandleJournalKey(string key)
+    public void HandleJournalKey(string key)
     {
         bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking;
         if (!noButtonMenus && !JournalLockMenus.Any(menu => menu.IsActive()))
@@ -156,14 +162,21 @@ public class UIController : MonoBehaviour
             CloseLogbook();
             if (!currOpen)
             {
+                defaultUI.DeactivateMenu();
                 screenKeyCodes[key].ActivateMenu();
             }
         }
     }
 
+    public void ActivatePauseMenu()
+    {
+        pauseScreenScript.ActivateMenu();
+    }
+
     public void CloseLogbook()
     {
         foreach (var menu in LogbookMenus) { menu.DeactivateMenu(); }
+        defaultUI.ActivateMenu();
     }
 
     public void CloseOverlays()
@@ -194,16 +207,19 @@ public class UIController : MonoBehaviour
         defaultUI.ActivateCombat();
     }
 
-    public void ActivateTradeScreen(EntityInventory inventory)
+    public void ActivateTradeScreen(Merchant merchant, bool isBuying = true)
     {
+        Debug.Log("trader is buying: " + isBuying);
         CloseOverlays();
-        tradeScreenScript.SetInventory(inventory);
+        defaultUI.DeactivateMenu();
+        tradeScreenScript.SetInventory(merchant.inventory, merchant, isBuying);
         tradeScreenScript.ActivateMenu();
     }
 
     public void ActivateContainerScreen(EntityInventory inventory)
     {
         CloseOverlays();
+        defaultUI.DeactivateMenu();
         containerScreenScript.SetInventory(inventory);
         containerScreenScript.ActivateMenu();
     }
@@ -214,15 +230,23 @@ public class UIController : MonoBehaviour
         itemSelectMenu.ActivateMenu();
     }
 
+    public void ActivateMenuDropdown(Vector3 pos, Vector3 itemPos, ItemSlot itemSlot)
+    {
+        menuDropdown.SetItemSelection(pos, itemPos, itemSlot);
+        menuDropdown.ActivateMenu();
+    }
+
     public void ActivateSettings()
     {
         CloseOverlays();
+        defaultUI.DeactivateMenu();
         settingsMenu.ActivateMenu();
     }
 
     public void ActivateSaveMenu()
     {
         CloseOverlays();
+        defaultUI.DeactivateMenu();
         savesMenu.SetSaveMode();
         savesMenu.ActivateMenu();
     }
@@ -230,6 +254,7 @@ public class UIController : MonoBehaviour
     public void ActivateLoadMenu()
     {
         CloseOverlays();
+        defaultUI.DeactivateMenu();
         savesMenu.SetLoadMode();
         savesMenu.ActivateMenu();
     }

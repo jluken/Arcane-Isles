@@ -23,6 +23,7 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("START LEVEL");
         SceneLoader.Instance.SetLevel(this);
 
         LevelSaveData levelData = SceneLoader.Instance.GetLevelData(LevelName);
@@ -47,19 +48,25 @@ public class LevelManager : MonoBehaviour
 
     public bool InsideBlockedRegion(Vector3 point)
     {
-        foreach (var region in visRegions)  // TODO: combin into double Any()
-        {
-            if (region.regionState == VisRegion.RegionState.Undiscovered && region.ClickBlockers.Any(blocker => blocker.activeSelf && blocker.GetComponent<Collider>().bounds.Contains(point))) return true;
-        }
+        if (visRegions.Any(
+            region => region.regionState == VisRegion.RegionState.Undiscovered && region.ClickBlockers.Any(
+                blocker => blocker.activeSelf && blocker.GetComponent<Collider>().bounds.Contains(point)))) return true;
+        //foreach (var region in visRegions)
+        //{
+        //    if (region.regionState == VisRegion.RegionState.Undiscovered && region.ClickBlockers.Any(blocker => blocker.activeSelf && blocker.GetComponent<Collider>().bounds.Contains(point))) return true;
+        //}
         return false;
     }
 
     public bool InsideInvisibleRegion(Vector3 point)
     {
-        foreach (var region in visRegions)  // TODO: combin into double Any()
-        {
-            if (region.regionState != VisRegion.RegionState.Visible && region.ClickBlockers.Any(blocker => blocker.activeSelf && blocker.GetComponent<Collider>().bounds.Contains(point))) return true;
-        }
+        if (visRegions.Any(
+            region => region.regionState != VisRegion.RegionState.Visible && region.ClickBlockers.Any(
+                blocker => blocker.activeSelf && blocker.GetComponent<Collider>().bounds.Contains(point)))) return true;
+        //foreach (var region in visRegions)
+        //{
+        //    if (region.regionState != VisRegion.RegionState.Visible && region.ClickBlockers.Any(blocker => blocker.activeSelf && blocker.GetComponent<Collider>().bounds.Contains(point))) return true;
+        //}
         return false;
     }
 }

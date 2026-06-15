@@ -15,13 +15,15 @@ MonoBehaviour:
   itemName: Sword
   description: Pretty good
   sprite: {fileID: 21300000, guid: 9cdd97799b791064da4993559680c672, type: 3}
-  itemPrefab: {fileID: 0}
+  itemPrefab: {fileID: 8711259635184205290, guid: a42b42d2979191541984016de734263d, type: 3}
   price: 5
   weight: 1
+  dt: 0
   APCost: 0
   maxStackSize: 1
   itemType: 1
   equipStats: []
+  consumeOnUse: 0
   consumeStats: []
   damageDie: 6
   swingAp: 4

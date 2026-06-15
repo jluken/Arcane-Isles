@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class camScript : MonoBehaviour
@@ -45,18 +46,18 @@ public class camScript : MonoBehaviour
     {
         if (!UIController.Instance.PauseTime())
         {
-            Vector2 mousePosition = SelectionController.Instance.MousePosition();
-            Vector2 mouseScroll = SelectionController.Instance.MouseScroll();
+            Vector2 mousePosition = SelectionController.MousePosition();
+            Vector2 mouseScroll = SelectionController.MouseScroll();
             Vector2 moveDirection = InputSystem.actions.FindActionMap("UI").FindAction("Navigate").ReadValue<Vector2>();
 
             bool inBounds = mousePosition.y >= 0 && mousePosition.y <= Screen.height && mousePosition.x >= 0 && mousePosition.x <= Screen.width;
 
             if (inBounds && moveDirection == Vector2.zero)
             {
-                float upThreshold = Screen.height * 0.90f;
-                float downThreshold = Screen.height * 0.10f;
-                float rightThreshold = Screen.width * 0.90f;
-                float leftThreshold = Screen.width * 0.10f;
+                float upThreshold = Screen.height * 0.95f;
+                float downThreshold = Screen.height * 0.05f;
+                float rightThreshold = Screen.width * 0.95f;
+                float leftThreshold = Screen.width * 0.05f;
                 if (mousePosition.y >= upThreshold) moveDirection.y = (mousePosition.y - upThreshold) / (Screen.height - upThreshold);
                 else if (mousePosition.y <= downThreshold) moveDirection.y = (mousePosition.y - downThreshold) / (downThreshold);
                 if (mousePosition.x >= rightThreshold) moveDirection.x = (mousePosition.x - rightThreshold) / (Screen.width - rightThreshold);
@@ -66,9 +67,10 @@ public class camScript : MonoBehaviour
             Vector3 screenUp = new Vector3(1.0f, 0.0f, -1.0f);
             Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
             Vector3 movement = ((screenUp * moveDirection.y) + (screenRight * moveDirection.x));
+            var scroll = !EventSystem.current.IsPointerOverGameObject() ? mouseScroll.y : 0.0f;
 
             var distFromPlayer = Vector3.Distance(ct.position, PartyController.Instance.selectedPartyMember.transform.position);  // TODO: maybe just restrict to bounds of level map
-            if (inBounds && (movement != Vector3.zero || mouseScroll.y != 0) && distFromPlayer <= maxCamDist) MoveCamera(movement, mouseScroll.y);
+            if (inBounds && (movement != Vector3.zero || scroll != 0) && distFromPlayer <= maxCamDist) MoveCamera(movement, scroll);
         }
     }
 

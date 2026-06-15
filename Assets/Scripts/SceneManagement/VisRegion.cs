@@ -45,7 +45,6 @@ public class VisRegion : MonoBehaviour
     {
         regionState = RegionState.Visible;
         foreach (VisMask mask in VisMasks) mask.SetSeen();
-        // TODO: register masks/blockers with level to save and also keep around "partially" (separate mask that doesn't block clicks, or just disable that?)
     }
 
     public void SetHidden()
@@ -53,6 +52,5 @@ public class VisRegion : MonoBehaviour
         if (regionState == RegionState.Undiscovered) return;
         regionState = RegionState.Unseen;
         foreach (VisMask mask in VisMasks) mask.SetHidden();
-        // TODO: register masks/blockers with level to save and also keep around "partially" (separate mask that doesn't block clicks, or just disable that?)
     }
 }

@@ -16,6 +16,7 @@ public class doorway : Selectable
     public override void Start()
     {
         //surface = GameObject.Find("Floor").GetComponent<NavMeshSurface>();
+        base.Start();
         doorObject.SetActive(!open);
         openDoor = new SelectionData(this)
         {
@@ -29,7 +30,7 @@ public class doorway : Selectable
             setSelect = true,
             interaction = new OpenClose()
         };
-        base.Start();
+        
     }
 
     public override List<SelectionData> Actions()

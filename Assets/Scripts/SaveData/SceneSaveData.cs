@@ -48,7 +48,7 @@ public class SceneSaveData
         groundObjs = new List<GroundObjData>();
         foreach (var gameGroundObj in gameGroundObjs)
         {
-            var groundScript = gameGroundObj.GetComponent<ItemScript>();
+            var groundScript = gameGroundObj.GetComponent<DroppableItem>();
             var groundObjData = new GroundObjData();
             groundObjData.itemName = groundScript.itemData.itemName;
             groundObjData.count = groundScript.stackSize;

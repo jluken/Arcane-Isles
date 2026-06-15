@@ -105,7 +105,7 @@ public class SelectionController : MonoBehaviour
         }
     }
 
-    private void HandleHover() // TODO: cleanup
+    private void HandleHover()
     {
         if (UIController.Instance.PauseTime() || (SceneLoader.Instance.GetLevel() != null && SceneLoader.Instance.GetLevel().InsideBlockedRegion(pointSpot))) return;
         if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().StartHover();
@@ -114,47 +114,17 @@ public class SelectionController : MonoBehaviour
             if (pointedObject != null && (pointedObject.GetComponent<groundScript>() != null || pointedObject.GetComponent<Selectable>() != null))
             {
                 var mainChar = PartyController.Instance.selectedPartyMember;
-                //if ((CombatManager.Instance.currentAction == null || CombatManager.Instance.currentAction == CombatManager.Instance.defaultRun) && !mainChar.mover.IsMoving())
-                //{
-                //    if (pointedObject.GetComponent<groundScript>() != null) mainChar.mover.DrawTo(pointSpot);
-                //    else mainChar.mover.DrawTo(pointedObject.GetComponent<Selectable>());
-                //}
                 if (pointedObject.GetComponent<groundScript>() != null) CombatManager.Instance.PrepTargetPoint(pointSpot);
                 else CombatManager.Instance.PrepAttackTarget(pointedObject.GetComponent<Selectable>());
-                //else CombatManager.Instance.TargetPoint(pointSpot);
             }
             else CombatManager.Instance.UpdateCombatDisplay(null);
         }
         else CombatManager.Instance.UpdateCombatDisplay(null);
-        //if (pointedObject != null && pointedObject.GetComponent<groundScript>() != null)
-        //{
-        //    if (PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
-        //    {
-        //        var mainChar = PartyController.Instance.selectedPartyMember;
-        //        if (CombatManager.Instance.currentAction == null && !mainChar.mover.IsMoving())
-        //        {
-        //            mainChar.mover.DrawTo(pointSpot);
-        //        }
-        //        //else CombatManager.Instance.TargetPoint(pointSpot);
-        //    }
-        //}
-        //else if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null)
-        //{
-        //    if (PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
-        //    {
-        //        var mainChar = PartyController.Instance.selectedPartyMember;
-        //        if (CombatManager.Instance.currentAction == null && !mainChar.mover.IsMoving())
-        //        {
-        //            mainChar.mover.DrawTo(pointedObject.GetComponent<Selectable>());
-        //        }
-        //        //else CombatManager.Instance.TargetPoint(pointSpot);
-        //    }
-        //}
     }
 
-    public Vector2 MousePosition() => Mouse.current is not null ? Mouse.current.position.value : new Vector2(Screen.width / 2, Screen.height / 2);
+    public static Vector2 MousePosition() => Mouse.current is not null ? Mouse.current.position.value : new Vector2(Screen.width / 2, Screen.height / 2);
 
-    public Vector2 MouseScroll() => Mouse.current is not null ? Mouse.current.scroll.value : new Vector2();
+    public static Vector2 MouseScroll() => Mouse.current is not null ? Mouse.current.scroll.value : new Vector2();
 
     public void InitiateSelection(SelectionData selectionData)
     {

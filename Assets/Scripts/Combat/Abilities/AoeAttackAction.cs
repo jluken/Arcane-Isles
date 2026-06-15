@@ -48,7 +48,7 @@ public class AoeAttackAction : PointAction
 
         CombatManager.Instance.LockAction(this);
         CombatManager.Instance.SpendActionPoints(attackCost);
-        if(weaponAttack) actor.inventory.UseWeapon();
+        if(weaponAttack) actor.inventory.UseMainWeapon();
         yield return new WaitForSeconds(1.0f);
         foreach(Character victim in victims) victim.takeDamage(damage);
         CombatManager.Instance.FinishAction();

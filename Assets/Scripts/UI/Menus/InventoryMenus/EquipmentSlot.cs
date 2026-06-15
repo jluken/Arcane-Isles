@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 public class EquipmentSlot : ItemSlot
 {
-    public InventoryData.ItemType equipType;
+    public EntityInventory.EquipmentInvType equipType;
 
     public override void Start()
     {
@@ -17,7 +17,7 @@ public class EquipmentSlot : ItemSlot
         DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
         Debug.Log(equipType);
         Debug.Log(draggableItem.inventoryData.itemType);
-        if (draggableItem.inventoryData.itemType == equipType)
+        if (EntityInventory.equippables[equipType].Contains(draggableItem.inventoryData.itemType))
         {
             Debug.Log("Not full");
             if (!CombatManager.Instance.CheckActionPoints(draggableItem.inventoryData.APCost)) return;
@@ -25,7 +25,7 @@ public class EquipmentSlot : ItemSlot
             Debug.Log("Cleared AP");
 
             draggableItem.parentAfterDrag = transform;
-            draggableItem.invSlot = -1;
+            draggableItem.invSlot = slotID;
         }
     }
 

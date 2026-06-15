@@ -1,5 +1,6 @@
 using NUnit.Framework.Internal;
 using System;
+using System.Collections;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -60,7 +61,7 @@ public class MoveToClick : MonoBehaviour
         if (!agent.pathPending)
         {
             if (!startedMoving && agent.velocity.sqrMagnitude > movingThreshold) { startedMoving = true; stopCount = 0;}
-            if (agent.hasPath && agent.velocity.sqrMagnitude <= movingThreshold) //stuck
+            if (agent.hasPath && agent.velocity.sqrMagnitude <= movingThreshold) //stuck //TODO: also stop if never got to start moving after some amount of time
             {
                 stopCount++;
                 if (stopCount >= maxStopCount)
@@ -69,7 +70,7 @@ public class MoveToClick : MonoBehaviour
                     StopMoving();
                 }
             }
-            else if (!agent.hasPath && startedMoving && agent.velocity.sqrMagnitude <= movingThreshold) // finished //TODO: also stop if never got to start moving after some amount of time
+            else if (!agent.hasPath && startedMoving && agent.velocity.sqrMagnitude <= movingThreshold) // finished 
             {
                 StopMoving();
             }
@@ -130,17 +131,24 @@ public class MoveToClick : MonoBehaviour
         followTarget = leader;
     }
 
-    public void PlantFeet() {
+
+    public IEnumerator PlantFeetAsync() {
+        
         planted = true;
         agent.avoidancePriority = 0;
         agent.enabled = false;
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
         obstacle.enabled = true;
         obstacle.carving = true;
     }
 
-    public void DefaultAvoidance() {
-        planted = false;
+    public IEnumerator DefaultAvoidanceAsync() {
+        
         obstacle.enabled = false;
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+        planted = false;
         agent.enabled = true;
         agent.avoidancePriority = 50;
     }

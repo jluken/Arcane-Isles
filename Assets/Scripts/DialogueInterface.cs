@@ -11,6 +11,8 @@ public class DialogueInterface : MonoBehaviour
 
     public static DialogueInterface Instance { get; private set; }
 
+    public GameObject DialogueCanvas;
+
     public AbstractBarkUI descriptionBarkUIPrefab;
     private AbstractBarkUI descriptionBarkUI;
     public AbstractBarkUI speakBarkUIPrefab;
@@ -37,6 +39,8 @@ public class DialogueInterface : MonoBehaviour
         //DialogueSystemEvents.ConversationEvents.onConversationLineEnd += LogConversation;
 
         chatHistory = new List<string>();
+
+        DialogueCanvas.SetActive(true);
 
         Debug.Log("ui prefab: " + speakBarkUIPrefab);
         Debug.Log("ui prefab: " + descriptionBarkUIPrefab);
@@ -82,7 +86,13 @@ public class DialogueInterface : MonoBehaviour
         var words = line.dialogueEntry.currentDialogueText;
         chatHistory.Add(speaker + ": " + words);
         updateChatLog.Invoke(chatHistory);
-}
+    }
+
+    public void LogLine(string line)
+    {
+        chatHistory.Add(line);
+        updateChatLog.Invoke(chatHistory);
+    }
 
     public void DescriptionBark(Selectable item)
     {
@@ -146,7 +156,7 @@ public class DialogueInterface : MonoBehaviour
         QuestLog.SetQuestState(questName, QuestState.Active);
         DialogueLua.SetQuestField(questName, "StartTime", GameData.Instance.gameTime);
         if(initEntryNum > 0) ActivateQuestEntry(questName, initEntryNum);
-        //TODO: pop up notification? [UI]
+        LogLine("Journal updated");
     }
 
     public void ActivateQuestEntry(string questName, double entryNumd)
@@ -167,7 +177,8 @@ public class DialogueInterface : MonoBehaviour
             }
         }
         PartyController.Instance.xp += totalXp;
-        //TODO: pop up notification? [UI]
+        LogLine("+" + totalXp + "XP");
+        LogLine("Journal updated");
     }
 
     public struct QuestData
@@ -192,7 +203,7 @@ public class DialogueInterface : MonoBehaviour
         return quests;
     }
 
-    public List<QuestData> GetQuestEntries(string quest)
+    public List<QuestData> GetQuestDetails(string quest)
     {
         // Return list of (entryNum, entry JournalDesc, entry start time, status)
         List<QuestData> questEntries = new List<QuestData>();
