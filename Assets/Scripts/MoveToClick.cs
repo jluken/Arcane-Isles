@@ -11,6 +11,8 @@ using UnityEngine.AI;
 public class MoveToClick : MonoBehaviour
 {
     public NavMeshAgent agent => GetComponent<NavMeshAgent>();
+
+    public Character character => GetComponent<Character>();
     public NavMeshObstacle obstacle => GetComponent<NavMeshObstacle>();
 
     public float activateDist = 1.0f;
@@ -77,9 +79,12 @@ public class MoveToClick : MonoBehaviour
         }
         if (startedMoving && CombatManager.Instance.combatActive)
         {
-            CombatManager.Instance.LogTravel(agent, Vector3.Distance(Utils.GroundPoint(agent.gameObject), lastPoint));
-            lastPoint = Utils.GroundPoint(agent.gameObject);
+            CombatManager.Instance.LogTravel(agent, Vector3.Distance(Utils.GroundPoint(character.renderBody.gameObject), lastPoint));
+            lastPoint = Utils.GroundPoint(character.renderBody.gameObject);
         }
+
+        character.animator.SetBool("Moving", startedMoving);
+        character.animator.SetFloat("Velocity", agent.velocity.sqrMagnitude / agent.speed);
     }
 
     public NavMeshPath PathToPoint(Vector3 dest)
@@ -183,7 +188,7 @@ public class MoveToClick : MonoBehaviour
         if (pathLocked) return;
         var path = PathToPoint(dest);
         if (path != null) agent.SetPath(path);
-        lastPoint = Utils.GroundPoint(agent.gameObject);
+        lastPoint = Utils.GroundPoint(character.renderBody.gameObject);
         if(useMarker) NavLine.Instance.DisableMarker();
         if (useMarker && PathDist(path) > 0) NavLine.Instance.SetMarker(dest);
     }
@@ -216,7 +221,7 @@ public class MoveToClick : MonoBehaviour
             agent.isStopped = true;
             agent.ResetPath();
         }
-        lastPoint = Utils.GroundPoint(agent.gameObject);
+        lastPoint = Utils.GroundPoint(character.renderBody.gameObject);
         startedMoving = false;
         if (useMarker)
         {

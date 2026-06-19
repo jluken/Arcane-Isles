@@ -62,7 +62,6 @@ public class PartyData
     {
         CharSaveData charSaveData = new CharSaveData();
         charSaveData.id = name;
-        Debug.Log("Save player pos: " + pos.x + " " + pos.y + " " + pos.z);
         charSaveData.pos = new float[] { pos.x, pos.y, pos.z };
         charSaveData.rot = new float[] { EulerRot.x, EulerRot.y, EulerRot.z };
 
@@ -76,7 +75,6 @@ public class PartyData
 
     public static CharStatData LoadCharStatData(CharStats charStats)
     {
-        Debug.Log("Saved health: " + charStats.GetCurrStat(CharStats.StatVal.health, false));
         CharStatData charStatData = new CharStatData();
         charStatData.name = charStats.charName;
         charStatData.charImageName = charStats.charImage != null ? charStats.charImage.name : "";

@@ -15,6 +15,9 @@ public class Character : Selectable
     public EntityInventory inventory => gameObject.GetComponent<EntityInventory>();
     public MoveToClick mover => gameObject.GetComponent<MoveToClick>();
 
+    public GameObject renderBody;
+    public Animator animator;
+
     public CharInteract interactRad;
     public float reach = 1;
 

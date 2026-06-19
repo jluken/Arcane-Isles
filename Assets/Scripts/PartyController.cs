@@ -86,15 +86,15 @@ public class PartyController : MonoBehaviour
         {
             Debug.Log("Moving party member " + i + " to " + partyLocs[i]);
             //party[i].gameObject.SetActive(enable);
-            var feetOffset = partyLocs[i].y - party[i].GetComponent<Renderer>().bounds.min.y;
+            var feetOffset = partyLocs[i].y - party[i].renderBody.GetComponent<Renderer>().bounds.min.y;
             party[i].GetComponent<NavMeshAgent>().Warp(partyLocs[i] + new Vector3(0, feetOffset, 0));
             party[i].gameObject.SetActive(enable);
         }
     }
 
-    public List<Vector3> GetPartyLoc()
+    public List<Collider> GetPartyColliders()
     {
-        return party.Select(member => member.transform.position).ToList();
+        return party.Select(member => member.GetComponents<Collider>().FirstOrDefault(c => !c.isTrigger)).ToList();
     }
 
     public void ActivateParty()
@@ -126,8 +126,9 @@ public class PartyController : MonoBehaviour
     {  
         if (AddCompanion(recruitedCompanion))
         {
-            SceneLoader.Instance.GetCurrentSceneManager(recruitedCompanion.gameObject).RemoveNPC(recruitedCompanion);
-            SceneManager.MoveGameObjectToScene(recruitedCompanion.gameObject, SceneManager.GetSceneByName("PartyScene")); // TODO: hard coded?
+            var charRoot = recruitedCompanion.transform.root.gameObject;
+            SceneLoader.Instance.GetCurrentSceneManager(charRoot).RemoveNPC(recruitedCompanion);
+            SceneManager.MoveGameObjectToScene(charRoot, SceneManager.GetSceneByName("PartyScene")); // TODO: hard coded?
             recruitedCompanion.Recruit();
             
         }

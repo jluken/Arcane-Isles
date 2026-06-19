@@ -16,9 +16,11 @@ public class SceneSaveData
     [System.Serializable]
     public struct GroundObjData
     {
-        public string itemName;
+        public string itemPrefabName;
+        public string itemDataName;
         public int count;
         public float[] pos;
+        public float[] rot;
     }
 
     public bool loaded;
@@ -28,6 +30,7 @@ public class SceneSaveData
 
     public SceneSaveData(List<GameObject> gameChars, List<EntityInventory> gameContainers, List<GameObject> gameGroundObjs)
     {
+        Debug.Log("Loading scene Data with droppable " + (gameGroundObjs.Count > 0 ? gameGroundObjs[0].name : "null"));
         NPCs = new List<CharData>();
         foreach (var gameChar in gameChars) {
             Debug.Log("Saving NPC " + gameChar);
@@ -50,9 +53,10 @@ public class SceneSaveData
         {
             var groundScript = gameGroundObj.GetComponent<DroppableItem>();
             var groundObjData = new GroundObjData();
-            groundObjData.itemName = groundScript.itemData.itemName;
+            groundObjData.itemPrefabName = groundScript.itemData.itemPrefab.name;
             groundObjData.count = groundScript.stackSize;
             groundObjData.pos = new float[] { gameGroundObj.transform.position.x, gameGroundObj.transform.position.y, gameGroundObj.transform.position.z };
+            groundObjData.rot = new float[] { gameGroundObj.transform.rotation.eulerAngles.x, gameGroundObj.transform.rotation.eulerAngles.y, gameGroundObj.transform.rotation.eulerAngles.z };
             groundObjs.Add(groundObjData);
         }
     }

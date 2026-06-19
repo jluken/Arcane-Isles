@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Health Potion
   description: This potion increases health
   sprite: {fileID: 21300000, guid: 3e8e617c0085ee341a224fb62a577069, type: 3}
-  itemPrefab: {fileID: 8609574653360052992, guid: 1bc1aaa11690c8744b18c40ec8e378b2, type: 3}
+  itemPrefab: {fileID: 6629398770332552483, guid: 569ff413449c03a43a621cc6dd2e7caf, type: 3}
   price: 5
   weight: 0
   dt: 0

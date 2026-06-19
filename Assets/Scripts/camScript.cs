@@ -46,6 +46,9 @@ public class camScript : MonoBehaviour
     {
         if (!UIController.Instance.PauseTime())
         {
+            Vector3 screenUp = new Vector3(1.0f, 0.0f, -1.0f);
+            Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
+
             Vector2 mousePosition = SelectionController.MousePosition();
             Vector2 mouseScroll = SelectionController.MouseScroll();
             Vector2 moveDirection = InputSystem.actions.FindActionMap("UI").FindAction("Navigate").ReadValue<Vector2>();
@@ -64,14 +67,25 @@ public class camScript : MonoBehaviour
                 else if (mousePosition.x <= leftThreshold) moveDirection.x = (mousePosition.x - leftThreshold) / (leftThreshold);
             }
 
-            Vector3 screenUp = new Vector3(1.0f, 0.0f, -1.0f);
-            Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);
-            Vector3 movement = ((screenUp * moveDirection.y) + (screenRight * moveDirection.x));
+            // Disallow moving too far away  // TODO: maybe just restrict to bounds of level map
+            var pointAbovePlayer = CameraAbovePoint(PartyController.Instance.selectedPartyMember.transform.position);
+            var distRight = Vector3.Scale(ct.position - pointAbovePlayer, screenRight);
+            var distUp = Vector3.Scale(ct.position - pointAbovePlayer, screenUp);
+            var cappedMovement = new Vector2(CapMovementVector(moveDirection.x, distRight.magnitude), CapMovementVector(moveDirection.y, distUp.magnitude));
+
+            
+            Vector3 movement = ((screenUp * cappedMovement.y) + (screenRight * cappedMovement.x));
             var scroll = !EventSystem.current.IsPointerOverGameObject() ? mouseScroll.y : 0.0f;
 
-            var distFromPlayer = Vector3.Distance(ct.position, PartyController.Instance.selectedPartyMember.transform.position);  // TODO: maybe just restrict to bounds of level map
-            if (inBounds && (movement != Vector3.zero || scroll != 0) && distFromPlayer <= maxCamDist) MoveCamera(movement, scroll);
+
+            //var distFromPlayer = Vector3.Distance(ct.position, PartyController.Instance.selectedPartyMember.transform.position);  
+            if (inBounds && (movement != Vector3.zero || scroll != 0)) MoveCamera(movement, scroll);
         }
+    }
+
+    private float CapMovementVector(float movement, float dist)
+    {
+        return Math.Abs(movement + dist) > maxCamDist ? 0f : movement;
     }
 
     public void MoveCamera(Vector3 direction, float zoom)
@@ -88,6 +102,11 @@ public class camScript : MonoBehaviour
 
     public void CenterCamera(Vector3 position)
     {
+        ct.position = CameraAbovePoint(position);
+    }
+
+    private Vector3 CameraAbovePoint(Vector3 position)
+    {
         var tiltDownRad = Math.PI * xTilt / 180.0;
         var rotRad = Math.PI * yRot / 180.0;
 
@@ -97,7 +116,7 @@ public class camScript : MonoBehaviour
         float xpos = position.x - (xzHypotenuse * (float)Math.Sin(rotRad));
         float zpos = position.z - (xzHypotenuse * (float)Math.Cos(rotRad));
 
-        ct.position = new Vector3(xpos, ct.position.y, zpos);
+        return new Vector3(xpos, ct.position.y, zpos);
     }
 
     public void TrackObj(GameObject obj)

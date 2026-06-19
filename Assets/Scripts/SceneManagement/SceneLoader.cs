@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VectorGraphics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -135,14 +136,24 @@ public class SceneLoader : MonoBehaviour
 
     public IEnumerator SafeSceneHandler()
     {
-        var spawnPoints = PartyController.Instance.GetPartyLoc();
-        var activateScenes = levelManager.sceneTriggers.Where(trigger => spawnPoints.Any(spawnPoint => trigger.GetComponent<Collider>().bounds.Contains(spawnPoint))).ToList();
+        var spawnPoints = PartyController.Instance.GetPartyColliders();
+        var activateScenes = levelManager.sceneTriggers.Where(trigger => spawnPoints.Any(spawnPoint => trigger.GetComponent<Collider>().bounds.Intersects(spawnPoint.bounds))).ToList();
         var activateSceneNames = activateScenes.Select(trigger => trigger.GetComponent<SceneTrigger>().sceneName).ToList();
+        Debug.Log("Activate scenes: " + string.Join(", ", activateSceneNames));
         //if (activateSceneNames.Any(activateScene => !SceneObjectManagers.ContainsKey(activateScene))) UIController.Instance.ActivateLoadingScreen();
 
-        while (activateSceneNames.Any(sceneName => !SceneObjectManagers.ContainsKey(sceneName))) yield return null;
+        while (activateSceneNames.Any(sceneName => !SceneObjectManagers.ContainsKey(sceneName)))
+        {
+            Debug.Log("Manager keys: " + string.Join(", ", SceneObjectManagers.Keys));
+            foreach (var name in activateSceneNames) {
+                Debug.Log("scene name " + name + " is contained in keys: " + SceneObjectManagers.ContainsKey(name));
+            }
+            yield return null;
+        }
+        Debug.Log("scenes activated");
 
         var deadScenes = SceneObjectManagers.Keys.Where(scene => !activateSceneNames.Contains(scene)).ToList();
+        Debug.Log("Dead scenes: " + string.Join(", ", deadScenes));
         int deadCount = deadScenes.Count;
         foreach (var scene in deadScenes) StartCoroutine(DeactivateSubscene(scene));
     }
@@ -157,6 +168,7 @@ public class SceneLoader : MonoBehaviour
     {
         if (SceneObjectManagers.ContainsKey(sceneName)) {
             var manager = SceneObjectManagers[sceneName];
+            Debug.Log("Adding scene Data " + manager.sceneName + " with droppable " + (manager.GroundObjects.Count > 0 ? manager.GroundObjects[0].name : "null"));
             SceneData[sceneName] = new SceneSaveData(manager.npcs, manager.containers, manager.GroundObjects);
             SceneData[sceneName].loaded = false;
             SceneObjectManagers.Remove(sceneName);
@@ -168,8 +180,10 @@ public class SceneLoader : MonoBehaviour
 
     public SceneSaveData GetSceneData(string sceneName)
     {
+        Debug.Log("Getting scene data for " + sceneName);
         if (SceneData.ContainsKey(sceneName))
         {
+            Debug.Log("Found scene data for " + sceneName);
             return SceneData[sceneName];
         }
         else return null;
@@ -177,6 +191,7 @@ public class SceneLoader : MonoBehaviour
 
     public void AddSceneManager(SceneObjectManager sceneManager)
     {
+        Debug.Log("Adding scene Manager " + sceneManager.sceneName + " with droppable " + (sceneManager.GroundObjects.Count > 0 ? sceneManager.GroundObjects[0].name : "null"));
         loadingScenes.Remove(sceneManager.sceneName);
         SceneObjectManagers[sceneManager.sceneName] = sceneManager;
     }

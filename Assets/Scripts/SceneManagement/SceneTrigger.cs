@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class SceneTrigger : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class SceneTrigger : MonoBehaviour
     {
         if (other.gameObject.GetComponent<PartyMember>() != null && SceneLoader.Instance.SceneLoaded(sceneName))
         {
+            Debug.Log(other.name + " leaving trigger " + name + " at " + other.transform.position);
+            //Debug.Break();
             StartCoroutine(SceneLoader.Instance.SafeSceneHandler());  // Check all scenes
         }
     }
