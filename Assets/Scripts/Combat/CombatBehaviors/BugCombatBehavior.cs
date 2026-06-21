@@ -6,7 +6,7 @@ using static UnityEngine.GraphicsBuffer;
 [CreateAssetMenu(fileName = "BugCombatBehavior", menuName = "Scriptable Objects/BugCombatBehavior")]
 public class BugCombatBehavior : BaseCombatBehavior
 {
-    private AttackAction Bite = new AttackAction(attackCost: 4, damageDie: 30, modifier: CharStats.StatVal.survival, name: "bite", icon: null, range: 1.5f);
+    private AttackAction Bite = new AttackAction(attackCost: 4, damageDie: 3, modifier: CharStats.StatVal.vigor, name: "bite", icon: null, range: 1.5f);
     private MoveToObject MoveTo = new MoveToObject(name: "bite", icon: null, range: float.PositiveInfinity);
     //private MoveToPoint MoveTowards = new MoveToPoint("bite", null);
 

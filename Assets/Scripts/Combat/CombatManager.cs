@@ -17,6 +17,7 @@ public class CombatManager : MonoBehaviour
     public static CombatManager Instance { get; private set; }
 
     public bool combatActive { get; private set; } = false;
+    public bool sneaking { get; private set; } = false;
 
     public event Action callToArms;
     public event Action setPeace;
@@ -59,6 +60,7 @@ public class CombatManager : MonoBehaviour
     public GameObject abilityEffectMarker;
 
     private InputActionMap uiActions;
+    private InputActionMap playerActions; // TODO: refactor action listeners into own class?
 
     void Awake()
     {
@@ -69,12 +71,14 @@ public class CombatManager : MonoBehaviour
 
         defaultRun = new MoveToPoint("run", runIcon);
         uiActions = InputSystem.actions.FindActionMap("UI");
+        playerActions = InputSystem.actions.FindActionMap("Player");
     }
 
     public void Start()
     {
         EventHandler.Instance.deathEvent += RemoveCombatant;
         uiActions.FindAction("Cancel").performed += (sender) => UnsetAction();
+        playerActions.FindAction("Crouch").performed += (sender) => ToggleSneak();
     }
 
     public List<InitiativeEntry> enemies => combatantInitiative.Where(entry => entry.type == CombatantType.Enemy).ToList();
@@ -420,6 +424,11 @@ public class CombatManager : MonoBehaviour
             currentAction = null;
             combatStatUpdate.Invoke();
         }
+    }
+
+    public void ToggleSneak()
+    {
+        sneaking = !sneaking;
     }
 
 }

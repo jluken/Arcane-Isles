@@ -301,6 +301,7 @@ GameObject:
   - component: {fileID: 387626985}
   - component: {fileID: 387626986}
   - component: {fileID: 387626987}
+  - component: {fileID: 387626989}
   m_Layer: 13
   m_Name: Bug
   m_TagString: Untagged
@@ -324,6 +325,16 @@ MonoBehaviour:
   maxInv: 40
   initInv: []
   initInvStacks: 
+  initHoldMainHand: {fileID: 0}
+  initHoldOffHand: {fileID: 0}
+  initTorso: {fileID: 0}
+  initCoat: {fileID: 0}
+  initHead: {fileID: 0}
+  initFace: {fileID: 0}
+  initLegs: {fileID: 0}
+  initBoots: {fileID: 0}
+  initNecklace: {fileID: 0}
+  initHands: {fileID: 0}
   hasEquip: 0
   money: 0
   merchant: 0
@@ -531,6 +542,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   description: 
+  renderBody: {fileID: 387626974}
+  animator: {fileID: 387626989}
   interactRad: {fileID: 1172947731}
   reach: 1
   defaultWeapon: {fileID: 0}
@@ -689,6 +702,28 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!95 &387626989
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387626974}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b5221ea5a335ceb43b556a954b3b65fa, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &435814258
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,7 +868,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2001142642}
   m_Father: {fileID: 387626980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &483860955
@@ -926,7 +962,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454803b68c8da1b4db607cdaa1bf668e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  enemy: {fileID: 0}
+  enemy: {fileID: 387626985}
+  visRange: {fileID: 2001142643}
 --- !u!1 &569477736
 GameObject:
   m_ObjectHideFlags: 0
@@ -1052,7 +1089,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3efaf07d5269a3d46918d95efa61ada4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  enemy: {fileID: 0}
+  enemy: {fileID: 387626985}
 --- !u!1 &907668015
 GameObject:
   m_ObjectHideFlags: 0
@@ -1597,6 +1634,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2001142641
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2001142642}
+  - component: {fileID: 2001142643}
+  m_Layer: 11
+  m_Name: VisRange
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2001142642
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2001142641}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 483860954}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &2001142643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2001142641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.DecalProjector
+  m_Material: {fileID: 2100000, guid: 8148b971deefb7848b4970270fa079e7, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_RenderingLayerMask:
+    serializedVersion: 0
+    m_Bits: 2
+  m_ScaleMode: 1
+  m_Offset: {x: 0, y: 0, z: 0.5}
+  m_Size: {x: 6, y: 6, z: 1}
+  m_FadeFactor: 1
+  m_VisibleInScene: 1
+  version: 1
+  m_DecalLayerMask: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

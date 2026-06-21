@@ -15,9 +15,14 @@ public class MoveToPoint : PointAction  // TODO: possibly rethink movetopoint lo
         var path = actor.GetComponent<MoveToClick>().PathToPoint(target);
         if (path != null)
         {
+            Debug.Log("moveto Path is not null");
+
             var maxdist = Math.Min(PathDistToPoint(actor, target), CombatManager.Instance.ActionPoints * actor.charStats.runModifier);
+            Debug.Log("runMod: " + actor.charStats.runModifier);
+            Debug.Log("maxdist: " + maxdist);
             return MoveToClick.PointAlongPath(path, maxdist);
         }
+        Debug.Log("moveto Path is null");
         return actor.transform.position;
     }
 

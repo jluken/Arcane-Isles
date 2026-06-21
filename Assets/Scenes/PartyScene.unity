@@ -1979,9 +1979,9 @@ MonoBehaviour:
   charName: 
   gender: X
   level: 1
-  vigor: 0
-  finesse: 0
-  psyche: 0
+  vigor: 3
+  finesse: 3
+  psyche: 3
   intimidation: 0
   athletics: 0
   survival: 0

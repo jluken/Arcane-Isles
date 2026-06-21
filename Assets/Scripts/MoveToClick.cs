@@ -33,14 +33,17 @@ public class MoveToClick : MonoBehaviour
 
     public bool planted { private set; get; }
 
+    private float defaultSpeed;
+
     void Start()
     {
-        Debug.Log("Start MTC");
         startedMoving = false;
         pathLocked = false;
         followTarget = null;
         stopCount = 0;
         planted = false;
+
+        defaultSpeed = agent.speed;
 
         if (controlled) SelectionController.Instance.deselectEvent += StopMoving;
     }
@@ -85,6 +88,9 @@ public class MoveToClick : MonoBehaviour
 
         character.animator.SetBool("Moving", startedMoving);
         character.animator.SetFloat("Velocity", agent.velocity.sqrMagnitude / agent.speed);
+        var sneaking = CombatManager.Instance.sneaking && PartyController.Instance.party.Contains(character);
+        agent.speed = sneaking ? defaultSpeed / 2 : defaultSpeed;
+        character.animator.SetBool("Sneaking", sneaking);
     }
 
     public NavMeshPath PathToPoint(Vector3 dest)
@@ -187,6 +193,7 @@ public class MoveToClick : MonoBehaviour
     {
         if (pathLocked) return;
         var path = PathToPoint(dest);
+
         if (path != null) agent.SetPath(path);
         lastPoint = Utils.GroundPoint(character.renderBody.gameObject);
         if(useMarker) NavLine.Instance.DisableMarker();
