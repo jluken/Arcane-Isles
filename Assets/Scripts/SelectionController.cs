@@ -79,7 +79,7 @@ public class SelectionController : MonoBehaviour
         {
             if (leftClick && PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
             {
-                if (CombatManager.Instance.currentAction == null)
+                if (!CombatManager.Instance.ValidSelectedAction())
                 {
                     Deselect();
                     PartyController.Instance.GoTo(pointSpot);
@@ -117,9 +117,9 @@ public class SelectionController : MonoBehaviour
                 if (pointedObject.GetComponent<groundScript>() != null) CombatManager.Instance.PrepTargetPoint(pointSpot);
                 else CombatManager.Instance.PrepAttackTarget(pointedObject.GetComponent<Selectable>());
             }
-            else CombatManager.Instance.UpdateCombatDisplay(null);
+            else CombatManager.Instance.UpdateCombatDisplay(-1, null);
         }
-        else CombatManager.Instance.UpdateCombatDisplay(null);
+        else CombatManager.Instance.UpdateCombatDisplay(-1, null);
     }
 
     public static Vector2 MousePosition() => Mouse.current is not null ? Mouse.current.position.value : new Vector2(Screen.width / 2, Screen.height / 2);

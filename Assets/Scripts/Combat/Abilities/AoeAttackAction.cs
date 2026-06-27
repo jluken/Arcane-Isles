@@ -6,15 +6,13 @@ using UnityEngine.Rendering.Universal;
 
 public class AoeAttackAction : PointAction
 {
-    public int attackCost;
     public int damageDie;
     public float radius;
 
     public bool weaponAttack;
 
-    public AoeAttackAction(int attackCost, int damageDie, float radius, bool weaponAttack, string name, Sprite icon, float range, Character actor = null, Vector3 point = new Vector3()) : base(name, icon, range: range, actor: actor, point: point)
+    public AoeAttackAction(int attackCost, int damageDie, float radius, bool weaponAttack, string name, Sprite icon, float range, Character actor = null, Vector3 point = new Vector3()) : base(name, actionCost: attackCost, icon: icon, range: range, actor: actor, point: point)
     {
-        this.attackCost = attackCost;
         this.damageDie = damageDie;
         this.radius = radius;
         this.weaponAttack = weaponAttack;
@@ -47,8 +45,8 @@ public class AoeAttackAction : PointAction
         var damage = Random.Range(1, damageDie);
 
         CombatManager.Instance.LockAction(this);
-        CombatManager.Instance.SpendActionPoints(attackCost);
-        if(weaponAttack) actor.inventory.UseMainWeapon();
+        CombatManager.Instance.SpendActionPoints(actionCost);
+        //if(weaponAttack) actor.inventory.UseMainWeapon();  // TODO: refactor this into aligning with magick slot logic
         yield return new WaitForSeconds(1.0f);
         foreach(Character victim in victims) victim.takeDamage(damage);
         CombatManager.Instance.FinishAction();
@@ -57,7 +55,7 @@ public class AoeAttackAction : PointAction
 
     public override int GetActionCost()
     {
-        return attackCost;
+        return actionCost;
     }
 
     public override void DisplayTarget()

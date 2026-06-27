@@ -7,7 +7,7 @@ using static UnityEngine.GraphicsBuffer;
 public class BugCombatBehavior : BaseCombatBehavior
 {
     private AttackAction Bite = new AttackAction(attackCost: 4, damageDie: 3, modifier: CharStats.StatVal.vigor, name: "bite", icon: null, range: 1.5f);
-    private MoveToObject MoveTo = new MoveToObject(name: "bite", icon: null, range: float.PositiveInfinity);
+    private MoveToPoint MoveTo = new MoveToPoint(name: "bite", icon: null);
     //private MoveToPoint MoveTowards = new MoveToPoint("bite", null);
 
     public override Character ChooseTarget(Character attacker)
@@ -54,7 +54,7 @@ public class BugCombatBehavior : BaseCombatBehavior
     public IEnumerator BugBite(Character target)
     {
         Bite.SetTarget(target);
-        CombatManager.Instance.UseCombatAbility(Bite);
+        CombatManager.Instance.UseCombatAbility(-1, Bite);
         //while (CombatManager.Instance.inAction) yield return null;
         yield break;
     }
@@ -64,7 +64,7 @@ public class BugCombatBehavior : BaseCombatBehavior
         Debug.Log("Bug Move To");
         MoveTo.SetTarget(target);
         
-        CombatManager.Instance.UseCombatAbility(MoveTo);
+        CombatManager.Instance.UseCombatAbility(-1, MoveTo);
         //while (CombatManager.Instance.inAction) yield return null;
         yield break;
     }

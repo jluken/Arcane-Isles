@@ -5,14 +5,12 @@ using static CharStats;
 
 public class AttackAction : InteractionAction
 {
-    public int attackCost;
     public int damageDie;
     public StatVal modifier;
     public bool precisionAttack;
 
-    public AttackAction(int attackCost, int damageDie, StatVal modifier, bool precisionAttack = false, string name = "", Sprite icon = null, float range = 0f, Character actor = null, Selectable target = null) : base(name: name, icon: icon, range: range, actor: actor, target: target)
+    public AttackAction(int attackCost, int damageDie, StatVal modifier, bool precisionAttack = false, string name = "", Sprite icon = null, float range = 0f, Character actor = null, Selectable target = null) : base(name: name, actionCost: attackCost, icon: icon, range: range, actor: actor, target: target)
     {
-        this.attackCost = attackCost;
         this.damageDie = damageDie;
         this.modifier = modifier;
         this.precisionAttack = precisionAttack;
@@ -35,7 +33,7 @@ public class AttackAction : InteractionAction
         var damage = Dice.RollDie(damageDie);
 
         CombatManager.Instance.LockAction(this);
-        CombatManager.Instance.SpendActionPoints(attackCost); // account for floating point and wiggle room
+        CombatManager.Instance.SpendActionPoints(actionCost); // account for floating point and wiggle room
         yield return new WaitForSeconds(1.0f);
 
         var diceRoll = Dice.RollDie(6) + Dice.RollDie(6);
@@ -58,7 +56,7 @@ public class AttackAction : InteractionAction
 
     public override int GetActionCost()
     {
-        return attackCost;
+        return actionCost;
     }
 
     public override void DisplayTarget()

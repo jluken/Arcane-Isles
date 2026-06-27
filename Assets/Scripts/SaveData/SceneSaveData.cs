@@ -38,7 +38,7 @@ public class SceneSaveData
             charData.id = gameChar.name;
             charData.active = gameChar.activeSelf;
             charData.pos = new float[] { gameChar.transform.position.x, gameChar.transform.position.y, gameChar.transform.position.z };
-            charData.charData = PartyData.LoadCharData(gameChar.name, gameChar.transform.position, gameChar.transform.rotation.eulerAngles, gameChar.GetComponent<Character>(), gameChar.GetComponent<CharStats>(), gameChar.GetComponent<EntityInventory>());
+            charData.charData = PartyData.LoadCharData(gameChar.name, gameChar.transform.position, gameChar.transform.rotation.eulerAngles, gameChar.GetComponent<Character>(), gameChar.GetComponent<CharStats>(), gameChar.GetComponent<EntityInventory>(), gameChar.GetComponent<CharSigils>());
             NPCs.Add(charData);
         }
 

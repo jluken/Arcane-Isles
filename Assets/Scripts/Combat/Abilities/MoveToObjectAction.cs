@@ -4,9 +4,10 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 
+// TODO: redundant now?
 public class MoveToObject : InteractionAction
 {
-    public MoveToObject(string name, Sprite icon, float range, Character actor = null) : base(name, icon, range, actor)
+    public MoveToObject(string name, Sprite icon, float range, Character actor = null) : base(name: name, icon: icon, range: range, actor: actor)
     {
     }
 

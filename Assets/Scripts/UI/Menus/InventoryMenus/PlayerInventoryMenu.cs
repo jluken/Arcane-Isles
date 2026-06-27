@@ -69,7 +69,7 @@ public class PlayerInventoryMenu : InventoryMenu
         Debug.Log("Activate Item " + itemData.itemType);
         if (itemData.itemType == ItemType.consumable)
         {
-            if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;
+            if (!CombatManager.Instance.CheckActionPoints(itemData.EquipAPCost)) return;
             Debug.Log("Pass Check");
             foreach (var consumeData in itemData.consumeStats)
             {
@@ -80,7 +80,7 @@ public class PlayerInventoryMenu : InventoryMenu
                     PartyController.Instance.selectedPartyMember.charStats.addModifier(consumeData.consumeStat, consumeData.value, consumeData.duration);
                 }
             }
-            CombatManager.Instance.SpendActionPoints(itemData.APCost);
+            CombatManager.Instance.SpendActionPoints(itemData.EquipAPCost);
             Debug.Log("prev count " + PartyController.Instance.selectedPartyMember.inventory.inventory[slotId].count);
             Debug.Log("Remove 1 from slot " + slotId);
             PartyController.Instance.selectedPartyMember.inventory.UpdateInvStack(slotId, -1);
@@ -93,10 +93,10 @@ public class PlayerInventoryMenu : InventoryMenu
             if (slotGroup == playerInventorySlots) // Equip the item from the inventory
             {
                 Debug.Log("Equip from inventory");
-                if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;
+                if (!CombatManager.Instance.CheckActionPoints(itemData.EquipAPCost)) return;
                 var oldEquip = playerInventory.SwapOutEquipment(itemData);
                 playerInventory.SetInventory(slotId, oldEquip);
-                CombatManager.Instance.SpendActionPoints(itemData.APCost);
+                CombatManager.Instance.SpendActionPoints(itemData.EquipAPCost);
             }
             else
             {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = System.Random;
 
@@ -66,8 +67,9 @@ public class CharStats : MonoBehaviour
         arcana,
         physick,
 
-        dodge,
-        actionPoints
+        evade,
+        actionPoints,
+        sigilSlots
     };
 
     public Dictionary<StatVal, int> statMap = new Dictionary<StatVal, int>(); // current vals 
@@ -147,9 +149,10 @@ public class CharStats : MonoBehaviour
     }
 
     private int maxHealth => 10 + GetCurrStat(StatVal.level) * GetCurrStat(StatVal.vigor);
-    private int maxMagick => GetCurrStat(StatVal.level) + 2 * GetCurrStat(StatVal.arcana);
+    private int maxMagick => 2 * GetCurrStat(StatVal.arcana);
+    private int sigilSlots => (GetCurrStat(StatVal.arcana) + 1) / 2;
     private int actionPoints => 6 + GetCurrStat(StatVal.finesse);
-    private int dodge => GetCurrStat(StatVal.finesse) + 6;
+    private int evade => GetCurrStat(StatVal.finesse) + 6;
 
     public float runModifier => GetCurrStat(StatVal.athletics) / 3.0f;
     public float barterModifier => GetCurrStat(StatVal.persuasion) / 6.0f;
@@ -159,7 +162,8 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.maxHealth] = maxHealth;
         statMap[StatVal.maxMagick] = maxMagick;
         statMap[StatVal.actionPoints] = actionPoints;
-        statMap[StatVal.dodge] = dodge;
+        statMap[StatVal.sigilSlots] = sigilSlots;
+        statMap[StatVal.evade] = evade;
     }
 
     public void maxBars()

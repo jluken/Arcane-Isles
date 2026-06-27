@@ -1,7 +1,9 @@
 using PixelCrushers.DialogueSystem.Articy.Articy_4_0;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -56,11 +58,22 @@ public class CharacterMenu : MenuScreen
 
     public GameObject LevelWarning;
 
+    public GameObject etchedSigils;
+    private List<GameObject> etchedSigilObjs;
+    public GameObject preparedSigils;
+    private List<GameObject> preparedSigilObjs;
+    public TMP_Text magickCost;
+    public Button prepareSigils;
+
+    public GameObject emptyButtonPrefab;
+
     //private CharStats charStats;
 
     private void Awake()
     {
         Instance = this;
+        etchedSigilObjs = new List<GameObject>();
+        preparedSigilObjs = new List<GameObject>();
 
         statIncreases = new Dictionary<StatVal, int>();
     }
@@ -72,6 +85,7 @@ public class CharacterMenu : MenuScreen
 
     public override void DeactivateMenu()
     {
+        if(currChar != null) currChar.sigils.ClearExcessSigils();
         CharMenu.SetActive(false);
         UIActive = false;
     }
@@ -119,6 +133,8 @@ public class CharacterMenu : MenuScreen
             skillPoints.text = availPoints.ToString();
             PreviewStats();
         }
+
+        DisplaySigils();
     }
 
     public void SpendPoints(StatVal skill, int amount = 1)
@@ -174,6 +190,75 @@ public class CharacterMenu : MenuScreen
         foreach (SkillBar s in skillBars) { s.ApplyChanges(currChar); s.Populate(currChar); }
         currChar.charStats.setDerivedStats();
         ActivateMenu();
+    }
+
+    private void DisplaySigils()
+    {
+        Debug.Log("displaying sigils");
+        foreach(var sigil in etchedSigilObjs) Destroy(sigil);
+        etchedSigilObjs.Clear();
+        foreach(var sigil in currChar.sigils.etchedSigils)
+        {
+            var nextActionButton = Instantiate(emptyButtonPrefab, etchedSigils.transform);
+            etchedSigilObjs.Add(nextActionButton);
+            etchedSigilObjs.Last().GetComponent<Image>().sprite = sigil.sprite;
+            etchedSigilObjs.Last().GetComponent<Button>().onClick.AddListener(() => PrePrepSigil(sigil));
+        }
+
+        foreach (var sigil in preparedSigilObjs) Destroy(sigil);
+        preparedSigilObjs.Clear();
+        var lastSigilSlot = currChar.sigils.preparedSigils.Count > 0 ? currChar.sigils.preparedSigils.Keys.Max() : -1;
+        for (int i = 0; i <= lastSigilSlot; i++)
+        {
+            Debug.Log("preparing sigil");
+            var nextActionButton = Instantiate(emptyButtonPrefab, preparedSigils.transform);
+            preparedSigilObjs.Add(nextActionButton);
+            if(!currChar.sigils.preparedSigils.ContainsKey(i) || currChar.sigils.preparedSigils[i].Item1 == null) // empty slot
+            {
+                Debug.Log("empty sigil");
+                preparedSigilObjs.Last().GetComponent<Image>().sprite = null;
+            }
+            else if(currChar.sigils.preparedSigils[i].Item2 == false)  // preprepped sigil
+            {
+                Debug.Log("preprepped sigil");
+                var sigil = currChar.sigils.preparedSigils[i].Item1;
+                var buttonImage = preparedSigilObjs.Last().GetComponent<Image>();
+                buttonImage.sprite = sigil.sprite;
+
+                Color tempColor = buttonImage.color;
+                tempColor.a = 0.5f;
+                buttonImage.color = tempColor;
+                int currIdx = i;
+                preparedSigilObjs.Last().GetComponent<Button>().onClick.AddListener(() => UnPrepSigil(currIdx));
+            }
+            else  // prepped sigil
+            {
+                Debug.Log("prepped sigil");
+                var sigil = currChar.sigils.preparedSigils[i].Item1;
+                var buttonImage = preparedSigilObjs.Last().GetComponent<Image>();
+                buttonImage.sprite = sigil.sprite;
+                preparedSigilObjs.Last().GetComponent<Button>().onClick.AddListener(() => UnPrepSigil(i));
+                // TODO: maybe way to remove prepared sigils to clear up slots other than just spending them?
+            }
+        }
+
+        magickCost.text = currChar.sigils.CostToPrepare() + "/" + currChar.charStats.GetCurrStat(StatVal.magick);
+    }
+
+    private void PrePrepSigil(Sigil sigil) // TODO: maybe replace these with events that update the display
+    {
+        if (currChar.sigils.PreprepSigil(sigil)) DisplaySigils();
+    }
+
+    private void UnPrepSigil(int i)
+    {
+        Debug.Log("unprep " + i);
+        if (currChar.sigils.UnprepSigil(i)) DisplaySigils();
+    }
+
+    public void PrepSigils()
+    {
+        if (currChar.sigils.PrepareSigils()) DisplaySigils();
     }
 
     public override bool IsActive()

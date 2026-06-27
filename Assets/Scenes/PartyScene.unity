@@ -1653,6 +1653,7 @@ GameObject:
   - component: {fileID: 9053108686238225124}
   - component: {fileID: 9053108686238225123}
   - component: {fileID: 9053108686238225122}
+  - component: {fileID: 9053108686238225128}
   m_Layer: 7
   m_Name: PlayerObj
   m_TagString: Player
@@ -1994,6 +1995,21 @@ MonoBehaviour:
   physick: 0
   insight: 0
   arcana: 0
+--- !u!114 &9053108686238225128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7604127806412255885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8aad09d27fcae548b4f8652b21691a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharSigils
+  initEtchedSigils:
+  - {fileID: 11400000, guid: fd4c8fae02b498142b456c5971277914, type: 2}
+  etchedSigils: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

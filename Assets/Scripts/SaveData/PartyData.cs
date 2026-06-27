@@ -40,6 +40,7 @@ public class PartyData
         public CharStatData charStatData;
         //Inventory
         public EntityInventorySaveData inventory;
+        public SigilSaveData charSigils;
         public string stateName;
     }
 
@@ -54,11 +55,11 @@ public class PartyData
         for (int i = 0; i < partyController.party.Count; i++) {
             PartyMember partyMember = partyController.party[i];
             partyMembers[i] = LoadCharData(partyMember.gameObject.name, partyMember.transform.position, partyMember.transform.rotation.eulerAngles,
-                partyMember, partyMember.charStats, partyMember.inventory);
+                partyMember, partyMember.charStats, partyMember.inventory, partyMember.sigils);
         }
     }
 
-    public static CharSaveData LoadCharData(string name, Vector3 pos, Vector3 EulerRot, Character npc, CharStats charStats, EntityInventory inv)
+    public static CharSaveData LoadCharData(string name, Vector3 pos, Vector3 EulerRot, Character npc, CharStats charStats, EntityInventory inv, CharSigils charSigils)
     {
         CharSaveData charSaveData = new CharSaveData();
         charSaveData.id = name;
@@ -68,6 +69,7 @@ public class PartyData
         charSaveData.charStatData = LoadCharStatData(charStats);
 
         charSaveData.inventory = new EntityInventorySaveData(inv);
+        charSaveData.charSigils = new SigilSaveData(charSigils);
         charSaveData.stateName = npc.StateName();
 
         return charSaveData;

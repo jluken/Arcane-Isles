@@ -1,17 +1,12 @@
-using NUnit.Framework;
-using PixelCrushers.DialogueSystem;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
 using static PartyData;
 
 public class Character : Selectable
 {
     public CharStats charStats => gameObject.GetComponent<CharStats>();
+    public CharSigils sigils => gameObject.GetComponent<CharSigils>();
     public EntityInventory inventory => gameObject.GetComponent<EntityInventory>();
     public MoveToClick mover => gameObject.GetComponent<MoveToClick>();
 
@@ -97,6 +92,7 @@ public class Character : Selectable
     {
         charStats.LoadFromSaveData(charSaveData.charStatData);
         inventory.LoadFromSaveData(charSaveData.inventory);
+        if(sigils != null) sigils.LoadFromSaveData(charSaveData.charSigils);
         mover.agent.Warp(new Vector3(charSaveData.pos[0], charSaveData.pos[1], charSaveData.pos[2]));
         transform.rotation = Quaternion.identity * Quaternion.Euler(charSaveData.rot[0], charSaveData.rot[1], charSaveData.rot[2]);
         Debug.Log("Loading State + " + charSaveData.stateName + " for " + charStats.charName);
@@ -156,12 +152,20 @@ public class Character : Selectable
     {
         var totalAbilities = new List<AbilityAction>();
         var mainWeapon = inventory.GetEquipment(EntityInventory.EquipmentInvType.holdMainHand);
-        if (mainWeapon == null) totalAbilities.AddRange(defaultWeapon.ItemActions());
-        else totalAbilities.AddRange(mainWeapon.ItemActions());
+        if(mainWeapon != null) totalAbilities.AddRange(mainWeapon.ItemActions());
+        else if (defaultWeapon != null) totalAbilities.AddRange(defaultWeapon.ItemActions());
         var offWeapon = inventory.GetEquipment(EntityInventory.EquipmentInvType.holdOffHand);
         if (offWeapon != null) totalAbilities.AddRange(offWeapon.ItemActions());
         foreach ( var action in totalAbilities) { action.SetActor(this); }
         return totalAbilities;
+    }
+
+    public List<AbilityAction> GetSigilAbilities()
+    {
+        if (sigils == null) return new List<AbilityAction>();
+        var abilities = sigils.PreparedSigilAbilities();
+        foreach (var action in abilities) { if(action != null) action.SetActor(this); }
+        return abilities;
     }
 
     // TODO: get magic abilities + innate abilities
@@ -204,6 +208,7 @@ public class Character : Selectable
 
     public virtual void SetActiveChar()
     {
+        CombatManager.Instance.SetActions(this, GetWeaponAbilities(), GetSigilAbilities());
         StateMachine.CurrentPlayerState.SetActiveChar();
     }
 
@@ -225,13 +230,13 @@ public class Character : Selectable
         CombatManager.Instance.InitiateCombat(new List<Character> { this });
     }
 
-    public List<AbilityAction> GetActions()
-    {
-        var abilities = GetWeaponAbilities();
-        abilities.Insert(0, CombatManager.Instance.defaultRun);
-        foreach (var action in abilities) { action.SetActor(this); }
-        return abilities;
-    }
+    //public List<AbilityAction> GetActions()
+    //{
+    //    var abilities = GetWeaponAbilities();
+    //    abilities.Insert(0, CombatManager.Instance.defaultRun);
+    //    foreach (var action in abilities) { action.SetActor(this); }
+    //    return abilities;
+    //}
 
     public virtual bool IsActive => StateMachine.CurrentPlayerState.isActive;
 }

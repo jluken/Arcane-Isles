@@ -6,14 +6,16 @@ using static CharStats;
 public abstract class AbilityAction
 {
     public string actionName;
+    public int actionCost;
     public Sprite icon;
     public float range;
 
     public Character actor;
 
-    public AbilityAction(string name="", Sprite icon = null, float range=-1f, Character actor=null)
+    public AbilityAction(string name="", int actionCost = -1, Sprite icon = null, float range=-1f, Character actor=null)
     {
         actionName = name;
+        this.actionCost = actionCost;
         this.icon = icon;
         this.actor = actor;
         this.range = range;

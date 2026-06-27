@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,7 +17,7 @@ public class InventoryData : ScriptableObject
 
     public int dt;
 
-    public int APCost; // Cost to use/equip the item
+    public int EquipAPCost; // Cost to use/equip the item
 
     public int maxStackSize = 1;
 

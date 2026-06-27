@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
-using static EntityInventory;
-using static InventoryData;
 
 [System.Serializable]
 public class EntityInventorySaveData

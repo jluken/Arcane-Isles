@@ -20,8 +20,8 @@ public class EquipmentSlot : ItemSlot
         if (EntityInventory.equippables[equipType].Contains(draggableItem.inventoryData.itemType))
         {
             Debug.Log("Not full");
-            if (!CombatManager.Instance.CheckActionPoints(draggableItem.inventoryData.APCost)) return;
-            CombatManager.Instance.SpendActionPoints(draggableItem.inventoryData.APCost);
+            if (!CombatManager.Instance.CheckActionPoints(draggableItem.inventoryData.EquipAPCost)) return;
+            CombatManager.Instance.SpendActionPoints(draggableItem.inventoryData.EquipAPCost);
             Debug.Log("Cleared AP");
 
             draggableItem.parentAfterDrag = transform;

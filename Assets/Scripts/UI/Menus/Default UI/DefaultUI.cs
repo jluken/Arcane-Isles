@@ -23,7 +23,7 @@ public class DefaultUI : MenuScreen
     private List<GameObject> initiativeIcons;
 
     private List<GameObject> actionButtons;
-    private List<AbilityAction> buttonActions;
+    //private List<AbilityAction> buttonActions;
 
     public GameObject ActionPointBar;
     private List<GameObject> ActionPointPips;
@@ -54,7 +54,7 @@ public class DefaultUI : MenuScreen
         //charStats = player.GetComponent<CharStats>();
         //charStats.updateStatEvent += UpdateStats;
         actionButtons = new List<GameObject>();
-        buttonActions = new List<AbilityAction>();
+        //buttonActions = new List<AbilityAction>();
         initiativeIcons = new List<GameObject>();
         ActionPointPips = new List<GameObject>();
 
@@ -104,7 +104,8 @@ public class DefaultUI : MenuScreen
         //if (buttonActions.Select(x => x.actionName).SequenceEqual(selectedNPC.GetActions().Select(x=>x.actionName))) return;
         foreach (GameObject but in actionButtons) Destroy(but);
         actionButtons.Clear();
-        buttonActions.Clear();
+        //buttonActions.Clear();
+        Debug.Log("Initiative size: " + CombatManager.Instance.combatantInitiative.Count);
         if (!CombatManager.Instance.IsPartyTurn)
         {
             ActionMenu.SetActive(false);
@@ -112,18 +113,21 @@ public class DefaultUI : MenuScreen
         }
         else
         {
-            var actions = selectedNPC.GetActions();
+            var actions = CombatManager.Instance.actions;
+            //CombatManager.Instance.SetActions(selectedNPC.GetWeaponAbilities(), selectedNPC.GetSigilAbilities());
             ActionMenu.SetActive(true);
             NextTurnButton.interactable = CombatManager.Instance.combatActive;
-            foreach (AbilityAction action in actions)
+            for (int i = 0; i < actions.Length; i++)
             {
                 var nextActionButton = Instantiate(ActionButtonPrefab, ActionMenu.transform);
                 actionButtons.Add(nextActionButton);
-                nextActionButton.GetComponent<Button>().image.sprite = action.icon;
-                nextActionButton.GetComponent<Button>().onClick.AddListener(() => CombatManager.Instance.SetCurrentAction(action));
+                nextActionButton.GetComponent<Button>().image.sprite = actions[i] == null ? null : actions[i].icon;
+                int iCopy = i;
+                nextActionButton.GetComponent<Button>().onClick.AddListener(() => CombatManager.Instance.SetCurrentAction(iCopy));
                 if (selectedNPC != PartyController.Instance.activePartyMember) nextActionButton.GetComponent<Button>().interactable = false;
-                buttonActions.Add(action);
+                //buttonActions.Add(action);
                 if(CombatManager.Instance.InAction()) nextActionButton.GetComponent<Button>().interactable = false;
+                if(i == CombatManager.Instance.displayIdx) nextActionButton.GetComponent<Button>().image.color = Color.red;
             }
         }
     }

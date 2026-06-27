@@ -6,12 +6,10 @@ public class PointAction : AbilityAction
     protected Vector3 target;
     protected Selectable targetObject;
 
-    public PointAction(string name, Sprite icon,  Character actor, float range = -1f, Vector3 point = new Vector3()) : base(name: name, icon: icon, range: range, actor: actor)
+    public PointAction(string name, Sprite icon,  Character actor, int actionCost = -1, float range = -1f, Vector3 point = new Vector3()) : base(name: name, actionCost: actionCost, icon: icon, range: range, actor: actor)
     {
         SetTarget(point);
     }
-
-    public PointAction(string name, Sprite icon) : base(name, icon) { }
 
     public override bool CheckValidAction()
     {

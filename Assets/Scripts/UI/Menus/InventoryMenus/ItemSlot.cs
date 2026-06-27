@@ -184,8 +184,8 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
             if (!EntityInventory.equippables[draggableItem.equipSlotType].Contains(draggableItem.inventoryData.itemType) ) return;
             if(draggableItem.parentBeforeDrag.gameObject.GetComponent<EquipmentSlot>() != null) // Will equip this item
             {
-                if (!CombatManager.Instance.CheckActionPoints(itemData.APCost)) return;
-                CombatManager.Instance.SpendActionPoints(itemData.APCost);
+                if (!CombatManager.Instance.CheckActionPoints(itemData.EquipAPCost)) return;
+                CombatManager.Instance.SpendActionPoints(itemData.EquipAPCost);
             }
         }
         draggableItem.parentAfterDrag = transform;
