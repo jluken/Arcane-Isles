@@ -32,6 +32,8 @@ public class ItemSelectMenu : MenuScreen
         InputActionMap uiActions = InputSystem.actions.FindActionMap("UI");
         uiActions.FindAction("Click").performed += (sender) => HandleClick();
         uiActions.FindAction("RightClick").performed += (sender) => HandleClick();
+
+        camScript.Instance.camMove += DeactivateMenu;
     }
 
     void Update()

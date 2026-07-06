@@ -21,4 +21,17 @@ public class EventHandler : MonoBehaviour
     public event Action inventoryUpdate;
     public void TriggerInventoryUpdate() { inventoryUpdate?.Invoke(); }
 
+    public delegate void SelectableEvent(Selectable obj);
+    public event SelectableEvent hoverObj;
+    public void TriggerObjHover(Selectable obj)
+    {
+        hoverObj?.Invoke(obj);
+    }
+    public event SelectableEvent unhoverObj;
+    public void TriggerObjUnhover(Selectable obj)
+    {
+        unhoverObj?.Invoke(obj);
+    }
+
+
 }

@@ -15,25 +15,32 @@ public class camScript : MonoBehaviour
     public float scrollSpeed = 0.0015f; // Set camera movement speed.
     public float zoomSpeed = 0.1f; // Set camera movement speed.
     public float maxCamDist = 40f;
-    private Camera cam; // Reference to camera.
+    public Camera cam { get;  private set; } // Reference to camera.
     private Transform ct;
 
     private float xTilt = 37.5f;
     private float yRot = 135f;
 
+    public event Action camMove;
+
     private void Awake()
     {
         Instance = this;
+
+        cam = GetComponent<Camera>(); // Access player's Rigidbody.
+        ct = cam.transform;
+        Camera.main.orthographic = true;
+        ct.rotation = Quaternion.identity * Quaternion.Euler(xTilt, yRot, 0);
     }
 
 
     // Start is called before the first frame update
     void Start()
     {
-        cam = GetComponent<Camera>(); // Access player's Rigidbody.
-        ct = cam.transform;
-        Camera.main.orthographic = true;
-        ct.rotation = Quaternion.identity * Quaternion.Euler(xTilt, yRot, 0);
+        //cam = GetComponent<Camera>(); // Access player's Rigidbody.
+        //ct = cam.transform;
+        //Camera.main.orthographic = true;
+        //ct.rotation = Quaternion.identity * Quaternion.Euler(xTilt, yRot, 0);
     }
 
     void Update()
@@ -98,6 +105,7 @@ public class camScript : MonoBehaviour
         cam.orthographicSize -= zoom * zoomSpeed;
         cam.orthographicSize = Math.Max(cam.orthographicSize, 2.0f);
         cam.orthographicSize = Math.Min(cam.orthographicSize, 5.0f);
+        camMove.Invoke();
     }
 
     public void CenterCamera(Vector3 position)

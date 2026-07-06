@@ -18,6 +18,7 @@ public class Selectable : MonoBehaviour
     private ItemSelectMenu selectMenu;
 
     public string description;
+    [TextArea] public string hoverInfo;
     private IEnumerator displayRoutine;
     private GameObject itemPopUpPrefab;
     private GameObject itemPopUp;
@@ -112,12 +113,16 @@ public class Selectable : MonoBehaviour
         GetComponent<Outline>().enabled = true;
         GetComponent<Outline>().OutlineWidth = 1;
         GetComponent<Outline>().OutlineColor = Color.white;
+        if(!string.IsNullOrEmpty(hoverInfo)) UIController.Instance.ActivateInfobox(hoverInfo);
+        EventHandler.Instance.TriggerObjHover(this);
     }
 
     public virtual void EndHover()
     {
         GetComponent<NavMeshObstacle>().carving = true;
         GetComponent<Outline>().enabled = false;
+        UIController.Instance.DeactivateInfobox();
+        EventHandler.Instance.TriggerObjUnhover(this);
     }
 
     public void SetInteractAction(Interaction activeAct)

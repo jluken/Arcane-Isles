@@ -48,7 +48,7 @@ public class SkillBar : MonoBehaviour
         }
     }
 
-    public void UpdateBoxes(Character character)
+    public virtual void UpdateBoxes(Character character)
     {
         int currStatVal = character.charStats.GetRawStat(stat);
 
@@ -64,9 +64,9 @@ public class SkillBar : MonoBehaviour
         }
     }
 
-    public void BoxClicked(int boxId)
+    public virtual void BoxClicked(int boxId)
     {
-        bool anotherBox = boxId < CharStats.MaxSkillVal;
+        bool anotherBox = boxId < MaxSkillVal;
         //if (boxId != lastMarked && boxId != lastMarked + 1) return;
 
         if (CharacterMenu.Instance.availPoints > 0 && SkillBoxes[boxId].boxState == SkillBox.BoxState.available)  // select new valid skill point

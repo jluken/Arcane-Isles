@@ -85,7 +85,7 @@ public class DefaultUI : MenuScreen
             }
         }
         UpdateActions();
-        UpdateInitiative();
+        UpdateInitiative();  // TODO: break out initiative trigger into its own event listener
     }
 
     public void ActivateCombat()
@@ -122,6 +122,7 @@ public class DefaultUI : MenuScreen
                 var nextActionButton = Instantiate(ActionButtonPrefab, ActionMenu.transform);
                 actionButtons.Add(nextActionButton);
                 nextActionButton.GetComponent<Button>().image.sprite = actions[i] == null ? null : actions[i].icon;
+                nextActionButton.GetComponent<InfoHover>().text = actions[i] == null ? "" : actions[i].actionName;
                 int iCopy = i;
                 nextActionButton.GetComponent<Button>().onClick.AddListener(() => CombatManager.Instance.SetCurrentAction(iCopy));
                 if (selectedNPC != PartyController.Instance.activePartyMember) nextActionButton.GetComponent<Button>().interactable = false;

@@ -24,10 +24,24 @@ public class charIcon : MonoBehaviour
     private List<string> statuses;
     private List<Image> statusIcons;
 
+    private bool glowing;
+
     void Awake()
     {
         statuses = new();
         statusIcons = new();
+    }
+
+    private void Start()
+    {
+        EventHandler.Instance.hoverObj += Glow;
+        EventHandler.Instance.unhoverObj += Deglow;
+    }
+
+    public void OnDestroy()
+    {
+        EventHandler.Instance.hoverObj -= Glow;
+        EventHandler.Instance.unhoverObj -= Deglow;
     }
 
     public void UpdateIcon(Character npcChar, bool isPartyIcon = false)
@@ -47,6 +61,8 @@ public class charIcon : MonoBehaviour
         Health.text = currHealth + "/" + maxHealth;
 
         border.gameObject.SetActive(npcChar.IsActive);
+        if(glowing && !partyIcon) charPic.color = Color.yellow; // TODO: placeholder effect
+        else charPic.color = Color.white;
 
         // TODO: (add eventually status effects and refactor)
         var oldStatuses = statuses.ToList();
@@ -71,6 +87,23 @@ public class charIcon : MonoBehaviour
                 icon.GetComponent<Image>().sprite = stopSprite;
                 statusIcons.Add(icon.GetComponent<Image>());
             }
+        }
+    }
+
+    public void Glow(Selectable obj)
+    {
+        if (obj != null && obj.GetComponent<Character>() == iconChar && !glowing) { 
+            glowing = true;
+            UpdateIcon(iconChar, partyIcon);
+        }
+    }
+
+    public void Deglow(Selectable obj)
+    {
+        if (glowing)
+        {
+            glowing = false;
+            UpdateIcon(iconChar, partyIcon);
         }
     }
 

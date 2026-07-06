@@ -42,6 +42,7 @@ public class UIController : MonoBehaviour
     // Special in-frame menu that does not pause - sticks around until custom condition
     public ItemSelectMenu itemSelectMenu;
     public MenuDropdown menuDropdown;
+    public InfoBox infoBox;
 
     private List<MenuScreen> SceneScreens;
     private List<MenuScreen> LogbookMenus;
@@ -102,6 +103,7 @@ public class UIController : MonoBehaviour
         OverlayMenus.AddRange(LogbookMenus);
         OverlayMenus.Add(itemSelectMenu);
         OverlayMenus.Add(menuDropdown);
+        OverlayMenus.Add(infoBox);
 
         AllMenus = new List<MenuScreen>();
         AllMenus.AddRange(SceneScreens);
@@ -111,6 +113,7 @@ public class UIController : MonoBehaviour
         AllMenus.Add(defaultUI);
         AllMenus.Add(itemSelectMenu);
         AllMenus.Add(menuDropdown);
+        AllMenus.Add(infoBox);
 
         uiActions = InputSystem.actions.FindActionMap("UI");
         screenKeyCodes = new Dictionary<string, MenuScreen>
@@ -189,6 +192,12 @@ public class UIController : MonoBehaviour
         foreach (var menu in AllMenus) { menu.DeactivateMenu(); }
     }
 
+    public void ActivateCharacterCreation()
+    {
+        DeactivateAllMenus();
+        charCreateMenu.ActivateMenu();
+    }
+
     public void ActivateDefaultScreen()
     {
         DeactivateAllMenus();
@@ -234,6 +243,17 @@ public class UIController : MonoBehaviour
     {
         menuDropdown.SetItemSelection(pos, itemPos, itemSlot);
         menuDropdown.ActivateMenu();
+    }
+
+    public void ActivateInfobox(string text)
+    {
+        infoBox.SetInfo(SelectionController.MousePosition(), text);
+        infoBox.ActivateMenu();
+    }
+
+    public void DeactivateInfobox()
+    {
+        infoBox.DeactivateMenu();
     }
 
     public void ActivateSettings()

@@ -2,6 +2,7 @@ using PixelCrushers.DialogueSystem;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static CharStats;
 
 public class CharCreateMenu : MenuScreen
@@ -11,33 +12,75 @@ public class CharCreateMenu : MenuScreen
 
     private bool active;
 
-    private int remainingPoints = 2;
+    public int remainingPoints { get; private set; } = 2;
 
-    private Dictionary<string, int> attrPoints = new Dictionary<string, int>()
+    private Dictionary<StatVal, int> attrPoints = new Dictionary<StatVal, int>()
     {
-        { "vigor", 3},
-        { "finesse", 3},
-        { "psyche", 3}
+        { StatVal.vigor, 3},
+        { StatVal.finesse, 3},
+        { StatVal.psyche, 3}
     };
 
     public TMP_InputField nameField;
     public TMP_Dropdown genderField;
+    public Image portrait;
 
     public TMP_Text pointLeftTxt;
-    public TMP_Text vigorTxt;
-    public TMP_Text finesseTxt;
-    public TMP_Text psycheTxt;
+    public List<AbilityBar> abilityBars;
+
+    public List<Material> colors;
+    public List<GameObject> models;
+    public List<Sprite> portraits;
+
+    public TMP_Dropdown colorSelection;
+    private Dictionary<string, Material> colorMap;
+    public TMP_Dropdown modelSelection;
+    private Dictionary<string, GameObject> modelMap;
+
+    //public TMP_Text vigorTxt;
+    //public TMP_Text finesseTxt;
+    //public TMP_Text psycheTxt;
+
+    public Button proceed;
 
     //TODO: Vis - add character avatar creation (choose between M/F model and array of portraits)
     public void Awake()
     {
         Instance = this;
+        colorMap = new();
+        modelMap = new();
     }
 
     public override void ActivateMenu()
     {
         charCreateMenu.SetActive(true);
         active = true;
+
+        foreach (AbilityBar a in abilityBars) a.Populate(3);
+
+        List<string> colorOptions = new();
+        colorMap = new();
+        for (int i = 0; i < colors.Count; i++)
+        {
+            var numString = (i + 1).ToString();
+            colorOptions.Add(numString);
+            colorMap.Add(numString, colors[i]);
+        }
+        colorSelection.AddOptions(colorOptions);
+        colorSelection.RefreshShownValue();
+
+        List<string> modelOptions = new();
+        modelMap = new();
+        for (int i = 0; i < models.Count; i++)
+        {
+            var numString = (i + 1).ToString();
+            modelOptions.Add(numString);
+            modelMap.Add(numString, models[i]);
+        }
+        modelSelection.AddOptions(modelOptions);
+        modelSelection.RefreshShownValue();
+
+        UpdateAppearance();
     }
 
     public override void DeactivateMenu()
@@ -51,41 +94,59 @@ public class CharCreateMenu : MenuScreen
         return active;
     }
 
-    private void UpdateText()
-    {
-        pointLeftTxt.text = remainingPoints.ToString();
-        vigorTxt.text = attrPoints["vigor"].ToString();
-        finesseTxt.text = attrPoints["finesse"].ToString();
-        psycheTxt.text = attrPoints["psyche"].ToString();
-    }
+    //private void UpdateText()
+    //{
+    //    pointLeftTxt.text = remainingPoints.ToString();
+    //    vigorTxt.text = attrPoints["vigor"].ToString();
+    //    finesseTxt.text = attrPoints["finesse"].ToString();
+    //    psycheTxt.text = attrPoints["psyche"].ToString();
+    //}
 
-    //TODO: possibly switch to bars like char page (maybe even show stats as well to let them know what it will affect), also possibly add descriptions of abilities (hover?)
-    public void IncreaseAttr(string attr)
+    public void IncreaseAttr(StatVal attr)
     {
         if (!attrPoints.ContainsKey(attr)) Debug.LogError("Invalid attribute " + attr);
         if (remainingPoints < 1) return;
         remainingPoints -= 1;
         attrPoints[attr] += 1;
-        UpdateText();
+        pointLeftTxt.text = remainingPoints.ToString();
+        proceed.interactable = remainingPoints > 0;
     }
 
-    public void DecreaseAttr(string attr)
+    public void DecreaseAttr(StatVal attr)
     {
         if (!attrPoints.ContainsKey(attr)) Debug.LogError("Invalid attribute " + attr);
         if (attrPoints[attr] <= 1) return;
         remainingPoints += 1;
         attrPoints[attr] -= 1;
-        UpdateText();
+        pointLeftTxt.text = remainingPoints.ToString();
+        proceed.interactable = remainingPoints > 0;
     }
 
-    // TODO: show derived stats like HP, MP, and AC
+    public void UpdateAppearance()
+    {
+        var selectedModel = models[modelSelection.value];
+        var selectedMat = colors[colorSelection.value];
+        var oldModel = PartyController.Instance.playerChar.renderBody;
+
+        var newModel = Instantiate(selectedModel, PartyController.Instance.playerChar.animator.transform);
+        newModel.GetComponent<SkinnedMeshRenderer>().bones = oldModel.GetComponent<SkinnedMeshRenderer>().bones;
+        newModel.GetComponent<SkinnedMeshRenderer>().rootBone = oldModel.GetComponent<SkinnedMeshRenderer>().rootBone;
+        newModel.GetComponent<SkinnedMeshRenderer>().material = selectedMat;
+        Destroy(oldModel);
+        newModel.SetActive(true);
+        PartyController.Instance.playerChar.renderBody = newModel;
+        UICharModel.Instance.SetChar(PartyController.Instance.playerChar.renderBody);
+
+        int portraitIdx = (colors.Count * modelSelection.value) + colorSelection.value;
+        portrait.sprite = portraits[portraitIdx];
+    }
 
     public void AssignAttributes()
     {
         if (remainingPoints > 0) return;
-        PartyController.Instance.playerChar.charStats.SetStat(StatVal.vigor, attrPoints["vigor"]);
-        PartyController.Instance.playerChar.charStats.SetStat(StatVal.finesse, attrPoints["finesse"]);
-        PartyController.Instance.playerChar.charStats.SetStat(StatVal.psyche, attrPoints["psyche"]);
+        PartyController.Instance.playerChar.charStats.SetStat(StatVal.vigor, attrPoints[StatVal.vigor]);
+        PartyController.Instance.playerChar.charStats.SetStat(StatVal.finesse, attrPoints[StatVal.finesse]);
+        PartyController.Instance.playerChar.charStats.SetStat(StatVal.psyche, attrPoints[StatVal.psyche]);
         PartyController.Instance.playerChar.charStats.charName = nameField.text;
         string gender = genderField.options[genderField.value].text;
         if (gender == "M") {
@@ -108,7 +169,7 @@ public class CharCreateMenu : MenuScreen
             DialogueLua.SetVariable("PlayerTheir", "their");
             DialogueLua.SetVariable("PlayerTheirs", "theirs");
         }
-        PlayerChar.Instance.charStats.gender = gender;
+        PlayerChar.Instance.charStats.gender = gender;  // TODO: maybe just create function to get pronouns instead of Lua variables
 
         DeactivateMenu();
         // TODO: Demo: close this menu and immediately "level up"
