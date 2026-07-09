@@ -95,11 +95,12 @@ public class CombatManager : MonoBehaviour
     public List<InitiativeEntry> enemies => combatantInitiative.Where(entry => entry.type == CombatantType.Enemy).ToList();
     public List<InitiativeEntry> Allies => combatantInitiative.Where(entry => entry.type == CombatantType.Party || entry.type == CombatantType.Ally).ToList();
 
-    public bool IsPartyTurn => combatActive && combatantInitiative.Any() && combatantInitiative[initiativeTurn].type == CombatantType.Party;
+    public bool IsPartyTurn => !combatActive || (combatantInitiative.Any() && combatantInitiative[initiativeTurn].type == CombatantType.Party);
 
     public int GetCurrentAP(Character character)
     {
-        if (!combatActive || activeCombatant != character) return 0;
+        if (!combatActive) return int.MaxValue;
+        else if (activeCombatant != character) return 0;
         return ActionPoints;
     }
 
@@ -111,7 +112,7 @@ public class CombatManager : MonoBehaviour
 
     public float GetMaxPath()
     {
-        return GetCurrentAP(activeCombatant) * activeCombatant.charStats.runModifier;
+        return !combatActive ? float.PositiveInfinity : GetCurrentAP(activeCombatant) * activeCombatant.charStats.runModifier;
     }
 
     public void insertIntoInitiative(Character character, CombatantType type)
@@ -300,15 +301,13 @@ public class CombatManager : MonoBehaviour
         return selectedIdx >=0 && selectedIdx < abilityCount && actions[selectedIdx] != null; 
     }
 
-    public void AttackTarget(Selectable target)
+    public void TargetObj(Selectable target)
     {
-        //if(currentAction == null) currentAction = activeCombatant.GetDefaultAttack();
-        //currentAction.SetActor(activeCombatant);
-        //currentAction.SetTarget(target);
-        //UseCombatAbility(currentAction);
-
+        Debug.Log("TargetObj with idx " + selectedIdx);
         var currentActionIdx = selectedIdx;
-        if (!ValidSelectedAction()) currentActionIdx = weaponIdx;
+        if (!ValidSelectedAction() && combatActive) currentActionIdx = weaponIdx;
+        else if(!ValidSelectedAction()) currentActionIdx = runIdx;
+        Debug.Log("current idx " + currentActionIdx);
         var currentAction = actions[currentActionIdx];
         currentAction.SetTarget(target);
         UseCombatAbility(currentActionIdx, currentAction);
@@ -316,10 +315,6 @@ public class CombatManager : MonoBehaviour
 
     public void TargetPoint(Vector3 target)
     {
-        //currentAction ??= defaultRun;
-        //currentAction.SetActor(activeCombatant);
-        //currentAction.SetTarget(target);
-        //UseCombatAbility(currentAction);
 
         var currentActionIdx = selectedIdx;
         if (!ValidSelectedAction()) currentActionIdx = runIdx;
@@ -330,11 +325,11 @@ public class CombatManager : MonoBehaviour
 
     public void UseCombatAbility(int actionIdx, AbilityAction action)
     {
-        if (InAction() && Running())
+        if (InAction() && Running() && PartyController.Instance.activePartyMember != null)
         {
             // TODO: this might never get called due to deselect triggering first
             Debug.Log("Stop running for retarget");
-            activeCombatant.mover.StopMoving(); // Movement can be overridden 
+            PartyController.Instance.activePartyMember.mover.StopMoving(); // Movement can be overridden 
             Debug.Log("Finish action for retarget");
             FinishAction();
         }
@@ -355,12 +350,12 @@ public class CombatManager : MonoBehaviour
         }
     }
 
-    public void PrepAttackTarget(Selectable target)
+    public void PrepTargetObj(Selectable target)
     {   
         var tempIdx = selectedIdx;
-        if (!ValidSelectedAction()) tempIdx = weaponIdx;
+        if (!ValidSelectedAction() && combatActive) tempIdx = weaponIdx;
+        else if (!ValidSelectedAction()) tempIdx = runIdx;
         var tempAction = actions[tempIdx];
-        //tempAction.SetActor(activeCombatant);
         tempAction.SetTarget(target);
         UpdateCombatDisplay(tempIdx, tempAction);
     }
@@ -370,7 +365,6 @@ public class CombatManager : MonoBehaviour
         var tempIdx = selectedIdx;
         if (!ValidSelectedAction()) tempIdx = runIdx;
         var tempAction = actions[tempIdx];
-        //tempAction.SetActor(activeCombatant);
         tempAction.SetTarget(target);
         UpdateCombatDisplay(tempIdx, tempAction);
     }
@@ -398,11 +392,12 @@ public class CombatManager : MonoBehaviour
         }
         if(prevDeckAp != OnDeckActionPoints) combatActionUpdate.Invoke();
 
+        // Display action with range
         var rangeAction = action != null ? action : actions[selectedIdx];  // TODO: put this in the action itself, or special since it doesn't require point target?
         if (!InAction() && rangeAction != null && rangeAction.range > 0)
         {
             abilityRangeMarker.SetActive(true);
-            abilityRangeMarker.transform.position = activeCombatant.transform.position + new Vector3(0, 1, 0);
+            abilityRangeMarker.transform.position = PartyController.Instance.activePartyMember.transform.position + new Vector3(0, 1, 0);
             abilityRangeMarker.GetComponent<DecalProjector>().size = new Vector3(rangeAction.range * 2, rangeAction.range * 2, 3f);
         }
         else abilityRangeMarker.SetActive(false);
@@ -424,17 +419,15 @@ public class CombatManager : MonoBehaviour
 
     public void FinishAction()
     {
-        var actor = executingAction != null ? executingAction.actor : null;
+        if (executingAction == null) return;
+        var actor = executingAction.actor;
         executingAction = null;
 
         if (selectedIdx >= weaponIdx && selectedIdx < sigilIdx) actor.inventory.UseMainWeapon();
         else if (selectedIdx >= sigilIdx) actor.sigils.ActivateSigil(selectedIdx - sigilIdx);
         selectedIdx = -1;
-        if (activeCombatant != null)
-        {
-            activeCombatant.SetActiveChar();
-            combatActionUpdate.Invoke();
-        }
+        if (activeCombatant != null) activeCombatant.SetActiveChar();
+        combatActionUpdate.Invoke();
     }
 
     public void RemoveCombatant(Character npc)

@@ -188,7 +188,7 @@ public class Character : Selectable
 
     public void TargetAttack()
     {
-        CombatManager.Instance.AttackTarget(this);
+        CombatManager.Instance.TargetObj(this);
     }
 
     private void FixedUpdate()

@@ -9,29 +9,29 @@ public class InventoryPanel : MonoBehaviour
     public InventoryMenu inventoryMenu;
     
     protected EntityInventory inventory;
-    private List<ItemSlot> InventorySlots;
+    public List<ItemSlot> InventorySlots;
 
     void Awake()
     {
-        InventorySlots = new List<ItemSlot>();
+        //InventorySlots = new List<ItemSlot>();
     }
 
     public virtual void PopulateInventory(EntityInventory entityinventory, List<InventoryPanel> dragMatches = null)
     {
+        if (entityinventory.maxInv != InventorySlots.Count) Debug.LogError("Inventory does not match menu size");
         ClearInventory();
         inventory = entityinventory;
-        Debug.Log("Populate Inventory");
-        for (int i = 0; i < inventory.maxInv; i++)
+        for (int i = 0; i < InventorySlots.Count; i++)
         {
             var slotData = inventory.GetInventory(i);
-            var slotItem = Instantiate(slotPrefab, transform);
-            InventorySlots.Add(slotItem.GetComponent<ItemSlot>());
+            //var slotItem = Instantiate(slotPrefab, transform);
+            //InventorySlots.Add(slotItem.GetComponent<ItemSlot>());
             InventorySlots[i].slotID = i;
             InventorySlots[i].slotPanel = this;
             InventorySlots[i].dragMatches = dragMatches;
             //Debug.Log("Inv slot " + i + ": type: " + slotData.type + " count: " + slotData.count);
 
-            if (slotData.type != null) { InventorySlots[i].AddItem(slotData.type, slotData.count, false); }
+            if (slotData.type != null) { Debug.Log("Adding item at slot " + i);  InventorySlots[i].AddItem(slotData.type, slotData.count, false); }
         }
     }
 
@@ -53,8 +53,8 @@ public class InventoryPanel : MonoBehaviour
     public virtual void ClearInventory()
     {
         DeselectPanelSlots();
-        InventorySlots.ToList().ForEach(slot => Destroy(slot.gameObject));
-        InventorySlots = new List<ItemSlot>();
+        InventorySlots.ToList().ForEach(slot => slot.ClearItem(true, false));  // TODO: Fix destroy leak
+        //InventorySlots = new List<ItemSlot>();
     }
 
     public virtual void DeselectPanelSlots()

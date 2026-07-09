@@ -46,6 +46,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
             Debug.Log("Create new draggable");
             CreateDraggable(itemData);
         }
+        Debug.Log("Adding " + newStackSize + " of item to idx " + slotID);
         this.itemData = itemData;
         this.currentStack += newStackSize;
         dragObject.GetComponent<DraggableItem>().counterText.text = "";
@@ -103,8 +104,11 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDropHandler
         itemText.text = null;
         itemText.enabled = false;
 
-        if (slotPanel != null) slotPanel.DeselectMenuSlots();
-        if(applyChanges) slotPanel.UpdateEntity();
+        if (slotPanel != null)
+        {
+            slotPanel.DeselectMenuSlots();
+            if (applyChanges) slotPanel.UpdateEntity();
+        }
         return oldData;
     }
 

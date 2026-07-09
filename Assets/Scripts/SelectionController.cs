@@ -95,11 +95,12 @@ public class SelectionController : MonoBehaviour
             if (leftClick)
             {
                 if (invisible) PartyController.Instance.GoTo(pointedObject.GetComponent<Selectable>());
+                else if (CombatManager.Instance.ValidSelectedAction()) CombatManager.Instance.TargetObj(pointedObject.GetComponent<Selectable>());
                 else InitiateSelection(actions[0]);
             }
             else if (!invisible)
             {
-                if (CombatManager.Instance.combatActive) CombatManager.Instance.UnsetAction();
+                CombatManager.Instance.UnsetAction();
                 UIController.Instance.ActivateItemSelect(MousePosition(), actions);
             }
         }
@@ -109,13 +110,13 @@ public class SelectionController : MonoBehaviour
     {
         if (UIController.Instance.PauseTime() || (SceneLoader.Instance.GetLevel() != null && SceneLoader.Instance.GetLevel().InsideBlockedRegion(pointSpot))) return;
         if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().StartHover();
-        if (CombatManager.Instance.combatActive && PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
+        if (PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
         {
             if (pointedObject != null && (pointedObject.GetComponent<groundScript>() != null || pointedObject.GetComponent<Selectable>() != null))
             {
-                var mainChar = PartyController.Instance.selectedPartyMember;
+                //var mainChar = PartyController.Instance.selectedPartyMember;
                 if (pointedObject.GetComponent<groundScript>() != null) CombatManager.Instance.PrepTargetPoint(pointSpot);
-                else CombatManager.Instance.PrepAttackTarget(pointedObject.GetComponent<Selectable>());
+                else CombatManager.Instance.PrepTargetObj(pointedObject.GetComponent<Selectable>());
             }
             else CombatManager.Instance.UpdateCombatDisplay(-1, null);
         }

@@ -79,7 +79,7 @@ public class MoveToPoint : AbilityAction  // TODO: possibly rethink movetopoint 
 
     public override void DisplayTarget()
     {
-        if (!CheckValidAction()) return;
+        if (!CheckValidAction() || !CombatManager.Instance.combatActive) return;
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         if (targetObj != null) actor.mover.DrawTo(targetObj);
         else actor.mover.DrawTo(targetPt);

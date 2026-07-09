@@ -76,6 +76,7 @@ public class charIcon : MonoBehaviour
         }
         if (!statuses.SequenceEqual(oldStatuses))
         {
+            Debug.Log("Recreating statuses"); // TODO: make static instead of destroy
             foreach (var statusIcon in statusIcons) Destroy(statusIcon.gameObject);
             statusIcons.Clear();
             foreach (var status in statuses)

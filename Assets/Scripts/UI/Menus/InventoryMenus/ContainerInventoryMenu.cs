@@ -54,8 +54,10 @@ public class ContainerInventoryMenu : InventoryMenu
     public override void DeactivateMenu()
     {
         if (!IsActive()) return;
-       // SelectionController.Instance.Deselect();
+        // SelectionController.Instance.Deselect();
         //UpdateEntity();
+        Debug.Log("Deactivating current Inv 0: " + currentInventory.inventory[0].count);
+        Debug.Log("Deactivating current Inv 2: " + currentInventory.inventory[2].count);
         inventoryMenu.SetActive(false);
         currentInventory = null;
     }
@@ -85,6 +87,7 @@ public class ContainerInventoryMenu : InventoryMenu
 
     public override void ActivateItem(InventoryData itemData, InventoryPanel slotGroup, int slotId)
     {
+        Debug.Log("Activate container item with slotGroup " + slotGroup + " and id " + slotId);
         var playerInventory = PartyController.Instance.selectedPartyMember.inventory;
         if (slotGroup == playerInventorySlots)
         {
@@ -94,7 +97,10 @@ public class ContainerInventoryMenu : InventoryMenu
         }
         else
         {
+            Debug.Log("current inventory size " + currentInventory.inventory.Count);
+            Debug.Log("current inventory first val " + currentInventory.inventory[0].count + " " + currentInventory.inventory[0].type);
             var grabbedInv = currentInventory.GetInventory(slotId);
+            Debug.Log("Grabbed " + grabbedInv.count + " from slot " + slotId);
             var leftover = playerInventory.AddNewItem(itemData, grabbedInv.count);
             currentInventory.SetInventory(slotId, itemData, leftover);
         }

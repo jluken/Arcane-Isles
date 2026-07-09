@@ -45,6 +45,6 @@ public abstract class AbilityAction
 
     public static bool RunningAction(AbilityAction action)
     {
-        return action is MoveToPoint || action is MoveToObject;
+        return action is MoveToPoint;
     }
 }

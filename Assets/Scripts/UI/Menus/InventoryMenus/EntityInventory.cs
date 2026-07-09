@@ -10,7 +10,7 @@ public class EntityInventory : MonoBehaviour
 {
     public string containerId;
     
-    public int maxInv = 40;
+    public int maxInv = 42;
 
     // For the purposes of setting initial inventory through editor
     public List<InventoryData> initInv;
@@ -167,7 +167,6 @@ public class EntityInventory : MonoBehaviour
 
     public void SetInventory(int idx, InventoryData itemData, int count=1)
     {
-        if (idx >= maxInv) Debug.LogError("Setting inventory outside of bounds");
         if (count <= 0) itemData = null;
         if (itemData == null) count = 0;
 
@@ -212,7 +211,7 @@ public class EntityInventory : MonoBehaviour
             if (extra > 0) leftover = equipment[equipSlot];
             equipment[equipSlot] = null;
         }
-        leftover.DropItem(transform.position);
+        if (leftover != null) leftover.DropItem(transform.position);
     }
 
     public InventoryData GetEquipment(EquipmentInvType type)
@@ -252,7 +251,6 @@ public class EntityInventory : MonoBehaviour
         {
             if (GetInventory(i).count == 0)
             {
-                //Debug.Log("empty stack " + i);
                 int transferStack = Math.Min(itemData.maxStackSize, newStackSize);
                 //ItemSlots[i].AddItem(itemData, transferStack, true);
                 SetInventory(i, itemData, transferStack);

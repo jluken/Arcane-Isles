@@ -132,7 +132,7 @@ public class CharCreateMenu : MenuScreen
         newModel.GetComponent<SkinnedMeshRenderer>().bones = oldModel.GetComponent<SkinnedMeshRenderer>().bones;
         newModel.GetComponent<SkinnedMeshRenderer>().rootBone = oldModel.GetComponent<SkinnedMeshRenderer>().rootBone;
         newModel.GetComponent<SkinnedMeshRenderer>().material = selectedMat;
-        Destroy(oldModel);
+        Destroy(oldModel);  // TODO: maybe only swap out skinnedMeshRenderer
         newModel.SetActive(true);
         PartyController.Instance.playerChar.renderBody = newModel;
         UICharModel.Instance.SetChar(PartyController.Instance.playerChar.renderBody);

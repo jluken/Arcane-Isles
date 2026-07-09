@@ -19,9 +19,9 @@ public class Selectable : MonoBehaviour
 
     public string description;
     [TextArea] public string hoverInfo;
-    private IEnumerator displayRoutine;
-    private GameObject itemPopUpPrefab;
-    private GameObject itemPopUp;
+    //private IEnumerator displayRoutine;
+    //private GameObject itemPopUpPrefab;
+    //private GameObject itemPopUp;
 
     private string layerName;
 
@@ -85,12 +85,12 @@ public class Selectable : MonoBehaviour
     public virtual void Start()
     {
         SelectionController.Instance.deselectEvent += UnsetInteraction;
-        itemPopUpPrefab = Resources.Load<GameObject>("Prefabs/ItemPopup");
+        //itemPopUpPrefab = Resources.Load<GameObject>("Prefabs/ItemPopup");
         selectMenu = ItemSelectMenu.Instance;
         layerName = LayerMask.LayerToName(gameObject.layer);
         EndHover();
 
-        displayRoutine = DisplayText();
+        //displayRoutine = DisplayText();
     }
 
     public virtual void Update()
@@ -146,18 +146,18 @@ public class Selectable : MonoBehaviour
         DialogueInterface.Instance.DescriptionBark(this);
     }
 
-    IEnumerator DisplayText()
-    {
-        var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
-        Destroy(itemPopUp);
-        itemPopUp = Instantiate(itemPopUpPrefab, transform.position, itemPopUpPrefab.transform.rotation);
-        itemPopUp.transform.SetParent(transform);
-        itemPopUp.transform.localPosition = new Vector3(0, (height / 2) + 2, 0);
-        itemPopUp.GetComponent<TMP_Text>().text = description;
-        itemPopUp.SetActive(true);
-        yield return new WaitForSeconds(3);
-        Destroy(itemPopUp);  // TODO: fade out animation? [UI]
-    }
+    //IEnumerator DisplayText()
+    //{
+    //    var height = gameObject.GetComponent<MeshRenderer>().bounds.max.y;
+    //    Destroy(itemPopUp);
+    //    itemPopUp = Instantiate(itemPopUpPrefab, transform.position, itemPopUpPrefab.transform.rotation);
+    //    itemPopUp.transform.SetParent(transform);
+    //    itemPopUp.transform.localPosition = new Vector3(0, (height / 2) + 2, 0);
+    //    itemPopUp.GetComponent<TMP_Text>().text = description;
+    //    itemPopUp.SetActive(true);
+    //    yield return new WaitForSeconds(3);
+    //    Destroy(itemPopUp);  // TODO: fade out animation? [UI]
+    //}
 }
 
 public abstract class Interaction

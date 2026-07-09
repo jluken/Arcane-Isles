@@ -1836,6 +1836,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   description: 
+  hoverInfo: 
   open: 0
   doorObject: {fileID: 595739335}
 --- !u!1 &597588027
@@ -2196,7 +2197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerId: 
-  maxInv: 40
+  maxInv: 42
   initInv: []
   initInvStacks: 
   initHoldMainHand: {fileID: 0}
@@ -2225,6 +2226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Merchant
   description: Selling wares
+  hoverInfo: 
   renderBody: {fileID: 939156709}
   animator: {fileID: 939156707}
   interactRad: {fileID: 1187583374}
@@ -2459,6 +2461,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   description: 
+  hoverInfo: 
 --- !u!114 &605977425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3188,6 +3191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   description: 
+  hoverInfo: 
 --- !u!208 &806172939
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -5119,7 +5123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerId: 
-  maxInv: 40
+  maxInv: 42
   initInv: []
   initInvStacks: 
   initHoldMainHand: {fileID: 0}
@@ -5163,6 +5167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   description: A young intellectual
+  hoverInfo: 
   renderBody: {fileID: 862336366}
   animator: {fileID: 217348655}
   interactRad: {fileID: 710398448}
@@ -5294,6 +5299,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   description: A bed
+  hoverInfo: 
 --- !u!114 &1712190833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6217,6 +6223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   description: 
+  hoverInfo: 
   open: 0
   doorObject: {fileID: 1921501356}
 --- !u!208 &1921501362
@@ -6787,7 +6794,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerId: 
-  maxInv: 40
+  maxInv: 42
   initInv:
   - {fileID: 11400000, guid: 753089f0608df894da43bb8e801b1776, type: 2}
   - {fileID: 0}
@@ -6820,6 +6827,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   description: 
+  hoverInfo: 
 --- !u!1001 &3658092446600040686
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7115,6 +7123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   description: Issa Nightstand
+  hoverInfo: 
 --- !u!114 &9005998145335191457
 MonoBehaviour:
   m_ObjectHideFlags: 0

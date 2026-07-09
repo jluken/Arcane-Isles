@@ -5890,7 +5890,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerId: 
-  maxInv: 40
+  maxInv: 42
   initInv: []
   initInvStacks: 
   initHoldMainHand: {fileID: 0}

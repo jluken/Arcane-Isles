@@ -109,6 +109,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             Debug.Log("Absorb");
             parentAfterDrag.gameObject.GetComponent<ItemSlot>().AddItem(inventoryData, stackSize);
+            Debug.Log("DESTROYING DRAGGABLE"); // TODO: fix destroy leak
             Destroy(gameObject);
         }
         else  // Split

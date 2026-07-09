@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,11 +23,11 @@ public class DefaultUI : MenuScreen
     public GameObject initiativeBar;
     private List<GameObject> initiativeIcons;
 
-    private List<GameObject> actionButtons;
+    public List<GameObject> actionButtons;
     //private List<AbilityAction> buttonActions;
 
     public GameObject ActionPointBar;
-    private List<GameObject> ActionPointPips;
+    public List<GameObject> ActionPointPips;
     public GameObject pipPrefab;
     public Sprite fullPip;
     public Sprite prepPip;
@@ -53,10 +54,10 @@ public class DefaultUI : MenuScreen
         Debug.Log("Start UI");
         //charStats = player.GetComponent<CharStats>();
         //charStats.updateStatEvent += UpdateStats;
-        actionButtons = new List<GameObject>();
+        //actionButtons = new List<GameObject>();
         //buttonActions = new List<AbilityAction>();
         initiativeIcons = new List<GameObject>();
-        ActionPointPips = new List<GameObject>();
+        //ActionPointPips = new List<GameObject>();
 
         PartyController.Instance.updatePartyEvent += UpdateStats;
         DialogueInterface.Instance.updateChatLog += UpdateChatUI;
@@ -93,6 +94,7 @@ public class DefaultUI : MenuScreen
         ActivateMenu();
         NextTurnButton.interactable = true;
         initiativeBar.SetActive(true);
+        Debug.Log("DESTROYING ICONS"); // TODO: fix destroy leak
         foreach (GameObject icon in initiativeIcons) Destroy(icon);
         initiativeIcons.Clear();
     }
@@ -102,10 +104,13 @@ public class DefaultUI : MenuScreen
         var selectedNPC = PartyController.Instance.selectedPartyMember;
         FillActionPoints(selectedNPC);
         //if (buttonActions.Select(x => x.actionName).SequenceEqual(selectedNPC.GetActions().Select(x=>x.actionName))) return;
-        foreach (GameObject but in actionButtons) Destroy(but);
-        actionButtons.Clear();
-        //buttonActions.Clear();
-        Debug.Log("Initiative size: " + CombatManager.Instance.combatantInitiative.Count);
+        //foreach (GameObject but in actionButtons) Destroy(but);
+        //actionButtons.Clear();
+        for(int i = 0; i < actionButtons.Count; i++)
+        {
+            actionButtons[i].GetComponent<Button>().onClick.RemoveAllListeners();
+            actionButtons[i].SetActive(false);
+        }
         if (!CombatManager.Instance.IsPartyTurn)
         {
             ActionMenu.SetActive(false);
@@ -119,16 +124,18 @@ public class DefaultUI : MenuScreen
             NextTurnButton.interactable = CombatManager.Instance.combatActive;
             for (int i = 0; i < actions.Length; i++)
             {
-                var nextActionButton = Instantiate(ActionButtonPrefab, ActionMenu.transform);
-                actionButtons.Add(nextActionButton);
-                nextActionButton.GetComponent<Button>().image.sprite = actions[i] == null ? null : actions[i].icon;
-                nextActionButton.GetComponent<InfoHover>().text = actions[i] == null ? "" : actions[i].actionName;
+                //var nextActionButton = Instantiate(ActionButtonPrefab, ActionMenu.transform);
+                //actionButtons.Add(nextActionButton);
+                actionButtons[i].GetComponent<Button>().image.sprite = actions[i] == null ? null : actions[i].icon;
+                actionButtons[i].GetComponent<InfoHover>().text = actions[i] == null ? "" : actions[i].actionName;
                 int iCopy = i;
-                nextActionButton.GetComponent<Button>().onClick.AddListener(() => CombatManager.Instance.SetCurrentAction(iCopy));
-                if (selectedNPC != PartyController.Instance.activePartyMember) nextActionButton.GetComponent<Button>().interactable = false;
+                actionButtons[i].GetComponent<Button>().onClick.AddListener(() => CombatManager.Instance.SetCurrentAction(iCopy));
+                if (selectedNPC != PartyController.Instance.activePartyMember || CombatManager.Instance.InAction()) actionButtons[i].GetComponent<Button>().interactable = false;
+                else actionButtons[i].GetComponent<Button>().interactable = true;
                 //buttonActions.Add(action);
-                if(CombatManager.Instance.InAction()) nextActionButton.GetComponent<Button>().interactable = false;
-                if(i == CombatManager.Instance.displayIdx) nextActionButton.GetComponent<Button>().image.color = Color.red;
+                if(i == CombatManager.Instance.displayIdx) actionButtons[i].GetComponent<Button>().image.color = Color.red; // TODO: temp effect
+                else actionButtons[i].GetComponent<Button>().image.color = Color.white;
+                actionButtons[i].SetActive(true);
             }
         }
     }
@@ -154,29 +161,48 @@ public class DefaultUI : MenuScreen
         if (!CombatManager.Instance.combatActive) { initiativeBar.SetActive(false); return; }
         var combatants = CombatManager.Instance.GetInitiativeOrder();
         initiativeBar.SetActive(true);
-        foreach (GameObject icon in initiativeIcons) Destroy(icon);
-        initiativeIcons.Clear();
-        foreach (Character npc in combatants)
+        if (combatants.Count < initiativeIcons.Count)
         {
-            var icon = Instantiate(CharIconPrefab, initiativeBar.transform);
-            initiativeIcons.Add(icon);
-            icon.GetComponent<charIcon>().UpdateIcon(npc);
+            for (int i = combatants.Count; i < initiativeIcons.Count; i++) Destroy(initiativeIcons[i]);
+            initiativeIcons.RemoveRange(combatants.Count, initiativeIcons.Count - combatants.Count);
         }
+        else if (initiativeIcons.Count < combatants.Count)
+        {
+            for (int i = initiativeIcons.Count; i < combatants.Count; i++) initiativeIcons.Add(Instantiate(CharIconPrefab, initiativeBar.transform));
+        }
+
+        for(int i = 0;  i < initiativeIcons.Count; i++) initiativeIcons[i].GetComponent<charIcon>().UpdateIcon(combatants[i]);
+
+        //foreach (GameObject icon in initiativeIcons) Destroy(icon);
+        //initiativeIcons.Clear();
+        //foreach (Character npc in combatants)
+        //{
+        //    var icon = Instantiate(CharIconPrefab, initiativeBar.transform);
+        //    initiativeIcons.Add(icon);
+        //    icon.GetComponent<charIcon>().UpdateIcon(npc);
+        //}
     }
 
     public void FillActionPoints(Character selectedNPC)
     {
-        foreach (GameObject pip in ActionPointPips) Destroy(pip);
-        ActionPointPips.Clear();
+        //foreach (GameObject pip in ActionPointPips) Destroy(pip);
+        //ActionPointPips.Clear();
+        ActionPointBar.SetActive(CombatManager.Instance.combatActive && CombatManager.Instance.IsPartyTurn);
+        for (int i = 0; i < ActionPointPips.Count; i++)
+        {
+            ActionPointPips[i].SetActive(false);
+        }
         if (!PartyController.Instance.party.Contains(selectedNPC)) return;
+        Debug.Log("pass return");
         var currentAP = CombatManager.Instance.GetCurrentAP(selectedNPC);
         var prepAP = CombatManager.Instance.GetCurrentOnDeckAP(selectedNPC);
         for (int i = 0; i < selectedNPC.charStats.GetCurrStat(CharStats.StatVal.actionPoints); i++)
         {
-            ActionPointPips.Add(Instantiate(pipPrefab, ActionPointBar.transform));
-            if (currentAP < prepAP && i < currentAP) ActionPointPips.LastOrDefault().GetComponent<Image>().sprite = errPip;
-            else if (i < (currentAP- prepAP)) ActionPointPips.LastOrDefault().GetComponent<Image>().sprite = fullPip;
-            else if (i < currentAP) ActionPointPips.LastOrDefault().GetComponent<Image>().sprite = prepPip;
+            //ActionPointPips.Add(Instantiate(pipPrefab, ActionPointBar.transform));
+            ActionPointPips[i].SetActive(true);
+            if (currentAP < prepAP && i < currentAP) ActionPointPips[i].GetComponent<Image>().sprite = errPip;
+            else if (i < (currentAP- prepAP)) ActionPointPips[i].GetComponent<Image>().sprite = fullPip;
+            else if (i < currentAP) ActionPointPips[i].GetComponent<Image>().sprite = prepPip;
         }
     }
 

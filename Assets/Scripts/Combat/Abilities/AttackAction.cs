@@ -31,6 +31,8 @@ public class AttackAction : InteractionAction
     {
         var victim = target.GetComponent<Character>();
         var damage = Dice.RollDie(damageDie);
+        if (CombatManager.Instance.sneaking) CombatManager.Instance.ToggleSneak();
+        if(actor.animator != null) actor.animator.CrossFade("sword", 0.25f);  // TODO: generalize this
 
         CombatManager.Instance.LockAction(this);
         CombatManager.Instance.SpendActionPoints(actionCost); // account for floating point and wiggle room
