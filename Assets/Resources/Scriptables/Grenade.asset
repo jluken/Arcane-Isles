@@ -15,11 +15,11 @@ MonoBehaviour:
   itemName: Grenade
   description: Goes boom
   sprite: {fileID: 21300000, guid: 1ba14259ff4a56c4c8c5e24f90055e0d, type: 3}
-  itemPrefab: {fileID: 8711259635184205290, guid: a42b42d2979191541984016de734263d, type: 3}
+  itemPrefab: {fileID: 133524, guid: 0c74bb863bb2ece4193dd15ae219eb9b, type: 3}
   price: 50
   weight: 4
   dt: 0
-  APCost: 3
+  EquipAPCost: 0
   maxStackSize: 10
   itemType: 1
   equipStats: []

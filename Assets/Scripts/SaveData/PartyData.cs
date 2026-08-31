@@ -80,6 +80,7 @@ public class PartyData
         CharStatData charStatData = new CharStatData();
         charStatData.name = charStats.charName;
         charStatData.charImageName = charStats.charImage != null ? charStats.charImage.name : "";
+        Debug.Log("Char image: " + charStatData.charImageName);
         charStatData.level = charStats.GetCurrStat(CharStats.StatVal.level, false);
         charStatData.health = charStats.GetCurrStat(CharStats.StatVal.health, false);
         charStatData.magick = charStats.GetCurrStat(CharStats.StatVal.magick, false);

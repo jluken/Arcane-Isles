@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db90c29b24e5bb84885eb9f2fe4f44f5, type: 3}
+  m_Name: Silver Coin
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryData
+  itemName: Silver Coin
+  description: A standard coin used throughout the Kingdoms for trade.
+  sprite: {fileID: 21300000, guid: fdd7136187b8942439ad0c898759c79c, type: 3}
+  itemPrefab: {fileID: 113746, guid: 59c9a32041515f74d84432bfd84c16f6, type: 3}
+  price: 1
+  weight: 0.01
+  dt: 0
+  EquipAPCost: 0
+  maxStackSize: 1000
+  itemType: 10
+  equipStats: []
+  consumeOnUse: 0
+  consumeStats: []

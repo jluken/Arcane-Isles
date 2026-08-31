@@ -35,6 +35,10 @@ public class MoveToClick : MonoBehaviour
 
     private float defaultSpeed;
 
+    public bool prone { get; private set; } = false;
+    private bool gettingUp = false;
+    public string animationOverride;
+
     void Start()
     {
         startedMoving = false;
@@ -89,15 +93,20 @@ public class MoveToClick : MonoBehaviour
         character.animator.SetBool("Moving", startedMoving);
         character.animator.SetFloat("Velocity", agent.velocity.sqrMagnitude / agent.speed);
         var sneaking = CombatManager.Instance.sneaking && PartyController.Instance.party.Contains(character);
-        agent.speed = sneaking ? defaultSpeed / 2 : defaultSpeed;
+        agent.speed = prone ? 0 : sneaking ? defaultSpeed / 2 : defaultSpeed;
         character.animator.SetBool("Sneaking", sneaking);
+        character.animator.SetBool("Prone", prone && !gettingUp);
+        if (animationOverride != null) {
+            character.animator.Play(animationOverride);
+            animationOverride = null;
+        }
     }
 
     public NavMeshPath PathToPoint(Vector3 dest)
     {
         NavMeshPath path = new NavMeshPath();
         NavMeshHit hit;
-        if(NavMesh.SamplePosition(dest, out hit, 5.0f, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path)) return path;
+        if(NavMesh.SamplePosition(dest, out hit, 25.0f, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path)) return path;
         else return null;
     }
 
@@ -108,6 +117,7 @@ public class MoveToClick : MonoBehaviour
 
     public static float PathDist(NavMeshPath path)
     {
+        if(path == null) return float.PositiveInfinity;
         var corners = path.corners;
         var fullDistance = 0f;
         for (int i = 1; i < corners.Length; i++)
@@ -155,7 +165,7 @@ public class MoveToClick : MonoBehaviour
     }
 
     public IEnumerator DefaultAvoidanceAsync() {
-        
+        Debug.Log("Default");
         obstacle.enabled = false;
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
@@ -192,6 +202,11 @@ public class MoveToClick : MonoBehaviour
     public void SetDestination(Vector3 dest)
     {
         if (pathLocked) return;
+        if (prone)
+        {
+            StartCoroutine(GetUp());  // TODO: handle combining get up and movement
+            return;
+        }
         var path = PathToPoint(dest);
 
         if (path != null) agent.SetPath(path);
@@ -257,5 +272,24 @@ public class MoveToClick : MonoBehaviour
     public NavMeshPath AgentPath()
     {
         return agent.path;
+    }
+
+    public IEnumerator GetUp() // TODO: assign AP cost
+    {
+        if (!prone || gettingUp) yield break;
+        gettingUp = true;
+        Debug.Log("Getting up");
+        //character.animator.SetBool("Prone", false);
+        yield return new WaitForSeconds(4.5f);
+        Debug.Log("Getting up waited");
+        EventHandler.Instance.TriggerMovementEvent(character, "stand");
+        prone = false;
+        gettingUp=false;
+    }
+
+    public void GetDown()
+    {
+        prone = true;
+        animationOverride = "Prone";
     }
 }

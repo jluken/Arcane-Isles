@@ -256,6 +256,46 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &652647460
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 652647461}
+  - component: {fileID: 652647462}
+  m_Layer: 0
+  m_Name: Listener
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &652647461
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652647460}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.27, y: -1.08, z: 28.47}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1569938487}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &652647462
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652647460}
+  m_Enabled: 1
 --- !u!1 &1503231417
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,7 +409,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1569938487}
   - component: {fileID: 1569938486}
-  - component: {fileID: 1569938485}
   - component: {fileID: 1569938484}
   - component: {fileID: 1569938483}
   - component: {fileID: 1569938488}
@@ -439,14 +478,6 @@ MonoBehaviour:
   scrollSpeed: 0.015
   zoomSpeed: 0.1
   maxCamDist: 40
---- !u!81 &1569938485
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1569938482}
-  m_Enabled: 1
 --- !u!20 &1569938486
 Camera:
   m_ObjectHideFlags: 0
@@ -512,6 +543,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 471136391}
+  - {fileID: 652647461}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 37.5, y: 135, z: 0}
 --- !u!114 &1569938488
@@ -712,6 +744,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39b95cb474a7cda4fa23f5709b48e59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initCutscene: {fileID: 11400000, guid: 2e1040deb09063246b817bccd062fd06, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

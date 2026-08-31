@@ -11,7 +11,7 @@ public class MoveToPoint : AbilityAction  // TODO: possibly rethink movetopoint 
     Vector3 targetPt;
     Selectable targetObj;
 
-    public MoveToPoint(string name, Sprite icon, Character actor = null, Selectable targetObj = null, Vector3 target = new Vector3()) : base(name: name, icon: icon, actor: actor) {
+    public MoveToPoint(string name, Sprite icon, Character actor = null, Selectable targetObj = null, Vector3 target = new Vector3()) : base(name: name, icon: icon, actor: actor, animation: null) {
         if (targetObj != null) this.targetObj = targetObj;
         else targetPt = target;
     }

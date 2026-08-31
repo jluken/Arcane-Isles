@@ -102,7 +102,7 @@ public class JournalScript : MenuScreen
             Debug.Log("qe: " + qd);
             var qdPrefab = qd.state == QuestState.Active ? QuestDetailPrefab : ClosedQuestDetailPrefab;
             var journalQuestDetailEntry = Instantiate(qdPrefab, questDetailList.transform);
-            journalQuestDetailEntry.GetComponent<QuestDetail>().dateText.text = GameData.DateString(qd.startTime);
+            journalQuestDetailEntry.GetComponent<QuestDetail>().dateText.text = GameData.DateString((float)qd.startTime);
             journalQuestDetailEntry.GetComponent<QuestDetail>().descriptionText.text = qd.entry;
             displayedDetails.Add(journalQuestDetailEntry);
         }

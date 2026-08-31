@@ -19,6 +19,7 @@ public class CombatManager : MonoBehaviour
 
     public bool combatActive { get; private set; } = false;
     public bool sneaking { get; private set; } = false;
+    
 
     public event Action callToArms;
     public event Action setPeace;
@@ -290,9 +291,8 @@ public class CombatManager : MonoBehaviour
 
     public void SetCurrentAction(int actionIdx)
     {
-        //Debug.Log("Set current action to " + action.actionName);
-        //currentAction = action;
-        selectedIdx = actionIdx;
+        if (selectedIdx == actionIdx) UnsetAction();
+        else selectedIdx = actionIdx;
         combatActionUpdate.Invoke();
     }
 
@@ -323,15 +323,12 @@ public class CombatManager : MonoBehaviour
         UseCombatAbility(currentActionIdx, currentAction);
     }
 
-    public void UseCombatAbility(int actionIdx, AbilityAction action)
+    public void UseCombatAbility(int actionIdx, AbilityAction action) // TODO: out-of-combat default movement and action movement behaving differently
     {
         if (InAction() && Running() && PartyController.Instance.activePartyMember != null)
         {
-            // TODO: this might never get called due to deselect triggering first
-            Debug.Log("Stop running for retarget");
             PartyController.Instance.activePartyMember.mover.StopMoving(); // Movement can be overridden 
-            Debug.Log("Finish action for retarget");
-            FinishAction();
+            //FinishAction();
         }
         if (!InAction())
         {
@@ -473,6 +470,7 @@ public class CombatManager : MonoBehaviour
 
     public void ToggleSneak()
     {
+        Debug.Log("Toggle sneak");
         sneaking = !sneaking;
     }
 

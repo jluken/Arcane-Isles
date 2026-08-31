@@ -2,9 +2,11 @@ using NUnit.Framework;
 using PixelCrushers.DialogueSystem;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Unity.Multiplayer.Center.Common;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Windows;
 
 public class DialogueInterface : MonoBehaviour
 {
@@ -24,6 +26,9 @@ public class DialogueInterface : MonoBehaviour
 
     private Character actor;
     private Character conversant;
+
+    public delegate void DialogueEvent(string tag);
+    public event DialogueEvent dialogueEvent;
 
     private void Awake()
     {
@@ -50,9 +55,12 @@ public class DialogueInterface : MonoBehaviour
 
     void OnEnable()
     {
+        Lua.RegisterFunction("SpeechEvent", this, typeof(DialogueInterface).GetMethod("SpeechEvent"));
+
         Lua.RegisterFunction("SkillCheck", this, typeof(DialogueInterface).GetMethod("SkillCheck"));
         Lua.RegisterFunction("SetStat", this, typeof(DialogueInterface).GetMethod("SetStat"));
         Lua.RegisterFunction("Recruit", this, typeof(DialogueInterface).GetMethod("TalkRecruit"));
+        Lua.RegisterFunction("HealthChange", this, typeof(DialogueInterface).GetMethod("HealthChange"));
 
         Lua.RegisterFunction("StartQuest", this, typeof(DialogueInterface).GetMethod("StartQuest"));
         Lua.RegisterFunction("ActivateQuestEntry", this, typeof(DialogueInterface).GetMethod("ActivateQuestEntry"));
@@ -62,21 +70,35 @@ public class DialogueInterface : MonoBehaviour
     void OnDisable()
     {
         Lua.UnregisterFunction("SkillCheck");
+        Lua.UnregisterFunction("SpeechEvent");
         Lua.UnregisterFunction("SetStat");
         Lua.UnregisterFunction("Recruit");
+        Lua.UnregisterFunction("HealthChange");
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void StartPlayerConversation(string conversationName, Character player, Character npc)
+    public void StartPlayerObjConversation(string conversationName, Character player, Selectable obj)
     {
         DialogueLua.SetActorField("Player", "Display Name", player.charStats.charName);
         DialogueManager.masterDatabase.GetActor("Player").spritePortrait = player.charStats.charImage;
+        actor = player;
+        DialogueManager.StartConversation(conversationName, player.transform, obj.transform);
+        //DialogueManager.Set
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public void StartPlayerCharConversation(string conversationName, Character player, Character npc)
+    {
         DialogueLua.SetActorField("NPC", "Display Name", npc.charStats.charName);
         DialogueManager.masterDatabase.GetActor("NPC").spritePortrait = npc.charStats.charImage;
-        actor = player;
         conversant = npc;
-        DialogueManager.StartConversation(conversationName, player.transform, npc.transform);
-        //DialogueManager.Set
+
+        StartPlayerObjConversation(conversationName, player, npc);
+
+        //DialogueLua.SetActorField("Player", "Display Name", player.charStats.charName);
+        //DialogueManager.masterDatabase.GetActor("Player").spritePortrait = player.charStats.charImage;
+        //actor = player;
+        //DialogueManager.StartConversation(conversationName, player.transform, npc.transform);
+        ////DialogueManager.Set
     }
 
     public void RecordLine(Subtitle line)
@@ -84,7 +106,8 @@ public class DialogueInterface : MonoBehaviour
         //Debug.Log("Record:");
         var speaker = PixelCrushers.DialogueSystem.CharacterInfo.GetLocalizedDisplayNameInDatabase(line.speakerInfo.nameInDatabase);
         var words = line.dialogueEntry.currentDialogueText;
-        chatHistory.Add(speaker + ": " + words);
+        if(words.StartsWith("[")) words = Regex.Replace(words, @"#\[.*\] ", string.Empty);
+        chatHistory.Add(!string.IsNullOrEmpty(speaker) ? (speaker + ": " + words) : words );
         updateChatLog.Invoke(chatHistory);
     }
 
@@ -123,6 +146,12 @@ public class DialogueInterface : MonoBehaviour
 
     //}
 
+    public void SpeechEvent(string tag)
+    {
+        // Used to trigger custom scripts through listeners
+        dialogueEvent?.Invoke(tag);
+    }
+
     public static double SkillCheck(string skill)
     {
         Debug.Log("Dialogue skill check");
@@ -138,6 +167,12 @@ public class DialogueInterface : MonoBehaviour
         PartyController.Instance.selectedPartyMember.charStats.SetStat(skillType, (int)value);
     }
 
+    public void HealthChange(int hp)
+    {
+        PartyController.Instance.activePartyMember.charStats.updateHealth(hp);
+        if (PartyController.Instance.activePartyMember.charStats.GetCurrStat(CharStats.StatVal.health) <= 0) DialogueManager.StopConversation();
+    }
+
     public void TalkRecruit()
     {
         Debug.Log("Recruit");
@@ -149,10 +184,11 @@ public class DialogueInterface : MonoBehaviour
 
 
     //Wrapper classes around Quest behavior
-    private string QuestEntryField(int entryNum, string field) { return "Entry " + entryNum + " " + field; }
+    private string QuestEntryField(int entryNum, string field) { return "Entry " + entryNum + (field == null ? "" : (" " + field)); }
 
     public void StartQuest(string questName, double initEntryNum)
     {
+        if (QuestLog.GetQuestState(questName) != QuestState.Unassigned) return;
         QuestLog.SetQuestState(questName, QuestState.Active);
         DialogueLua.SetQuestField(questName, "StartTime", GameData.Instance.gameTime);
         if(initEntryNum > 0) ActivateQuestEntry(questName, initEntryNum);
@@ -211,7 +247,7 @@ public class DialogueInterface : MonoBehaviour
         {
             questEntries.Add(new QuestData()
             {
-                entry = DialogueLua.GetQuestField(quest, QuestEntryField(e, "JournalDesc")).AsString,
+                entry = DialogueLua.GetQuestField(quest, QuestEntryField(e, null)).AsString,
                 startTime = DialogueLua.GetQuestField(quest, QuestEntryField(e, "StartTime")).asFloat,
                 state = QuestLog.GetQuestEntryState(quest, e)
             });

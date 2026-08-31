@@ -56,8 +56,6 @@ public class ContainerInventoryMenu : InventoryMenu
         if (!IsActive()) return;
         // SelectionController.Instance.Deselect();
         //UpdateEntity();
-        Debug.Log("Deactivating current Inv 0: " + currentInventory.inventory[0].count);
-        Debug.Log("Deactivating current Inv 2: " + currentInventory.inventory[2].count);
         inventoryMenu.SetActive(false);
         currentInventory = null;
     }

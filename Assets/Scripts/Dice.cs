@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Dice
@@ -6,6 +7,20 @@ public class Dice
     public static int RollDie(int dVal)
     {
         return Random.Range(1, dVal);
+    }
+
+    public static int RollnDie(int num, int dVal)
+    {
+        int sum = 0;
+        for (int i = 0; i < num; i++) sum += RollDie(dVal);
+        return sum;
+    }
+
+    public static int RollDicePool(int poolSize, int diceCount, int dVal)
+    {
+        int[] pool = new int[poolSize];
+        for (int i = 0; i <= poolSize; i++) pool[i] = RollDie(dVal);
+        return pool.OrderByDescending(n => n).Take(diceCount).Sum();
     }
 
     public static int SkillCheck(int dVal, int modifier)

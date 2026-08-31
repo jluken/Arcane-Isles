@@ -9,16 +9,18 @@ public abstract class AbilityAction
     public int actionCost;
     public Sprite icon;
     public float range;
+    public string animation;
 
     public Character actor;
 
-    public AbilityAction(string name="", int actionCost = -1, Sprite icon = null, float range=-1f, Character actor=null)
+    public AbilityAction(string name="", int actionCost = -1, Sprite icon = null, float range=-1f, Character actor=null, string animation=null)
     {
         actionName = name;
         this.actionCost = actionCost;
         this.icon = icon;
         this.actor = actor;
         this.range = range;
+        this.animation = animation;
     }
 
     public void SetActor(Character actor)

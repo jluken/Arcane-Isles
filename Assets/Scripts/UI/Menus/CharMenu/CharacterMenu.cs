@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static CharStats;
@@ -65,6 +66,9 @@ public class CharacterMenu : MenuScreen
     public TMP_Text magickCost;
     public Button prepareSigils;
 
+    public GameObject Tabs;
+    private bool initLevel;
+
     public GameObject emptyButtonPrefab;
 
     //private CharStats charStats;
@@ -86,6 +90,7 @@ public class CharacterMenu : MenuScreen
     public override void DeactivateMenu()
     {
         if(currChar != null) currChar.sigils.ClearExcessSigils();
+        SetInitLevel(false);
         CharMenu.SetActive(false);
         UIActive = false;
     }
@@ -94,6 +99,9 @@ public class CharacterMenu : MenuScreen
     {
         UIActive = true;
         currChar = PartyController.Instance.selectedPartyMember;
+
+        initLevel = false;
+        Tabs.SetActive(true);
 
         int xpLevel = PartyController.Instance.GetLevelByXP();
         bool levelUp = xpLevel > currChar.charStats.GetCurrStat(StatVal.level) && currChar == PartyController.Instance.playerChar;
@@ -135,6 +143,12 @@ public class CharacterMenu : MenuScreen
         }
 
         DisplaySigils();
+    }
+
+    public void SetInitLevel(bool isInit)
+    {
+        initLevel = isInit;
+        Tabs.SetActive(!isInit);
     }
 
     public void SpendPoints(StatVal skill, int amount = 1)
@@ -183,13 +197,11 @@ public class CharacterMenu : MenuScreen
     {
         CloseWarning();
         int xpLevel = PartyController.Instance.GetLevelByXP();
-        //int fullLevel = xpLevel - currChar.charStats.GetCurrStat(StatVal.level);
-        //int gainedLevels = fullLevel - availPoints;
-        //Debug.Log("gained levels: " + gainedLevels);
         currChar.charStats.SetStat(StatVal.level, xpLevel);
         foreach (SkillBar s in skillBars) { s.ApplyChanges(currChar); s.Populate(currChar); }
         currChar.charStats.setDerivedStats();
-        ActivateMenu();
+        if (initLevel) ActivateMenu();
+        else SceneLoader.Instance.InitSpawn();
     }
 
     private void DisplaySigils()
@@ -218,6 +230,8 @@ public class CharacterMenu : MenuScreen
             sigil.GetComponent<Button>().onClick.RemoveAllListeners();
             sigil.SetActive(false);
         }
+        Debug.Log("sigils: " + currChar.sigils);
+        Debug.Log("prepared: " + currChar.sigils.preparedSigils);
         var lastSigilSlot = currChar.sigils.preparedSigils.Count > 0 ? currChar.sigils.preparedSigils.Keys.Max() : -1;
         for (int i = 0; i <= lastSigilSlot; i++)
         {

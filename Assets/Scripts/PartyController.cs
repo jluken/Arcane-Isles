@@ -7,6 +7,7 @@ using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UIElements;
+using static LevelManager;
 using static UnityEngine.UI.Image;
 
 public class PartyController : MonoBehaviour
@@ -76,15 +77,21 @@ public class PartyController : MonoBehaviour
 
     public PartyMember activePartyMember => (CombatManager.Instance.combatActive && CombatManager.Instance.activeCombatant != null) ? (CombatManager.Instance.activeCombatant.GetComponent<PartyMember>() != null ? CombatManager.Instance.activeCombatant.GetComponent<PartyMember>() :  null) : selectedPartyMember;
 
-    public void MoveParty(List<Vector3> partyLocs, bool enable)
+    public void MoveParty(List<SpawnData> partySpawns, bool enable)
     {
-        if (partyLocs.Count < party.Count) Debug.LogError("Not enough spawn points for the action");
+        if (partySpawns.Count < party.Count) Debug.LogError("Not enough spawn points for the action");
         for (int i = 0; i < party.Count; i++)
         {
-            Debug.Log("Moving party member " + i + " to " + partyLocs[i]);
+            Debug.Log("Moving party member " + i + " to " + partySpawns[i]);
             //party[i].gameObject.SetActive(enable);
-            var feetOffset = partyLocs[i].y - party[i].renderBody.GetComponent<Renderer>().bounds.min.y;
-            party[i].GetComponent<NavMeshAgent>().Warp(partyLocs[i] + new Vector3(0, feetOffset, 0));
+            var spawnPoint = partySpawns[i].pos;
+            var spawnRot = partySpawns[i].rot;
+            Debug.Log("spawn rotation: " + spawnRot);
+            var feetOffset = spawnPoint.y - party[i].renderBody.GetComponent<Renderer>().bounds.min.y;
+            feetOffset = 0; // TODO: any need for feet offset?
+            Debug.Log("feet offset " + feetOffset);
+            party[i].GetComponent<NavMeshAgent>().Warp(spawnPoint + new Vector3(0, feetOffset, 0));
+            party[i].transform.rotation = Quaternion.Euler(0f, spawnRot, 0f);
             party[i].gameObject.SetActive(enable);
         }
     }
@@ -98,7 +105,8 @@ public class PartyController : MonoBehaviour
     {
         foreach(var player in party) { 
             //player.charObject.GetComponent<NavMeshAgent>().Warp(player.charObject.transform.position); 
-            player.gameObject.SetActive(true); 
+            player.gameObject.SetActive(true);
+            StartCoroutine(player.mover.DefaultAvoidanceAsync());
         }
         selectedPartyMember.SetActiveChar();
         UpdateParty();

@@ -7,6 +7,7 @@ using System.Linq;
 using Unity.VectorGraphics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.TextCore.Text;
 
 public class SceneLoader : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class SceneLoader : MonoBehaviour
     public Dictionary<string, SceneObjectManager> SceneObjectManagers { get; private set; }
     private List<string> loadingScenes = new List<string>();
 
+    public SlideshowImages initCutscene;
+
     private void Awake()
     {
         Instance = this;
@@ -29,6 +32,13 @@ public class SceneLoader : MonoBehaviour
     {
         ResetData();
         UIController.Instance.ActivateMainMenu();
+    }
+
+    public void InitSpawn()  // TODO: this might go somewhere else for handling custom script behavior
+    {
+        SetToLevelSpawn("BeachManager", spawnLoc: 0);
+        PartyController.Instance.playerChar.mover.GetDown();
+        UIController.Instance.StartSlides(initCutscene);
     }
 
 
@@ -144,10 +154,6 @@ public class SceneLoader : MonoBehaviour
 
         while (activateSceneNames.Any(sceneName => !SceneObjectManagers.ContainsKey(sceneName)))
         {
-            Debug.Log("Manager keys: " + string.Join(", ", SceneObjectManagers.Keys));
-            foreach (var name in activateSceneNames) {
-                Debug.Log("scene name " + name + " is contained in keys: " + SceneObjectManagers.ContainsKey(name));
-            }
             yield return null;
         }
         Debug.Log("scenes activated");
@@ -215,9 +221,16 @@ public class SceneLoader : MonoBehaviour
 
     private void ResetData()
     {
+        Debug.Log("Reset data");
+        //var mainChar = PartyController.Instance.playerChar;
+        //mainChar.charStats.setInitStats(true);
+        //mainChar.inventory.SetInitInventory();
+        //StartCoroutine(mainChar.mover.DefaultAvoidanceAsync());
+        //mainChar.SetStates();
         foreach (var character in PartyController.Instance.party) {
             character.charStats.setInitStats(true); 
-            character.inventory.SetInitInventory(); 
+            character.inventory.SetInitInventory();
+            Debug.Log("Reset default");
             StartCoroutine(character.mover.DefaultAvoidanceAsync()); 
             character.SetStates(); }  // initialize chars before manipulating
         PartyController.Instance.DeactivateParty();

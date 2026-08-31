@@ -18,6 +18,14 @@ public class EventHandler : MonoBehaviour
         deathEvent?.Invoke(npc);
     }
 
+    public delegate void CharMovementEvent(Character npc, string movement);
+    public event CharMovementEvent charMovement;
+
+    public void TriggerMovementEvent(Character npc, string movement)
+    {
+        charMovement?.Invoke(npc, movement);
+    }
+
     public event Action inventoryUpdate;
     public void TriggerInventoryUpdate() { inventoryUpdate?.Invoke(); }
 

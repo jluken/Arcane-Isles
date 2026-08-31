@@ -30,6 +30,7 @@ public class Character : Selectable
     public DeadState DeadState;
 
     public WeaponItem defaultWeapon;
+    public CapsuleCollider wanderZone;
 
     public CombatManager.CombatantType combatantType = CombatManager.CombatantType.Bystander;
 
@@ -168,8 +169,6 @@ public class Character : Selectable
         return abilities;
     }
 
-    // TODO: get magic abilities + innate abilities
-
     public AbilityAction GetDefaultAttack()
     {
         var weapon = inventory.GetEquipment(EntityInventory.EquipmentInvType.holdMainHand);
@@ -179,9 +178,10 @@ public class Character : Selectable
         return attack;
     }
 
-    public void takeDamage(int rawDamage)
+    public void takeDamage(int rawDamage, bool bypassArmor = false)
     {
-        var totalArmor = inventory.GetEquipmentArmor();
+        // TODO: alert
+        var totalArmor = bypassArmor ? 0 : inventory.GetEquipmentArmor();
         var damage = Math.Max(rawDamage - totalArmor, 0);
         charStats.updateHealth(-1 * damage);
     }
@@ -246,7 +246,7 @@ public class Talk : Interaction
     public override void Interact(Character npc, Selectable interactable)
     {
         if (interactable.GetComponent<Character>() == null) { Debug.LogError("Can only talk to NPCs"); }
-        DialogueInterface.Instance.StartPlayerConversation("TestConvo1", npc, interactable.GetComponent<Character>());
+        DialogueInterface.Instance.StartPlayerCharConversation("TestConvo1", npc, interactable.GetComponent<Character>());
     }
 }
 

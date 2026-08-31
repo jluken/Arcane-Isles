@@ -109,6 +109,7 @@ public class Selectable : MonoBehaviour
 
     public virtual void StartHover()
     {
+        //Debug.Log("Selectable Hover: " + name);
         GetComponent<NavMeshObstacle>().carving = false;
         GetComponent<Outline>().enabled = true;
         GetComponent<Outline>().OutlineWidth = 1;

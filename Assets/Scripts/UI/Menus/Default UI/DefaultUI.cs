@@ -193,7 +193,6 @@ public class DefaultUI : MenuScreen
             ActionPointPips[i].SetActive(false);
         }
         if (!PartyController.Instance.party.Contains(selectedNPC)) return;
-        Debug.Log("pass return");
         var currentAP = CombatManager.Instance.GetCurrentAP(selectedNPC);
         var prepAP = CombatManager.Instance.GetCurrentOnDeckAP(selectedNPC);
         for (int i = 0; i < selectedNPC.charStats.GetCurrStat(CharStats.StatVal.actionPoints); i++)

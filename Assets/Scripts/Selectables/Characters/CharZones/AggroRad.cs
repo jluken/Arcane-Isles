@@ -24,7 +24,7 @@ public class AggroRad : MonoBehaviour
             ) {
             if (Utils.LineOfSight(gameObject, other.gameObject) && enemy.AwarePlayers.Contains(other.gameObject))
             {
-                enemy.isAggroed = true;
+                enemy.Alert();
             }
         }
     }

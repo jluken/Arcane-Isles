@@ -9,7 +9,7 @@ public class AttackAction : InteractionAction
     public StatVal modifier;
     public bool precisionAttack;
 
-    public AttackAction(int attackCost, int damageDie, StatVal modifier, bool precisionAttack = false, string name = "", Sprite icon = null, float range = 0f, Character actor = null, Selectable target = null) : base(name: name, actionCost: attackCost, icon: icon, range: range, actor: actor, target: target)
+    public AttackAction(int attackCost, int damageDie, StatVal modifier, bool precisionAttack = false, string name = "", Sprite icon = null, float range = 0f, Character actor = null, Selectable target = null, string animation = null) : base(name: name, actionCost: attackCost, icon: icon, range: range, actor: actor, target: target, animation: animation)
     {
         this.damageDie = damageDie;
         this.modifier = modifier;
@@ -18,7 +18,7 @@ public class AttackAction : InteractionAction
 
     public override bool CheckValidTarget(Selectable target)
     {
-        if (target == null) return false;
+        if (target == null || target == actor.GetComponent<Selectable>()) return false;
         var dist = Vector3.Distance(actor.gameObject.transform.position, target.gameObject.transform.position);
         if (target.GetComponent<Character>() != null && dist < range)
         {
@@ -32,7 +32,7 @@ public class AttackAction : InteractionAction
         var victim = target.GetComponent<Character>();
         var damage = Dice.RollDie(damageDie);
         if (CombatManager.Instance.sneaking) CombatManager.Instance.ToggleSneak();
-        if(actor.animator != null) actor.animator.CrossFade("sword", 0.25f);  // TODO: generalize this
+        if(actor.animator != null) actor.animator.CrossFade(animation, 0.25f);  // TODO: generalize this
 
         CombatManager.Instance.LockAction(this);
         CombatManager.Instance.SpendActionPoints(actionCost); // account for floating point and wiggle room
@@ -44,7 +44,7 @@ public class AttackAction : InteractionAction
         if (crit)
         {
             damage = (int)Math.Floor(damage * 1.5f);
-            victim.charStats.updateHealth(-1 * damage); // bypass armor
+            victim.takeDamage(damage, true); // bypass armor
             DialogueInterface.Instance.LogLine(actor.charStats.charName + " critically hits " + victim.charStats.charName + " for " + damage);
         }
         else if (hitCalc >= 0) {

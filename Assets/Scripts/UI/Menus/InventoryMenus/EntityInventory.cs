@@ -199,6 +199,22 @@ public class EntityInventory : MonoBehaviour
     public void SetEquipment(EquipmentInvType type, InventoryData itemData)
     {
         Debug.Log("Set Equipment type " + type + " to " + itemData);
+        if (itemData != null && itemData.name.ToLower().Contains("sword") && GetComponent<PlaceholderEquip>() != null)  // TODO: placeholder until modular avatar
+        {
+            GetComponent<PlaceholderEquip>().Equip("sword");
+        }
+        else if (itemData != null && itemData.name.ToLower().Contains("knife") && GetComponent<PlaceholderEquip>() != null)
+        {
+            GetComponent<PlaceholderEquip>().Equip("knife");
+        }
+        else if (itemData != null && itemData.name.ToLower().Contains("gun") && GetComponent<PlaceholderEquip>() != null)
+        {
+            GetComponent<PlaceholderEquip>().Equip("gun");
+        }
+        else if (type == EquipmentInvType.holdMainHand && GetComponent<PlaceholderEquip>() != null)
+        {
+            GetComponent<PlaceholderEquip>().Unequip();
+        }
         equipment[type] = itemData;
     }
 

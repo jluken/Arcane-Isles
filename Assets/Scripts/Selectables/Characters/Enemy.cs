@@ -10,10 +10,11 @@ public class Enemy : Character
 {
     public BaseCombatBehavior CombatBehavior;
 
-    public List<GameObject> PathMarkers;
+    public List<GameObject> PathMarkers; // TODO: move to Character?
 
     public AggroRad AggroRad;
     public AwareRad AwareRad;
+    public bool onSight;
 
     public List<GameObject> AwarePlayers = new List<GameObject>();
 
@@ -54,7 +55,7 @@ public class Enemy : Character
         var acts = new List<SelectionData>() { inspectSelection, goHere, startAttack };
 
         ActiveState = new ActiveState(this, StateMachine, acts);
-        IdleState = new EnemyPatrolState(this, StateMachine, acts);
+        IdleState = wanderZone != null ? new WanderState(this, StateMachine, acts) : new EnemyPatrolState(this, StateMachine, acts);
 
         StateMachine.Initialize(IdleState);
     }
@@ -73,5 +74,10 @@ public class Enemy : Character
     public void TakeAction()
     {
         StartCoroutine(CombatBehavior.CombatTurn(this));
+    }
+
+    public void Alert()  // TODO: maybe move this to Character?
+    {
+        if(onSight) isAggroed = true;
     }
 }

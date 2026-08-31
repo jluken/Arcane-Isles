@@ -39,11 +39,21 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    
-
-    public List<Vector3> GetSpawnPoints(int idx)
+    public struct SpawnData
     {
-        return spawns[idx].spawnPoints.Select(obj => obj.transform.position).ToList();
+        public Vector3 pos;
+        public float rot;
+
+        public SpawnData(Vector3 pos, float rot)
+        {
+            this.pos = pos;
+            this.rot = rot;
+        }
+    }
+
+    public List<SpawnData> GetSpawnPoints(int idx)
+    {
+        return spawns[idx].spawnPoints.Select(obj => new SpawnData(obj.transform.position, obj.transform.eulerAngles.y)).ToList();
     }
 
     public bool InsideBlockedRegion(Vector3 point)

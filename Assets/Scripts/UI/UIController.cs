@@ -19,7 +19,9 @@ public class UIController : MonoBehaviour
     public MainMenu mainMenu;
     public LoadingScreen loadingScreen;
     public CharCreateMenu charCreateMenu;
+    public CharacterMenu initCharMenu;
     public GameOverScreen gameOverScreen;
+    public Slides slideScreen;
 
     // Default gameplay UI
     public DefaultUI defaultUI;
@@ -68,7 +70,9 @@ public class UIController : MonoBehaviour
             mainMenu,
             loadingScreen,
             charCreateMenu,
-            gameOverScreen
+            initCharMenu,
+            gameOverScreen,
+            slideScreen
         };
 
         LogbookMenus = new List<MenuScreen>()
@@ -82,7 +86,8 @@ public class UIController : MonoBehaviour
         PauseMenus = new List<MenuScreen>() {
             pauseScreenScript,
             settingsMenu,
-            savesMenu
+            savesMenu,
+            slideScreen
         };
 
         InteractionMenus = new List<MenuScreen>()
@@ -155,6 +160,7 @@ public class UIController : MonoBehaviour
         bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking;
         if (OverlayMenus.Any(menu => menu.IsActive())) ActivateDefaultScreen();
         else if (!noButtonMenus) ActivatePauseMenu();
+        else if (initCharMenu.IsActive()) ActivateCharacterCreation();
     }
     public void HandleJournalKey(string key)
     {
@@ -192,10 +198,25 @@ public class UIController : MonoBehaviour
         foreach (var menu in AllMenus) { menu.DeactivateMenu(); }
     }
 
-    public void ActivateCharacterCreation()
+    public void ActivateCharacterCreation(bool reset = false)
     {
         DeactivateAllMenus();
+        if(reset) charCreateMenu.ResetStats();
         charCreateMenu.ActivateMenu();
+    }
+
+    public void ActivateInitCharMenu()
+    {
+        DeactivateAllMenus();
+        initCharMenu.SetInitLevel(true);
+        initCharMenu.ActivateMenu();
+    }
+
+    public void StartSlides(SlideshowImages images)
+    {
+        DeactivateAllMenus();
+        slideScreen.SetSlides(images);
+        slideScreen.ActivateMenu();
     }
 
     public void ActivateDefaultScreen()
@@ -266,7 +287,7 @@ public class UIController : MonoBehaviour
     public void ActivateSaveMenu()
     {
         CloseOverlays();
-        defaultUI.DeactivateMenu();
+        //defaultUI.DeactivateMenu();
         savesMenu.SetSaveMode();
         savesMenu.ActivateMenu();
     }
@@ -274,7 +295,7 @@ public class UIController : MonoBehaviour
     public void ActivateLoadMenu()
     {
         CloseOverlays();
-        defaultUI.DeactivateMenu();
+       // defaultUI.DeactivateMenu();
         savesMenu.SetLoadMode();
         savesMenu.ActivateMenu();
     }

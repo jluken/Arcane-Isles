@@ -1,4 +1,5 @@
 using PixelCrushers.DialogueSystem;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -30,6 +31,7 @@ public class CharCreateMenu : MenuScreen
 
     public List<Material> colors;
     public List<GameObject> models;
+    public List<Mesh> meshes;
     public List<Sprite> portraits;
 
     public TMP_Dropdown colorSelection;
@@ -51,8 +53,25 @@ public class CharCreateMenu : MenuScreen
         modelMap = new();
     }
 
+    public void ResetStats()
+    {
+        attrPoints = new Dictionary<StatVal, int>()
+        {
+            { StatVal.vigor, 3},
+            { StatVal.finesse, 3},
+            { StatVal.psyche, 3}
+        };
+        remainingPoints = 2;
+        PartyController.Instance.playerChar.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMesh = meshes[0];
+        PartyController.Instance.playerChar.renderBody.GetComponent<SkinnedMeshRenderer>().material = colors[0];
+
+        UICharModel.Instance.SetChar(PartyController.Instance.playerChar.renderBody);
+        portrait.sprite = portraits[0];
+    }
+
     public override void ActivateMenu()
     {
+        Debug.Log("Activate create");
         charCreateMenu.SetActive(true);
         active = true;
 
@@ -109,7 +128,7 @@ public class CharCreateMenu : MenuScreen
         remainingPoints -= 1;
         attrPoints[attr] += 1;
         pointLeftTxt.text = remainingPoints.ToString();
-        proceed.interactable = remainingPoints > 0;
+        proceed.interactable = remainingPoints == 0;
     }
 
     public void DecreaseAttr(StatVal attr)
@@ -119,7 +138,7 @@ public class CharCreateMenu : MenuScreen
         remainingPoints += 1;
         attrPoints[attr] -= 1;
         pointLeftTxt.text = remainingPoints.ToString();
-        proceed.interactable = remainingPoints > 0;
+        proceed.interactable = remainingPoints == 0;
     }
 
     public void UpdateAppearance()
@@ -128,13 +147,14 @@ public class CharCreateMenu : MenuScreen
         var selectedMat = colors[colorSelection.value];
         var oldModel = PartyController.Instance.playerChar.renderBody;
 
-        var newModel = Instantiate(selectedModel, PartyController.Instance.playerChar.animator.transform);
-        newModel.GetComponent<SkinnedMeshRenderer>().bones = oldModel.GetComponent<SkinnedMeshRenderer>().bones;
-        newModel.GetComponent<SkinnedMeshRenderer>().rootBone = oldModel.GetComponent<SkinnedMeshRenderer>().rootBone;
-        newModel.GetComponent<SkinnedMeshRenderer>().material = selectedMat;
-        Destroy(oldModel);  // TODO: maybe only swap out skinnedMeshRenderer
-        newModel.SetActive(true);
-        PartyController.Instance.playerChar.renderBody = newModel;
+        //var newModel = Instantiate(selectedModel, PartyController.Instance.playerChar.animator.transform);
+        //newModel.GetComponent<SkinnedMeshRenderer>().bones = oldModel.GetComponent<SkinnedMeshRenderer>().bones;
+        //newModel.GetComponent<SkinnedMeshRenderer>().rootBone = oldModel.GetComponent<SkinnedMeshRenderer>().rootBone;
+        oldModel.GetComponent<SkinnedMeshRenderer>().material = selectedMat;
+        oldModel.GetComponent<SkinnedMeshRenderer>().sharedMesh = meshes[modelSelection.value];
+        //Destroy(oldModel);  // TODO: maybe only swap out skinnedMeshRenderer
+        //newModel.SetActive(true);
+        //PartyController.Instance.playerChar.renderBody = newModel;
         UICharModel.Instance.SetChar(PartyController.Instance.playerChar.renderBody);
 
         int portraitIdx = (colors.Count * modelSelection.value) + colorSelection.value;
@@ -143,11 +163,14 @@ public class CharCreateMenu : MenuScreen
 
     public void AssignAttributes()
     {
-        if (remainingPoints > 0) return;
+        Debug.Log("Finish creation");
+        Debug.Log("Remaining points: " + remainingPoints);
+        if (remainingPoints > 0) return; // TODO: check for name
         PartyController.Instance.playerChar.charStats.SetStat(StatVal.vigor, attrPoints[StatVal.vigor]);
         PartyController.Instance.playerChar.charStats.SetStat(StatVal.finesse, attrPoints[StatVal.finesse]);
         PartyController.Instance.playerChar.charStats.SetStat(StatVal.psyche, attrPoints[StatVal.psyche]);
         PartyController.Instance.playerChar.charStats.charName = nameField.text;
+        PartyController.Instance.playerChar.charStats.charImage = portrait.sprite;
         string gender = genderField.options[genderField.value].text;
         if (gender == "M") {
             DialogueLua.SetVariable("PlayerThey", "he");
@@ -169,9 +192,9 @@ public class CharCreateMenu : MenuScreen
             DialogueLua.SetVariable("PlayerTheir", "their");
             DialogueLua.SetVariable("PlayerTheirs", "theirs");
         }
-        PlayerChar.Instance.charStats.gender = gender;  // TODO: maybe just create function to get pronouns instead of Lua variables
+        PartyController.Instance.playerChar.charStats.gender = gender;  // TODO: maybe just create function to get pronouns instead of Lua variables
 
-        DeactivateMenu();
-        // TODO: Demo: close this menu and immediately "level up"
+        //DeactivateMenu();
+        UIController.Instance.ActivateInitCharMenu();
     }
 }
