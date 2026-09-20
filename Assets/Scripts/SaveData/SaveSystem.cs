@@ -54,6 +54,7 @@ public static class SaveSystem
         gameSaveData.levelName = sceneLoader.GetLevelName();
         gameSaveData.LevelData = sceneLoader.GetAllLevelData();
         gameSaveData.SceneData = sceneLoader.GetAllSceneData();
+        gameSaveData.MapData = UIController.Instance.GetMapSaveData();
         gameSaveData.dialogData = PersistentDataManager.GetSaveData();
         gameSaveData.gameTime = GameData.Instance.gameTime;
         gameSaveData.saveName = saveName;
@@ -72,10 +73,21 @@ public static class SaveSystem
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);
 
-            GameSaveData data = formatter.Deserialize(stream) as GameSaveData;
-            stream.Close();
+            try
+            {
+                GameSaveData data = formatter.Deserialize(stream) as GameSaveData;
+                stream.Close();
+                return data;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("corrupted save file " + path + ": " + e); // TODO: clean up debugging
+                return null;
+
+            }
+            //GameSaveData data = formatter.Deserialize(stream) as GameSaveData;
               
-            return data;
+            //return data;
         }
         else
         {

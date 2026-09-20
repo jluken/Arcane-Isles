@@ -48,7 +48,7 @@ public class SelectionController : MonoBehaviour
 
     void Update()
     {
-        if (UIController.Instance.PauseTime()) return;
+        if (UIController.Instance.PauseAll()) return;
         RaycastHit hit;
         LayerMask layerMask = LayerMask.GetMask("Barrier");
 
@@ -74,7 +74,7 @@ public class SelectionController : MonoBehaviour
 
     private void HandleClick(bool leftClick)
     {
-        if (UIController.Instance.PauseTime() || (SceneLoader.Instance.GetLevel() != null && SceneLoader.Instance.GetLevel().InsideBlockedRegion(pointSpot))) return;
+        if (UIController.Instance.PauseAll() || (SceneLoader.Instance.GetLevel() != null && SceneLoader.Instance.GetLevel().InsideBlockedRegion(pointSpot))) return;
         if (pointedObject != null && pointedObject.GetComponent<groundScript>() != null)
         {
             if (leftClick && PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
@@ -108,7 +108,7 @@ public class SelectionController : MonoBehaviour
 
     private void HandleHover()
     {
-        if (UIController.Instance.PauseTime() || (SceneLoader.Instance.GetLevel() != null && SceneLoader.Instance.GetLevel().InsideBlockedRegion(pointSpot))) return;
+        if (UIController.Instance.PauseAll() || (SceneLoader.Instance.GetLevel() != null && SceneLoader.Instance.GetLevel().InsideBlockedRegion(pointSpot))) return;
         if (pointedObject != null && pointedObject.GetComponent<Selectable>() != null) pointedObject.GetComponent<Selectable>().StartHover();
         if (PartyController.Instance.selectedPartyMember == PartyController.Instance.activePartyMember)
         {

@@ -117,8 +117,10 @@ public class SceneLoader : MonoBehaviour
         if (spawnLoc >= 0) PartyController.Instance.MoveParty(levelManager.GetSpawnPoints(spawnLoc), true);
         PartyController.Instance.ActivateParty();
         yield return SafeSceneHandler();
+        Debug.Log("Safe scene handler done");
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
+        Debug.Log("Load wait done");
         UIController.Instance.ActivateDefaultScreen();
     }
 
@@ -138,6 +140,7 @@ public class SceneLoader : MonoBehaviour
 
     public IEnumerator ActivateSubscene(string sceneName)
     {
+        Debug.Log("Activating subscene " + sceneName);
         if(loadingScenes.Contains(sceneName) || SceneObjectManagers.ContainsKey(sceneName)) yield break;
         loadingScenes.Add(sceneName);
         SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
@@ -150,6 +153,7 @@ public class SceneLoader : MonoBehaviour
         var activateScenes = levelManager.sceneTriggers.Where(trigger => spawnPoints.Any(spawnPoint => trigger.GetComponent<Collider>().bounds.Intersects(spawnPoint.bounds))).ToList();
         var activateSceneNames = activateScenes.Select(trigger => trigger.GetComponent<SceneTrigger>().sceneName).ToList();
         Debug.Log("Activate scenes: " + string.Join(", ", activateSceneNames));
+        foreach (var sceneName in activateSceneNames) { StartCoroutine(ActivateSubscene(sceneName)); }// TODO: possibly unnecessary assurance scenes get triggered (even if party starts in trigger)
         //if (activateSceneNames.Any(activateScene => !SceneObjectManagers.ContainsKey(activateScene))) UIController.Instance.ActivateLoadingScreen();
 
         while (activateSceneNames.Any(sceneName => !SceneObjectManagers.ContainsKey(sceneName)))
@@ -253,6 +257,7 @@ public class SceneLoader : MonoBehaviour
 
         yield return InitializeLevel(saveData.levelName);
         PartyController.Instance.InstantiateFromData(saveData.partyData);
+        if(saveData.MapData != null) UIController.Instance.InstantiateMapsFromData(saveData.MapData); // TODO: safety exception
         yield return ActivateLevel(saveData.levelName);
     }
 

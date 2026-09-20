@@ -121,11 +121,11 @@ public class MapScript : MenuScreen
         currentMapImage.GetComponent<RectTransform>().localScale = new Vector3(2,2,2);
         mapOpen = true;
 
-        float xCoord = currentLevel.worldCoords[0];
-        float yCoord = currentLevel.worldCoords[1];
-        var mapWidth = worldMapImage.sprite.rect.size.x;
-        var mapHeight = worldMapImage.sprite.rect.size.y;
-        worldMarker.GetComponent<RectTransform>().anchoredPosition = new Vector3(xCoord * mapWidth, yCoord * mapHeight, 0);
+        //float xCoord = currentLevel.mapPos[0];
+        //float yCoord = currentLevel.mapPos[1];
+        //var mapWidth = worldMapImage.sprite.rect.size.x;
+        //var mapHeight = worldMapImage.sprite.rect.size.y;
+        worldMarker.GetComponent<RectTransform>().anchoredPosition = NavMapScript.Instance.GetMapLoc(currentLevel.LevelName).MapPos();
 
         CenterMapOnPoint(worldMarker.GetComponent<RectTransform>().anchoredPosition);
     }

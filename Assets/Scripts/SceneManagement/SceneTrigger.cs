@@ -21,7 +21,7 @@ public class SceneTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {
-        //Debug.Log("Test enter scene trigger ");
+        Debug.Log("Test enter scene trigger ");
         if (other.gameObject.GetComponent<PartyMember>() != null && !SceneLoader.Instance.SceneLoaded(sceneName))
         {
             StartCoroutine(SceneLoader.Instance.ActivateSubscene(sceneName));

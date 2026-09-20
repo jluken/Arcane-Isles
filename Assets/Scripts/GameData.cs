@@ -55,7 +55,7 @@ public class GameData : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!CombatManager.Instance.combatActive) gameTime += Time.deltaTime;  // Time incremented by CombatManager during combat
+        if (!CombatManager.Instance.combatActive || !UIController.Instance.StopClock()) gameTime += Time.deltaTime;  // Time incremented by CombatManager during combat
     }
 
     public static string DateString(float time)  // TODO: make calendar system

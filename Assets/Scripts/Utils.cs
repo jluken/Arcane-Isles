@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using Unity.Mathematics;
 using Unity.VisualScripting;
@@ -24,4 +25,23 @@ public class Utils
 
         return new Vector3(center.x, rend.bounds.min.y, center.z);
     }
+
+    public static bool AlmostEqual(float a, float b, float tolerance = 0.00001f)
+    {
+        float diff = Math.Abs(a - b);
+        if (diff <= tolerance)
+            return true;
+
+        return diff <= Math.Max(Math.Abs(a), Math.Abs(b)) * tolerance;
+    }
+
+    public static bool CompareColor32(Color32 c1, Color32 c2)
+    {
+        return c1.r == c2.r &&
+               c1.g == c2.g &&
+               c1.b == c2.b &&
+               c1.a == c2.a;
+    }
 }
+
+

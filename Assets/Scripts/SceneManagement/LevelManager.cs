@@ -11,8 +11,10 @@ public class LevelManager : MonoBehaviour
 
     public string LevelName;
 
-    public int[] worldCoords = new int[2];
-    public int[] levelDims = new int[2];
+    public MapLoc mapLoc;
+
+    //public Vector2 mapPos => mapLoc.MapPos();
+    public float[] levelDims = new float[2];
     public Sprite levelMap;
 
     public List<string> levelScenes;

@@ -95,9 +95,11 @@ public class SavesMenuScript : MenuScreen
         var saveVals = new List<Dictionary<string, string>>();
         foreach (string name in saveNames)
         {
+            var gameData = SaveSystem.LoadGame(name);
+            if(gameData == null) { continue; }
             var saveVal = new Dictionary<string, string>();
             saveVal.Add("name", name);
-            saveVal.Add("time", SaveSystem.LoadGame(name).saveTime);
+            saveVal.Add("time", gameData.saveTime);
             saveVals.Add(saveVal);
         }
         saveVals = saveVals.OrderByDescending(x => DateTime.Parse(x["time"])).ToList();

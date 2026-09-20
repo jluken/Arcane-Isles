@@ -26,6 +26,8 @@ public class PartyController : MonoBehaviour
     public int xp;
     public static int[] levelThresholds = { 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200 };
 
+    public Vector2 worldMapPos;
+
     private void Awake()
     {
         Instance = this;

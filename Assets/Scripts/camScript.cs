@@ -51,7 +51,7 @@ public class camScript : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if (!UIController.Instance.PauseTime())
+        if (!UIController.Instance.PauseAll())
         {
             Vector3 screenUp = new Vector3(1.0f, 0.0f, -1.0f);
             Vector3 screenRight = new Vector3(-1.0f, 0.0f, -1.0f);

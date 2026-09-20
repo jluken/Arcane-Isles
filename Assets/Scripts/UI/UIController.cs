@@ -22,6 +22,7 @@ public class UIController : MonoBehaviour
     public CharacterMenu initCharMenu;
     public GameOverScreen gameOverScreen;
     public Slides slideScreen;
+    public NavMapScript NavMap;
 
     // Default gameplay UI
     public DefaultUI defaultUI;
@@ -72,7 +73,8 @@ public class UIController : MonoBehaviour
             charCreateMenu,
             initCharMenu,
             gameOverScreen,
-            slideScreen
+            slideScreen,
+            NavMap
         };
 
         LogbookMenus = new List<MenuScreen>()
@@ -86,8 +88,7 @@ public class UIController : MonoBehaviour
         PauseMenus = new List<MenuScreen>() {
             pauseScreenScript,
             settingsMenu,
-            savesMenu,
-            slideScreen
+            savesMenu
         };
 
         InteractionMenus = new List<MenuScreen>()
@@ -141,18 +142,24 @@ public class UIController : MonoBehaviour
         uiActions.FindAction("Cancel").performed += (sender) => HandleCancel();
     }
 
-    public bool PauseTime()
+    public bool PauseAll()
     {
         var pausedMenus = new List<MenuScreen>();
         pausedMenus.AddRange(LogbookMenus);
         pausedMenus.AddRange(PauseMenus);
         pausedMenus.AddRange(InteractionMenus);
+        pausedMenus.AddRange(SceneScreens);
         return pausedMenus.Any(menu => menu.IsActive()) || talking;
+    }
+
+    public bool StopClock()
+    {
+        return PauseAll() || SceneScreens.Any(menu => menu.IsActive());  // TODO: still needed?
     }
 
     void Update()
     {
-        Time.timeScale = PauseTime() ? 0 : 1;
+        Time.timeScale = PauseAll() ? 0 : 1;
     }
 
     private void HandleCancel()
@@ -221,6 +228,7 @@ public class UIController : MonoBehaviour
 
     public void ActivateDefaultScreen()
     {
+        Debug.Log("Activate Default Screen");
         DeactivateAllMenus();
         defaultUI.ActivateMenu();
     }
@@ -312,9 +320,34 @@ public class UIController : MonoBehaviour
         mainMenu.ActivateMenu();
     }
 
+    public void ActivateNavMap()
+    {
+        DeactivateAllMenus();
+        NavMap.ActivateMenu();
+    }
+
     public void ToggleConversationUI(bool setTalking)
     {
         talking = setTalking;
 
+    }
+
+    public Dictionary<string, byte[]> GetMapSaveData()
+    {
+        // TODO: put this somewhere better
+        var mapSaveData = new Dictionary<string, byte[]>();
+        mapSaveData["worldShadow"] = ((Texture2D)NavMap.worldMapContent.GetComponent<NavMapPage>().mapShadow.texture).EncodeToPNG();
+
+        return mapSaveData;
+    }
+
+    public void InstantiateMapsFromData(Dictionary<string, byte[]> mapData)
+    {
+        if (mapData == null) return;
+
+        var defaultShadow = (Texture2D)NavMap.worldMapContent.GetComponent<NavMapPage>().mapShadow.texture;
+        var loadShadow = new Texture2D(defaultShadow.width, defaultShadow.height);
+        loadShadow.LoadImage(mapData["worldShadow"]);
+        NavMap.worldMapContent.GetComponent<NavMapPage>().mapShadow.texture = loadShadow;
     }
 }
