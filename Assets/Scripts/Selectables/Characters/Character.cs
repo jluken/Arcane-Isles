@@ -32,6 +32,8 @@ public class Character : Selectable
     public WeaponItem defaultWeapon;
     public CapsuleCollider wanderZone;
 
+    public string charConversation;
+
     public CombatManager.CombatantType combatantType = CombatManager.CombatantType.Bystander;
 
     public override void Awake()
@@ -75,6 +77,8 @@ public class Character : Selectable
         CombatManager.Instance.callToArms += SetToCombat;
         CombatManager.Instance.setPeace += EndCombat;
         base.Start();
+
+        
     }
 
     public override void Update()
@@ -243,10 +247,11 @@ public class Character : Selectable
 
 public class Talk : Interaction
 {
-    public override void Interact(Character npc, Selectable interactable)
+    public override void Interact(Character player, Selectable interactable)
     {
         if (interactable.GetComponent<Character>() == null) { Debug.LogError("Can only talk to NPCs"); }
-        DialogueInterface.Instance.StartPlayerCharConversation("TestConvo1", npc, interactable.GetComponent<Character>());
+        var npc = interactable.GetComponent<Character>();
+        DialogueInterface.Instance.StartPlayerCharConversation(npc.charConversation, player, npc);
     }
 }
 

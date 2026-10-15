@@ -95,7 +95,7 @@ public class MoveToClick : MonoBehaviour
         var sneaking = CombatManager.Instance.sneaking && PartyController.Instance.party.Contains(character);
         agent.speed = prone ? 0 : sneaking ? defaultSpeed / 2 : defaultSpeed;
         character.animator.SetBool("Sneaking", sneaking);
-        character.animator.SetBool("Prone", prone && !gettingUp);
+        character.animator.SetBool("Prone", prone && !gettingUp);  // TODO: Combine this with Character animation default
         if (animationOverride != null) {
             character.animator.Play(animationOverride);
             animationOverride = null;

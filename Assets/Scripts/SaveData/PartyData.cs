@@ -89,7 +89,7 @@ public class PartyData
         charStatData.intimidation = charStats.GetCurrStat(CharStats.StatVal.intimidation, false);
         charStatData.athletics = charStats.GetCurrStat(CharStats.StatVal.athletics, false);
         charStatData.melee = charStats.GetCurrStat(CharStats.StatVal.survival, false);
-        charStatData.endurance = charStats.GetCurrStat(CharStats.StatVal.repair, false);
+        charStatData.endurance = charStats.GetCurrStat(CharStats.StatVal.endurance, false);
         charStatData.guile = charStats.GetCurrStat(CharStats.StatVal.guile, false);
         charStatData.precision = charStats.GetCurrStat(CharStats.StatVal.precision, false);
         charStatData.sleightOfHand = charStats.GetCurrStat(CharStats.StatVal.sleightOfHand, false);

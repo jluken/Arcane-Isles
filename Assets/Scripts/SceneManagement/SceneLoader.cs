@@ -22,6 +22,7 @@ public class SceneLoader : MonoBehaviour
     private List<string> loadingScenes = new List<string>();
 
     public SlideshowImages initCutscene;
+    public SlideshowImages endCutscene;
 
     private void Awake()
     {
@@ -45,6 +46,8 @@ public class SceneLoader : MonoBehaviour
     void Start()
     {
         NewGame();
+
+        DialogueInterface.Instance.dialogueEvent += End;  // TODO: better place for stuff like this
     }
 
     public void SetLevel(LevelManager newManager)  // Called from level activation
@@ -97,7 +100,7 @@ public class SceneLoader : MonoBehaviour
         var oldLevel = levelManager;
         UIController.Instance.ActivateLoadingScreen();
         StartCoroutine(ActivateLevel(levelName, spawnLoc));
-        if (oldLevel != null && levelName != oldLevel.LevelName) StartCoroutine(DeactivateLevelCoroutine(oldLevel));
+        if (oldLevel != null && !string.IsNullOrEmpty(levelName) && levelName != oldLevel.LevelName) StartCoroutine(DeactivateLevelCoroutine(oldLevel));  // TODO: make safer (ex: null)
     }
 
     public IEnumerator InitializeLevel(string levelName)
@@ -112,7 +115,7 @@ public class SceneLoader : MonoBehaviour
 
     public IEnumerator ActivateLevel(string levelName, int spawnLoc = -1)
     {
-        yield return InitializeLevel(levelName);
+        if (!string.IsNullOrEmpty(levelName)) yield return InitializeLevel(levelName); // TODO: make safer/robust
 
         if (spawnLoc >= 0) PartyController.Instance.MoveParty(levelManager.GetSpawnPoints(spawnLoc), true);
         PartyController.Instance.ActivateParty();
@@ -292,5 +295,11 @@ public class SceneLoader : MonoBehaviour
         {
             SceneData[sceneName] = new SceneSaveData(npcActiveNames, npcInactiveNames);  // TODO: maybe protect this better
         }
+    }
+
+    public void End(string eventTag)
+    {
+        if (eventTag != "LeaveIsland") return;
+        UIController.Instance.StartSlides(endCutscene);  // TODO: reconfigure how slides work so this can go to main menu
     }
 }

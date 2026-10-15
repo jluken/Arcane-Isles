@@ -54,6 +54,7 @@ public class SceneSaveData
             var groundScript = gameGroundObj.GetComponent<DroppableItem>();
             var groundObjData = new GroundObjData();
             groundObjData.itemPrefabName = groundScript.itemData.itemPrefab.name;
+            groundObjData.itemDataName = groundScript.itemData.name;
             groundObjData.count = groundScript.stackSize;
             groundObjData.pos = new float[] { gameGroundObj.transform.position.x, gameGroundObj.transform.position.y, gameGroundObj.transform.position.z };
             groundObjData.rot = new float[] { gameGroundObj.transform.rotation.eulerAngles.x, gameGroundObj.transform.rotation.eulerAngles.y, gameGroundObj.transform.rotation.eulerAngles.z };

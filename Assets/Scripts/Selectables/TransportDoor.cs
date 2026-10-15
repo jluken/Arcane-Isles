@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TransportDoor : doorway
+public class TransportDoor : Selectable
 {
     public string toLevel;
     public int spawnPoint;

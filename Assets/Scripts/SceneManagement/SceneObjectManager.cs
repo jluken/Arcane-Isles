@@ -55,9 +55,12 @@ public class SceneObjectManager : MonoBehaviour
         //Load in new ground objects
         foreach(var groundObj in sceneData.groundObjs)
         {
+            Debug.Log("loading prefab " + groundObj.itemPrefabName);
             var newItem = Instantiate(Resources.Load<GameObject>("Prefabs/" + groundObj.itemPrefabName), gameObject.transform);
             newItem.transform.position = new Vector3(groundObj.pos[0], groundObj.pos[1], groundObj.pos[2]);
             newItem.transform.rotation = Quaternion.identity * Quaternion.Euler(groundObj.rot[0], groundObj.rot[1], groundObj.rot[2]);
+            Debug.Log("loading scriptable " + groundObj.itemDataName);
+            Debug.Log("script obj " + Resources.Load<InventoryData>("Scriptables/" + groundObj.itemDataName));
             newItem.GetComponent<DroppableItem>().itemData = Resources.Load<InventoryData>("Scriptables/" + groundObj.itemDataName);
             newItem.GetComponent<DroppableItem>().stackSize = groundObj.count;
             GroundObjects.Add(newItem);

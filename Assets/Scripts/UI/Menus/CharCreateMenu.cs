@@ -177,6 +177,10 @@ public class CharCreateMenu : MenuScreen
             DialogueLua.SetVariable("PlayerThem", "him");
             DialogueLua.SetVariable("PlayerTheir", "his");
             DialogueLua.SetVariable("PlayerTheirs", "his");
+            DialogueLua.SetVariable("PlayerThey're", "he's");
+            DialogueLua.SetVariable("PlayerFirstName", nameField.text);
+            DialogueLua.SetVariable("PlayerFormal", "gentleman");
+            DialogueLua.SetVariable("PlayerInformal", "lad");
         }
         else if (gender == "F")
         {
@@ -184,6 +188,10 @@ public class CharCreateMenu : MenuScreen
             DialogueLua.SetVariable("PlayerThem", "her");
             DialogueLua.SetVariable("PlayerTheir", "her");
             DialogueLua.SetVariable("PlayerTheirs", "hers");
+            DialogueLua.SetVariable("PlayerThey're", "she's");
+            DialogueLua.SetVariable("PlayerFirstName", nameField.text);
+            DialogueLua.SetVariable("PlayerFormal", "lady");
+            DialogueLua.SetVariable("PlayerInformal", "lass");
         }
         else if (gender == "X")
         {
@@ -191,6 +199,10 @@ public class CharCreateMenu : MenuScreen
             DialogueLua.SetVariable("PlayerThem", "them");
             DialogueLua.SetVariable("PlayerTheir", "their");
             DialogueLua.SetVariable("PlayerTheirs", "theirs");
+            DialogueLua.SetVariable("PlayerThey're", "they're");
+            DialogueLua.SetVariable("PlayerFirstName", nameField.text);
+            DialogueLua.SetVariable("PlayerFormal", "gentleperson");
+            DialogueLua.SetVariable("PlayerInformal", "kid");
         }
         PartyController.Instance.playerChar.charStats.gender = gender;  // TODO: maybe just create function to get pronouns instead of Lua variables
 

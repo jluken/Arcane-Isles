@@ -24,7 +24,7 @@ public class CharStats : MonoBehaviour
     [SerializeField] private int intimidation;
     [SerializeField] private int athletics;
     [SerializeField] private int survival;
-    [SerializeField] private int repair;
+    [SerializeField] private int endurance;
 
     [SerializeField] private int guile;
     [SerializeField] private int precision;
@@ -55,7 +55,7 @@ public class CharStats : MonoBehaviour
         intimidation,
         athletics,
         survival,
-        repair,
+        endurance,
 
         guile,
         precision,
@@ -79,7 +79,7 @@ public class CharStats : MonoBehaviour
     private static Dictionary<StatVal, StatVal> SkillAttrMap = new Dictionary<StatVal, StatVal>() { //Skills with their determining Attribute
         { StatVal.athletics, StatVal.vigor },
         { StatVal.survival, StatVal.vigor },
-        { StatVal.repair, StatVal.vigor },
+        { StatVal.endurance, StatVal.vigor },
         { StatVal.intimidation, StatVal.vigor },
         { StatVal.guile, StatVal.finesse },
         { StatVal.precision, StatVal.finesse },
@@ -130,7 +130,7 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.intimidation] = statData.intimidation;
         statMap[StatVal.athletics] = statData.athletics;
         statMap[StatVal.survival] = statData.melee;
-        statMap[StatVal.repair] = statData.endurance;
+        statMap[StatVal.endurance] = statData.endurance;
 
         statMap[StatVal.guile] = statData.guile;
         statMap[StatVal.precision] = statData.precision;
@@ -148,16 +148,17 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.magick] = statData.magick;
     }
 
-    private int maxHealth => 10 + GetCurrStat(StatVal.level) * GetCurrStat(StatVal.vigor);
+    private int maxHealth => 12 + (2 * GetCurrStat(StatVal.endurance));
     private int maxMagick => 2 * GetCurrStat(StatVal.arcana);
     private int sigilSlots => (GetCurrStat(StatVal.arcana) + 1) / 2;
     private int actionPoints => 6 + GetCurrStat(StatVal.finesse);
-    private int evade => GetCurrStat(StatVal.finesse) + 6;
+    private int evade => GetCurrStat(StatVal.finesse) + 6;  // TODO: make it easier to hit? Is this used?
+    public int strengthBonus => GetCurrStat(StatVal.vigor) / 2;
 
     public float runModifier => GetCurrStat(StatVal.athletics) / 3.0f;
     public float barterModifier => GetCurrStat(StatVal.persuasion) / 6.0f;
 
-    public void setDerivedStats()
+    public void setDerivedStats()  // TODO: is this necessary? just reference directly.
     {
         statMap[StatVal.maxHealth] = maxHealth;
         statMap[StatVal.maxMagick] = maxMagick;
@@ -186,7 +187,7 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.intimidation] = intimidation;
         statMap[StatVal.athletics] = athletics;
         statMap[StatVal.survival] = survival;
-        statMap[StatVal.repair] = repair;
+        statMap[StatVal.endurance] = endurance;
 
         statMap[StatVal.guile] = guile;
         statMap[StatVal.precision] = precision;

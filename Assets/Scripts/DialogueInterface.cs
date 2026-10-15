@@ -2,6 +2,7 @@ using NUnit.Framework;
 using PixelCrushers.DialogueSystem;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Unity.Multiplayer.Center.Common;
 using UnityEngine;
@@ -58,6 +59,10 @@ public class DialogueInterface : MonoBehaviour
         Lua.RegisterFunction("SpeechEvent", this, typeof(DialogueInterface).GetMethod("SpeechEvent"));
 
         Lua.RegisterFunction("SkillCheck", this, typeof(DialogueInterface).GetMethod("SkillCheck"));
+        Lua.RegisterFunction("IsHurt", this, typeof(DialogueInterface).GetMethod("IsHurt"));
+        Lua.RegisterFunction("ItemCheck", this, typeof(DialogueInterface).GetMethod("ItemCheck"));
+        Lua.RegisterFunction("RemoveItem", this, typeof(DialogueInterface).GetMethod("RemoveItem"));
+        Lua.RegisterFunction("AddItem", this, typeof(DialogueInterface).GetMethod("AddItem"));
         Lua.RegisterFunction("SetStat", this, typeof(DialogueInterface).GetMethod("SetStat"));
         Lua.RegisterFunction("Recruit", this, typeof(DialogueInterface).GetMethod("TalkRecruit"));
         Lua.RegisterFunction("HealthChange", this, typeof(DialogueInterface).GetMethod("HealthChange"));
@@ -70,6 +75,10 @@ public class DialogueInterface : MonoBehaviour
     void OnDisable()
     {
         Lua.UnregisterFunction("SkillCheck");
+        Lua.UnregisterFunction("IsHurt");
+        Lua.UnregisterFunction("ItemCheck");
+        Lua.UnregisterFunction("RemoveItem");
+        Lua.UnregisterFunction("AddItem");
         Lua.UnregisterFunction("SpeechEvent");
         Lua.UnregisterFunction("SetStat");
         Lua.UnregisterFunction("Recruit");
@@ -134,11 +143,11 @@ public class DialogueInterface : MonoBehaviour
         //item.GetComponent<DialogueActor>().barkUISettings.barkUI = speakBarkUI;
     }
 
-    public void SpeakBark(Character npc)
+    public static void SpeakBark(Character npc, string text)
     {
         //npc.GetComponent<DialogueActor>().barkUISettings.barkUI = speakBarkUI;
-        DialogueLua.SetVariable("BarkText", npc.description);
-        DialogueManager.Bark("BarkBark", npc.transform);
+        //DialogueLua.SetVariable("BarkText", text);  //TODO: maybe look at "default" for description
+        DialogueManager.BarkString(text, npc.transform);
     }
 
     //public void RecordBark()
@@ -160,6 +169,30 @@ public class DialogueInterface : MonoBehaviour
         return (double)PartyController.Instance.selectedPartyMember.charStats.GetCurrStat(skillType);
     }
 
+    public static bool ItemCheck(string item)
+    {
+        //if (!Enum.TryParse(skill, out CharStats.StatVal skillType)) Debug.LogError("Invalid skill type " + skill);
+        //return (double)PartyController.Instance.selectedPartyMember.charStats.GetCurrStat(skillType);
+
+        return PartyController.Instance.party.Any(member => member.inventory.ItemCheck(item));
+    }
+
+    public static void RemoveItem(string itemName) // TODO: check companions too
+    {
+        PartyController.Instance.playerChar.inventory.RemoveItem(itemName);
+    }
+
+    public static void AddItem(string itemName)
+    {
+        var itemData = Resources.Load<InventoryData>("Scriptables/" + itemName);
+        PartyController.Instance.playerChar.inventory.AddNewItem(itemData);
+    }
+
+    public static bool IsHurt()
+    {
+        return PartyController.Instance.selectedPartyMember.charStats.GetCurrStat(CharStats.StatVal.health) < PartyController.Instance.selectedPartyMember.charStats.GetCurrStat(CharStats.StatVal.maxHealth);
+    }
+
     public static void SetStat(string skill, double value)
     {
         Debug.Log("Set Stat");
@@ -167,9 +200,9 @@ public class DialogueInterface : MonoBehaviour
         PartyController.Instance.selectedPartyMember.charStats.SetStat(skillType, (int)value);
     }
 
-    public void HealthChange(int hp)
+    public void HealthChange(float hp)
     {
-        PartyController.Instance.activePartyMember.charStats.updateHealth(hp);
+        PartyController.Instance.activePartyMember.charStats.updateHealth((int)hp);
         if (PartyController.Instance.activePartyMember.charStats.GetCurrStat(CharStats.StatVal.health) <= 0) DialogueManager.StopConversation();
     }
 

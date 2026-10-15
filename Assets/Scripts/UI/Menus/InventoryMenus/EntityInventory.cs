@@ -289,6 +289,17 @@ public class EntityInventory : MonoBehaviour
         return newStackSize;
     }
 
+    public void RemoveItem(string itemName)  // TODO: maybe move some of this logic into lua
+    {
+        if (!inventory.Any(inv => inv.type.itemName == itemName))
+        {
+            //TODO: log error
+            return;
+        }
+        int idx = inventory.IndexOf(inventory.FirstOrDefault(inv => inv.type.itemName == itemName));
+        UpdateInvStack(idx, -1);
+    }
+
     public void ConsumeInventory(EntityInventory newInventory)
     {
         // Empty everything from inventory into this inventory
@@ -301,6 +312,12 @@ public class EntityInventory : MonoBehaviour
             int leftover = AddNewItem(invItem.type, invItem.count);
             newInventory.SetInventory(i, invItem.type, leftover);
         }
+    }
+
+    public bool ItemCheck(string itemName)
+    {
+        if (itemName == null) return false;
+        return inventory.Any(inv => inv.type.itemName == itemName);  // TODO: maybe make a count for robustness
     }
 
     public void DropAllInventory()

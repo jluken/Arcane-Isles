@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SyntyKneel
+  m_Controller: {fileID: 9100000, guid: ed44c4f98b950b646acc53581680cd4e, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 535fc090cec8a1f41bd8ee04eba8631c, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 45697802cc343424b9d06e36c31b9b54, type: 2}

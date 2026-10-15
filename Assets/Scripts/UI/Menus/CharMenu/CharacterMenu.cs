@@ -132,6 +132,7 @@ public class CharacterMenu : MenuScreen
         apChange.text = "";
         speedChange.text = "";
 
+        // TODO: Maybe just do one skill point at a time and let players bee line if they want
         levelUpButton.gameObject.SetActive(levelUp);
         levelUpButton.interactable = availPoints < (PartyController.Instance.GetLevelByXP() - currChar.charStats.GetCurrStat(StatVal.level));
         skillPointText.gameObject.SetActive(levelUp);
