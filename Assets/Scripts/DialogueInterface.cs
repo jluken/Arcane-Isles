@@ -66,6 +66,8 @@ public class DialogueInterface : MonoBehaviour
         Lua.RegisterFunction("SetStat", this, typeof(DialogueInterface).GetMethod("SetStat"));
         Lua.RegisterFunction("Recruit", this, typeof(DialogueInterface).GetMethod("TalkRecruit"));
         Lua.RegisterFunction("HealthChange", this, typeof(DialogueInterface).GetMethod("HealthChange"));
+        Lua.RegisterFunction("RestoreMagick", this, typeof(DialogueInterface).GetMethod("RestoreMagick"));
+        Lua.RegisterFunction("Teleport", this, typeof(DialogueInterface).GetMethod("Teleport"));
 
         Lua.RegisterFunction("StartQuest", this, typeof(DialogueInterface).GetMethod("StartQuest"));
         Lua.RegisterFunction("ActivateQuestEntry", this, typeof(DialogueInterface).GetMethod("ActivateQuestEntry"));
@@ -83,6 +85,8 @@ public class DialogueInterface : MonoBehaviour
         Lua.UnregisterFunction("SetStat");
         Lua.UnregisterFunction("Recruit");
         Lua.UnregisterFunction("HealthChange");
+        Lua.UnregisterFunction("RestoreMagick");
+        Lua.UnregisterFunction("Teleport");
     }
 
     public void StartPlayerObjConversation(string conversationName, Character player, Selectable obj)
@@ -213,6 +217,16 @@ public class DialogueInterface : MonoBehaviour
         //PartyController.Instance.leader.charStats.resetStat(skillType, (int)value);
         var recruitAct = new Recruit();
         recruitAct.Interact(actor, conversant);
+    }
+
+    public void RestoreMagick()
+    {
+        PartyController.Instance.activePartyMember.charStats.updateMagick(1000);
+    }
+
+    public void Teleport(double spawnPt)
+    {
+        SceneLoader.Instance.SetToLevelSpawn(null, (int)spawnPt);
     }
 
 

@@ -24,9 +24,744 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 112}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 51
+  controlID: 57
   draggingID: 0
 --- !u!114 &2
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3424c03dd9e533544a90f81267b56ab8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp-Editor-firstpass::PixelCrushers.DialogueSystem.DialogueEditor.DialogueEditorWindow
+  m_MinSize: {x: 720, y: 240}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Dialogue
+    m_Image: {fileID: 0}
+    m_Tooltip: 
+    m_TextWithWhitespace: "Dialogue\u200B"
+  m_Pos:
+    serializedVersion: 2
+    x: 403
+    y: 79
+    width: 999
+    height: 517
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_ContainerData: []
+    m_DynamicPanelContainerData: []
+    m_OverlaysVisible: 1
+    m_DynamicPanelBehavior: 0
+  actorFoldouts:
+    propertiesKeys: 
+    propertiesValues: 
+    fieldsKeys: ffffffff000000000100000005000000
+    fieldsValues: 01000100
+  actorFilter: 
+  hideFilteredOutActors: 0
+  actorListSelectedIndex: 5
+  actorTexturesFoldout: 1
+  actorSpritesFoldout: 1
+  showNodeEditor: 1
+  currentConversationID: 17
+  globalSearchText: 
+  globalReplaceText: 
+  globalSearchSpecificConversation: 0
+  globalSearchConversationIndex: -1
+  globalSearchUseRegex: 0
+  databaseFoldouts:
+    database: 1
+    emphasisSettings: 0
+    emphasisSetting: 
+    globalReplace: 0
+    merge: 0
+    export: 0
+    localization: 0
+    stats: 0
+    checkIssues: 0
+    editorSettings: 0
+    AI: 0
+  databaseToMerge: {fileID: 0}
+  conflictingIDRule: 0
+  mergeProperties: 1
+  mergeEmphases: 1
+  mergeActors: 1
+  mergeItems: 1
+  mergeLocations: 1
+  mergeVariables: 1
+  mergeConversations: 1
+  exportFormat: 0
+  chatMapperExportPath: 
+  csvExportPath: 
+  jsonExportPath: 
+  voiceoverExportPath: 
+  languageTextExportPath: 
+  screenplayExportPath: 
+  proofreadingExportPath: 
+  entrytagFormat: 0
+  encodingType: 4
+  isSearchBarOpen: 0
+  searchString: 
+  searchCaseSensitive: 0
+  currentEntryID: 22
+  itemFoldouts:
+    propertiesKeys: 
+    propertiesValues: 
+    fieldsKeys: ffffffff0100000000000000
+    fieldsValues: 010101
+  itemFilter: 
+  hideFilteredOutItems: 0
+  itemListSelectedIndex: 0
+  questEntrySelectedIdx: 0
+  showCompactQuestEntryList: 0
+  localizationLanguages:
+    languages: []
+    extraEntryFields: []
+    extraQuestFields: []
+    extraItemFields: []
+    importMainTextIndex: -1
+    outputFolder: 
+  exportLocalizationConversationTitle: 0
+  exportLocalizationKeyField: 0
+  exportAssignFieldValues: 0
+  exportLocalizationCreateNewFields: 0
+  exportIncludeEntriesWithoutText: 0
+  localizationKeyField: Articy Id
+  localizationEntrySortMethod: 0
+  locationFoldouts:
+    propertiesKeys: 
+    propertiesValues: 
+    fieldsKeys: 
+    fieldsValues: 
+  locationFilter: 
+  hideFilteredOutLocations: 0
+  locationListSelectedIndex: -1
+  toolbar:
+    current: 5
+  database: {fileID: 11400000, guid: 0b2bc021b8fb9f94abd8ece4da831df7, type: 2}
+  debug: 0
+  registerCompleteObjectUndo: 1
+  scrollPosition: {x: 0, y: 0}
+  templateFoldouts:
+    templates: 0
+    actors: 0
+    items: 0
+    quests: 0
+    locations: 0
+    conversations: 0
+    dialogueEntries: 0
+    variables: 0
+  variableView:
+    database: {fileID: 11400000, guid: 0b2bc021b8fb9f94abd8ece4da831df7, type: 2}
+    isDialogueEditorWindow: 1
+    variableFilter: 
+    showVariableGroupFoldouts: 1
+    expandedVariableGroups:
+    - SwirlingIsle
+  watches: []
+  autoUpdateWatches: 0
+  watchUpdateFrequency: 1
+  nextWatchUpdateTime: 673861.1069777
+  watchableVariableNames:
+  - Actor
+  - ActorIndex
+  - Alert
+  - Beach_Corpse_Crab
+  - Beach_Corpse_Found
+  - Beach_Corpse_Sword
+  - boosted
+  - BugSlain
+  - Conversant
+  - ConversantIndex
+  - DescriptionText
+  - PlayerFirstName
+  - PlayerFormal
+  - PlayerInformal
+  - PlayerLastName
+  - PlayerTheir
+  - PlayerTheirs
+  - PlayerThem
+  - PlayerThey
+  - PlayerTheyre
+  - PlayerThey're
+  - Speaker
+  - SwirlingIsle.Camp.Arrived
+  - SwirlingIsle.Camp.FixedCobb
+  - SwirlingIsle.Camp.HurtCobb
+  - SwirlingIsle.Camp.MetCharles
+  - SwirlingIsle.Camp.MetTriggs
+  - SwirlingIsle.Camp.RecruitCharles
+  - SwirlingIsle.JournalFound
+  - SwirlingIsle.PirateCamp.Arrived
+  - SwirlingIsle.PirateCamp.CaskContents
+  - SwirlingIsle.PirateCamp.PiratesAvailable
+  - SwirlingIsle_Beach_WreckFound
+  - SwirlingIsle_Beach_WreckLooted
+  - TestVar.One
+  - TestVar.Two.four
+  - TestVar.Two.three
+  watchableQuestNames:
+  - Kill the bug
+  - Stranded
+  luaCommand: 
+  zoomLocked: 0
+  _zoom: 0.43000057
+  canvasRectWidthMultiplier: 1
+  canvasScrollView: {x: 100000, y: 100000}
+  canvasScrollPosition: {x: 365.24707, y: 1050.1301}
+  conversationTitles:
+  - TestConvo1
+  - DescriptionBark
+  - Shopkeep
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Diane
+  - SwirlingIsle.SurvivorCamp.Will
+  - SwirlingIsle.PirateCamp.Rowboat
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Mate
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.PirateCamp.Sleepy
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.Temple.Captain
+  conversationTitlesForMenu:
+  - TestConvo1
+  - DescriptionBark
+  - Shopkeep
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Diane
+  - SwirlingIsle.SurvivorCamp.Will
+  - SwirlingIsle.PirateCamp.Rowboat
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Mate
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.PirateCamp.Sleepy
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.Temple.Captain
+  conversationIndex: 16
+  confirmDelete: 1
+  trimWhitespaceAroundPipes: 1
+  conversationTitleFilter: 
+  prevConversationStack:
+  - DescriptionBark
+  - TestConvo1
+  - DescriptionBark
+  - TestConvo1
+  - New Conversation 3
+  - TestConvo1
+  - Shopkeep
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - Shopkeep
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - DescriptionBark
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Corpse
+  - TestConvo1
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.PirateCamp.Mate
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Diane
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.PirateCamp.Sleepy
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Mate
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.PirateCamp.Boat
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.PirateCamp.Boat
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Boat
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.PirateCamp.Boat
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Boat
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.Beach.Corpse
+  - SwirlingIsle.Beach.Wreck
+  - SwirlingIsle.Temple.Captain
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.Temple.Captain
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.Temple.Captain
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.PirateCamp.Rowboat
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.SurvivorCamp.Triggs
+  - SwirlingIsle.SurvivorCamp.Charles
+  - SwirlingIsle.PirateCamp.Captain
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.Temple.Captain
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.Temple.Captain
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.Temple.Captain
+  - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.Temple.Captain
+  - SwirlingIsle.PirateCamp.Arrival
+  nextConversationStack: []
+--- !u!114 &3
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children:
+  - {fileID: 4}
+  - {fileID: 12}
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1404
+    height: 941
+  m_MinSize: {x: 200, y: 112}
+  m_MaxSize: {x: 16192, y: 16192}
+  vertical: 1
+  controlID: 58
+  draggingID: 0
+--- !u!114 &4
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children:
+  - {fileID: 5}
+  - {fileID: 8}
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1404
+    height: 543
+  m_MinSize: {x: 200, y: 56}
+  m_MaxSize: {x: 16192, y: 8096}
+  vertical: 0
+  controlID: 59
+  draggingID: 0
+--- !u!114 &5
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: SceneHierarchyWindow
+  m_EditorClassIdentifier: 
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 403
+    height: 543
+  m_MinSize: {x: 51, y: 76}
+  m_MaxSize: {x: 4001, y: 4026}
+  m_ActualView: {fileID: 7}
+  m_Panes:
+  - {fileID: 6}
+  - {fileID: 7}
+  m_Selected: 1
+  m_LastSelected: 0
+--- !u!114 &6
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12061, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Hierarchy
+    m_Image: {fileID: 7966133145522015247, guid: 0000000000000000d000000000000000, type: 0}
+    m_Tooltip: 
+    m_TextWithWhitespace: "Hierarchy\u200B"
+  m_Pos:
+    serializedVersion: 2
+    x: 1
+    y: 91
+    width: 402
+    height: 558
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_ContainerData: []
+    m_DynamicPanelContainerData: []
+    m_OverlaysVisible: 1
+    m_DynamicPanelBehavior: 0
+  m_SceneHierarchy:
+    m_TreeViewState:
+      scrollPos: {x: 0, y: 0}
+      m_SelectedIDs:
+      - m_Data: -258414
+      m_LastClickedID:
+        m_Data: 0
+      m_ExpandedIDs:
+      - m_Data: -244522
+      - m_Data: -238888
+      - m_Data: -197600
+      - m_Data: -46768
+      - m_Data: -44150
+      - m_Data: -28402
+      - m_Data: -1370
+      - m_Data: -1366
+      - m_Data: -1362
+      m_RenameOverlay:
+        m_UserAcceptedRename: 0
+        m_Name: 
+        m_OriginalName: 
+        m_EditFieldRect:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        m_UserData:
+          m_Data: 0
+        m_IsWaitingForDelay: 0
+        m_IsRenaming: 0
+        m_OriginalEventType: 11
+        m_IsRenamingFilename: 0
+        m_TrimLeadingAndTrailingWhitespace: 0
+        m_ClientGUIView: {fileID: 5}
+      m_SearchString: 
+    m_ExpandedScenes: []
+    m_CurrenRootEntityId:
+      m_Data: 0
+    m_LockTracker:
+      m_IsLocked: 1
+    m_CurrentSortingName: TransformSorting
+  m_WindowGUID: 4c969a2b90040154d917609493e03593
+--- !u!114 &7
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 12061, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.SceneHierarchyWindow
+  m_MinSize: {x: 50, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Hierarchy
+    m_Image: {fileID: 7966133145522015247, guid: 0000000000000000d000000000000000, type: 0}
+    m_Tooltip: 
+    m_TextWithWhitespace: "Hierarchy\u200B"
+  m_Pos:
+    serializedVersion: 2
+    x: 0
+    y: 79
+    width: 402
+    height: 517
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_ContainerData: []
+    m_DynamicPanelContainerData: []
+    m_OverlaysVisible: 1
+    m_DynamicPanelBehavior: 0
+  m_SceneHierarchy:
+    m_TreeViewState:
+      scrollPos: {x: 0, y: 2496}
+      m_SelectedIDs:
+      - m_Data: -258414
+      m_LastClickedID:
+        m_Data: -258414
+      m_ExpandedIDs:
+      - m_Data: -244522
+      - m_Data: -238888
+      - m_Data: -223064
+      - m_Data: -223056
+      - m_Data: -223054
+      - m_Data: -223050
+      - m_Data: -205492
+      - m_Data: -198352
+      - m_Data: -198350
+      - m_Data: -198348
+      - m_Data: -198344
+      - m_Data: -198260
+      - m_Data: -197600
+      - m_Data: -193996
+      - m_Data: -193654
+      - m_Data: -193430
+      - m_Data: -189808
+      - m_Data: -187638
+      - m_Data: -177720
+      - m_Data: -169906
+      - m_Data: -151364
+      - m_Data: -151362
+      - m_Data: -151360
+      - m_Data: -151350
+      - m_Data: -151340
+      - m_Data: -151338
+      - m_Data: -151336
+      - m_Data: -151322
+      - m_Data: -151320
+      - m_Data: -151318
+      - m_Data: -151292
+      - m_Data: -149458
+      - m_Data: -141808
+      - m_Data: -141806
+      - m_Data: -108008
+      - m_Data: -83238
+      - m_Data: -79816
+      - m_Data: -9904
+      - m_Data: -1376
+      - m_Data: -1374
+      - m_Data: -1372
+      - m_Data: -1370
+      - m_Data: -1366
+      - m_Data: -1362
+      - m_Data: -1352
+      - m_Data: 65268
+      - m_Data: 65324
+      - m_Data: 65386
+      - m_Data: 65576
+      - m_Data: 65872
+      - m_Data: 65982
+      - m_Data: 66034
+      - m_Data: 66162
+      - m_Data: 66848
+      - m_Data: 66874
+      - m_Data: 66878
+      - m_Data: 66882
+      - m_Data: 66894
+      - m_Data: 122400
+      - m_Data: 122524
+      - m_Data: 129434
+      - m_Data: 149878
+      - m_Data: 149890
+      m_RenameOverlay:
+        m_UserAcceptedRename: 0
+        m_Name: 
+        m_OriginalName: 
+        m_EditFieldRect:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        m_UserData:
+          m_Data: 0
+        m_IsWaitingForDelay: 0
+        m_IsRenaming: 0
+        m_OriginalEventType: 11
+        m_IsRenamingFilename: 0
+        m_TrimLeadingAndTrailingWhitespace: 0
+        m_ClientGUIView: {fileID: 5}
+      m_SearchString: 
+    m_ExpandedScenes: []
+    m_CurrenRootEntityId:
+      m_Data: 0
+    m_LockTracker:
+      m_IsLocked: 0
+    m_CurrentSortingName: TransformSorting
+  m_WindowGUID: bc1a0baa7b4e0624faffaa4cc1ba4f53
+--- !u!114 &8
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: DialogueEditorWindow
+  m_EditorClassIdentifier: 
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 403
+    y: 0
+    width: 1001
+    height: 543
+  m_MinSize: {x: 722, y: 266}
+  m_MaxSize: {x: 4002, y: 4026}
+  m_ActualView: {fileID: 2}
+  m_Panes:
+  - {fileID: 9}
+  - {fileID: 10}
+  - {fileID: 2}
+  - {fileID: 11}
+  m_Selected: 2
+  m_LastSelected: 0
+--- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,7 +784,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 403
     y: 79
-    width: 996
+    width: 999
     height: 517
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -607,9 +1342,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 200.805, y: -3.8849843, z: -367.4913}
+    m_Target: {x: 212.91872, y: -59.53171, z: -502.96747}
     speed: 2
-    m_Value: {x: 200.805, y: -3.8849843, z: -367.4913}
+    m_Value: {x: 212.91872, y: -59.53171, z: -502.96747}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -637,9 +1372,9 @@ MonoBehaviour:
       m_Size: {x: 1, y: 1}
     yGrid:
       m_Fade:
-        m_Target: 1
+        m_Target: 0
         speed: 2
-        m_Value: 1
+        m_Value: 0
       m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.4}
       m_OffsetAlongAxis: {x: 0, y: 0, z: 0}
       m_Size: {x: 1, y: 1}
@@ -651,18 +1386,18 @@ MonoBehaviour:
       m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.4}
       m_OffsetAlongAxis: {x: 0, y: 0, z: 0}
       m_Size: {x: 1, y: 1}
-    m_ShowGrid: 1
+    m_ShowGrid: 0
     m_GridAxis: 1
     m_gridOpacity: 0.5
     m_NearestPlaneToHandleMode: 0
   m_Rotation:
-    m_Target: {x: -0.08525089, y: -0.91063505, z: 0.2373721, w: -0.3269441}
+    m_Target: {x: -0.06507454, y: -0.90513915, z: 0.39246288, w: -0.14407746}
     speed: 2
-    m_Value: {x: -0.08490484, y: -0.91123295, z: 0.23752798, w: -0.32561657}
+    m_Value: {x: -0.065130025, y: -0.90591085, z: 0.3927975, w: -0.14420031}
   m_Size:
-    m_Target: 7.7908406
+    m_Target: 54.49789
     speed: 2
-    m_Value: 8.1579485
+    m_Value: 54.49789
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -683,7 +1418,7 @@ MonoBehaviour:
   m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
   m_LastSceneViewOrtho: 0
   m_Viewpoint:
-    m_SceneView: {fileID: 2}
+    m_SceneView: {fileID: 9}
     m_CameraOverscanSettings:
       m_Opacity: 50
       m_Scale: 1
@@ -696,308 +1431,7 @@ MonoBehaviour:
     name: Contributors / Receivers
     section: Lighting
   m_ViewIsLockedToObject: 0
---- !u!114 &3
-MonoBehaviour:
-  m_ObjectHideFlags: 52
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 1
-  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Children:
-  - {fileID: 4}
-  - {fileID: 12}
-  m_Position:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1401
-    height: 941
-  m_MinSize: {x: 200, y: 112}
-  m_MaxSize: {x: 16192, y: 16192}
-  vertical: 1
-  controlID: 52
-  draggingID: 0
---- !u!114 &4
-MonoBehaviour:
-  m_ObjectHideFlags: 52
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 1
-  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Children:
-  - {fileID: 5}
-  - {fileID: 8}
-  m_Position:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1401
-    height: 543
-  m_MinSize: {x: 200, y: 56}
-  m_MaxSize: {x: 16192, y: 8096}
-  vertical: 0
-  controlID: 53
-  draggingID: 0
---- !u!114 &5
-MonoBehaviour:
-  m_ObjectHideFlags: 52
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 1
-  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: SceneHierarchyWindow
-  m_EditorClassIdentifier: 
-  m_Children: []
-  m_Position:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 403
-    height: 543
-  m_MinSize: {x: 51, y: 76}
-  m_MaxSize: {x: 4001, y: 4026}
-  m_ActualView: {fileID: 7}
-  m_Panes:
-  - {fileID: 6}
-  - {fileID: 7}
-  m_Selected: 1
-  m_LastSelected: 0
---- !u!114 &6
-MonoBehaviour:
-  m_ObjectHideFlags: 52
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 1
-  m_Script: {fileID: 12061, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
-  m_TitleContent:
-    m_Text: Hierarchy
-    m_Image: {fileID: 7966133145522015247, guid: 0000000000000000d000000000000000, type: 0}
-    m_Tooltip: 
-    m_TextWithWhitespace: "Hierarchy\u200B"
-  m_Pos:
-    serializedVersion: 2
-    x: 1
-    y: 91
-    width: 402
-    height: 558
-  m_SerializedDataModeController:
-    m_DataMode: 0
-    m_PreferredDataMode: 0
-    m_SupportedDataModes: 
-    isAutomatic: 1
-  m_ViewDataDictionary: {fileID: 0}
-  m_OverlayCanvas:
-    m_LastAppliedPresetName: Default
-    m_SaveData: []
-    m_ContainerData: []
-    m_DynamicPanelContainerData: []
-    m_OverlaysVisible: 1
-    m_DynamicPanelBehavior: 0
-  m_SceneHierarchy:
-    m_TreeViewState:
-      scrollPos: {x: 0, y: 0}
-      m_SelectedIDs:
-      - m_Data: -125868
-      m_LastClickedID:
-        m_Data: -125868
-      m_ExpandedIDs:
-      - m_Data: -106532
-      - m_Data: -38674
-      - m_Data: -37668
-      - m_Data: -1370
-      - m_Data: -1368
-      - m_Data: -1366
-      - m_Data: -1364
-      m_RenameOverlay:
-        m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
-        m_EditFieldRect:
-          serializedVersion: 2
-          x: 0
-          y: 0
-          width: 0
-          height: 0
-        m_UserData:
-          m_Data: 0
-        m_IsWaitingForDelay: 0
-        m_IsRenaming: 0
-        m_OriginalEventType: 11
-        m_IsRenamingFilename: 0
-        m_TrimLeadingAndTrailingWhitespace: 0
-        m_ClientGUIView: {fileID: 5}
-      m_SearchString: 
-    m_ExpandedScenes: []
-    m_CurrenRootEntityId:
-      m_Data: 0
-    m_LockTracker:
-      m_IsLocked: 1
-    m_CurrentSortingName: TransformSorting
-  m_WindowGUID: 4c969a2b90040154d917609493e03593
---- !u!114 &7
-MonoBehaviour:
-  m_ObjectHideFlags: 52
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 12061, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.SceneHierarchyWindow
-  m_MinSize: {x: 50, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
-  m_TitleContent:
-    m_Text: Hierarchy
-    m_Image: {fileID: 7966133145522015247, guid: 0000000000000000d000000000000000, type: 0}
-    m_Tooltip: 
-    m_TextWithWhitespace: "Hierarchy\u200B"
-  m_Pos:
-    serializedVersion: 2
-    x: 0
-    y: 79
-    width: 402
-    height: 517
-  m_SerializedDataModeController:
-    m_DataMode: 0
-    m_PreferredDataMode: 0
-    m_SupportedDataModes: 
-    isAutomatic: 1
-  m_ViewDataDictionary: {fileID: 0}
-  m_OverlayCanvas:
-    m_LastAppliedPresetName: Default
-    m_SaveData: []
-    m_ContainerData: []
-    m_DynamicPanelContainerData: []
-    m_OverlaysVisible: 1
-    m_DynamicPanelBehavior: 0
-  m_SceneHierarchy:
-    m_TreeViewState:
-      scrollPos: {x: 0, y: 560}
-      m_SelectedIDs:
-      - m_Data: 53832
-      m_LastClickedID:
-        m_Data: 0
-      m_ExpandedIDs:
-      - m_Data: -131498
-      - m_Data: -109638
-      - m_Data: -109634
-      - m_Data: -109622
-      - m_Data: -109618
-      - m_Data: -109614
-      - m_Data: -109530
-      - m_Data: -109526
-      - m_Data: -109466
-      - m_Data: -109458
-      - m_Data: -109438
-      - m_Data: -109426
-      - m_Data: -109222
-      - m_Data: -109218
-      - m_Data: -109122
-      - m_Data: -40764
-      - m_Data: -1370
-      - m_Data: -1368
-      - m_Data: -1366
-      - m_Data: -1364
-      - m_Data: -1358
-      - m_Data: -1352
-      - m_Data: 56494
-      - m_Data: 57158
-      - m_Data: 58436
-      - m_Data: 58582
-      - m_Data: 61922
-      - m_Data: 62542
-      - m_Data: 69558
-      - m_Data: 72876
-      - m_Data: 72884
-      - m_Data: 72974
-      - m_Data: 73182
-      - m_Data: 73242
-      - m_Data: 73334
-      - m_Data: 73430
-      - m_Data: 73436
-      - m_Data: 73506
-      - m_Data: 73734
-      - m_Data: 103020
-      - m_Data: 103420
-      - m_Data: 103452
-      m_RenameOverlay:
-        m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
-        m_EditFieldRect:
-          serializedVersion: 2
-          x: 0
-          y: 0
-          width: 0
-          height: 0
-        m_UserData:
-          m_Data: 0
-        m_IsWaitingForDelay: 0
-        m_IsRenaming: 0
-        m_OriginalEventType: 11
-        m_IsRenamingFilename: 0
-        m_TrimLeadingAndTrailingWhitespace: 0
-        m_ClientGUIView: {fileID: 5}
-      m_SearchString: 
-    m_ExpandedScenes: []
-    m_CurrenRootEntityId:
-      m_Data: 0
-    m_LockTracker:
-      m_IsLocked: 0
-    m_CurrentSortingName: TransformSorting
-  m_WindowGUID: bc1a0baa7b4e0624faffaa4cc1ba4f53
---- !u!114 &8
-MonoBehaviour:
-  m_ObjectHideFlags: 52
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 1
-  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: SceneView
-  m_EditorClassIdentifier: 
-  m_Children: []
-  m_Position:
-    serializedVersion: 2
-    x: 403
-    y: 0
-    width: 998
-    height: 543
-  m_MinSize: {x: 202, y: 226}
-  m_MaxSize: {x: 4002, y: 4026}
-  m_ActualView: {fileID: 2}
-  m_Panes:
-  - {fileID: 2}
-  - {fileID: 9}
-  - {fileID: 10}
-  - {fileID: 11}
-  m_Selected: 0
-  m_LastSelected: 2
---- !u!114 &9
+--- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1018,10 +1452,10 @@ MonoBehaviour:
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 408
-    y: 87
-    width: 987
-    height: 512
+    x: 403
+    y: 79
+    width: 999
+    height: 517
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1068,7 +1502,7 @@ MonoBehaviour:
     m_HSlider: 0
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
-    m_EnableMouseInput: 0
+    m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
     m_EnableSliderZoomVertical: 0
     m_UniformScale: 1
@@ -1077,400 +1511,29 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 21
-      width: 987
-      height: 491
-    m_Scale: {x: 0.45462963, y: 0.45462963}
-    m_Translation: {x: 493.5, y: 245.5}
+      width: 999
+      height: 496
+    m_Scale: {x: 0.45925927, y: 0.45925927}
+    m_Translation: {x: 499.5, y: 248}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -1085.499
+      x: -1087.621
       y: -540
-      width: 2170.998
+      width: 2175.242
       height: 1080
     m_MinimalGUI: 1
-  m_defaultScale: 0.45462963
-  m_LastWindowPixelSize: {x: 987, y: 512}
+  m_defaultScale: 0.45925927
+  m_LastWindowPixelSize: {x: 999, y: 517}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000000000000000000
   m_XRRenderMode: 0
   m_RenderTexture: {fileID: 0}
   m_showToolbar: 1
---- !u!114 &10
-MonoBehaviour:
-  m_ObjectHideFlags: 52
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3424c03dd9e533544a90f81267b56ab8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-Editor-firstpass::PixelCrushers.DialogueSystem.DialogueEditor.DialogueEditorWindow
-  m_MinSize: {x: 720, y: 240}
-  m_MaxSize: {x: 4000, y: 4000}
-  m_TitleContent:
-    m_Text: Dialogue
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-    m_TextWithWhitespace: "Dialogue\u200B"
-  m_Pos:
-    serializedVersion: 2
-    x: 403
-    y: 79
-    width: 996
-    height: 517
-  m_SerializedDataModeController:
-    m_DataMode: 0
-    m_PreferredDataMode: 0
-    m_SupportedDataModes: 
-    isAutomatic: 1
-  m_ViewDataDictionary: {fileID: 0}
-  m_OverlayCanvas:
-    m_LastAppliedPresetName: Default
-    m_SaveData: []
-    m_ContainerData: []
-    m_DynamicPanelContainerData: []
-    m_OverlaysVisible: 1
-    m_DynamicPanelBehavior: 0
-  actorFoldouts:
-    propertiesKeys: 
-    propertiesValues: 
-    fieldsKeys: ffffffff000000000100000005000000
-    fieldsValues: 01000100
-  actorFilter: 
-  hideFilteredOutActors: 0
-  actorListSelectedIndex: 5
-  actorTexturesFoldout: 1
-  actorSpritesFoldout: 1
-  showNodeEditor: 1
-  currentConversationID: 16
-  globalSearchText: 
-  globalReplaceText: 
-  globalSearchSpecificConversation: 0
-  globalSearchConversationIndex: -1
-  globalSearchUseRegex: 0
-  databaseFoldouts:
-    database: 1
-    emphasisSettings: 0
-    emphasisSetting: 
-    globalReplace: 0
-    merge: 0
-    export: 0
-    localization: 0
-    stats: 0
-    checkIssues: 0
-    editorSettings: 0
-    AI: 0
-  databaseToMerge: {fileID: 0}
-  conflictingIDRule: 0
-  mergeProperties: 1
-  mergeEmphases: 1
-  mergeActors: 1
-  mergeItems: 1
-  mergeLocations: 1
-  mergeVariables: 1
-  mergeConversations: 1
-  exportFormat: 0
-  chatMapperExportPath: 
-  csvExportPath: 
-  jsonExportPath: 
-  voiceoverExportPath: 
-  languageTextExportPath: 
-  screenplayExportPath: 
-  proofreadingExportPath: 
-  entrytagFormat: 0
-  encodingType: 4
-  isSearchBarOpen: 0
-  searchString: 
-  searchCaseSensitive: 0
-  currentEntryID: -1
-  itemFoldouts:
-    propertiesKeys: 
-    propertiesValues: 
-    fieldsKeys: ffffffff0100000000000000
-    fieldsValues: 010101
-  itemFilter: 
-  hideFilteredOutItems: 0
-  itemListSelectedIndex: 0
-  questEntrySelectedIdx: 0
-  showCompactQuestEntryList: 0
-  localizationLanguages:
-    languages: []
-    extraEntryFields: []
-    extraQuestFields: []
-    extraItemFields: []
-    importMainTextIndex: -1
-    outputFolder: 
-  exportLocalizationConversationTitle: 0
-  exportLocalizationKeyField: 0
-  exportAssignFieldValues: 0
-  exportLocalizationCreateNewFields: 0
-  exportIncludeEntriesWithoutText: 0
-  localizationKeyField: Articy Id
-  localizationEntrySortMethod: 0
-  locationFoldouts:
-    propertiesKeys: 
-    propertiesValues: 
-    fieldsKeys: 
-    fieldsValues: 
-  locationFilter: 
-  hideFilteredOutLocations: 0
-  locationListSelectedIndex: -1
-  toolbar:
-    current: 5
-  database: {fileID: 11400000, guid: 0b2bc021b8fb9f94abd8ece4da831df7, type: 2}
-  debug: 0
-  registerCompleteObjectUndo: 1
-  scrollPosition: {x: 0, y: 0}
-  templateFoldouts:
-    templates: 0
-    actors: 0
-    items: 0
-    quests: 0
-    locations: 0
-    conversations: 0
-    dialogueEntries: 0
-    variables: 0
-  variableView:
-    database: {fileID: 11400000, guid: 0b2bc021b8fb9f94abd8ece4da831df7, type: 2}
-    isDialogueEditorWindow: 1
-    variableFilter: 
-    showVariableGroupFoldouts: 1
-    expandedVariableGroups: []
-  watches: []
-  autoUpdateWatches: 0
-  watchUpdateFrequency: 1
-  nextWatchUpdateTime: 33693.749386999996
-  watchableVariableNames:
-  - Alert
-  - Beach_Corpse_Crab
-  - Beach_Corpse_Found
-  - Beach_Corpse_Sword
-  - boosted
-  - BugSlain
-  - DescriptionText
-  - PlayerTheir
-  - PlayerTheirs
-  - PlayerThem
-  - PlayerThey
-  - SwirlingIsle_Beach_WreckFound
-  - SwirlingIsle_Beach_WreckLooted
-  - TestVar.One
-  - TestVar.Two.four
-  - TestVar.Two.three
-  watchableQuestNames:
-  - Kill the bug
-  - Stranded
-  luaCommand: 
-  zoomLocked: 0
-  _zoom: 0.49000046
-  canvasRectWidthMultiplier: 1
-  canvasScrollView: {x: 100000, y: 100000}
-  canvasScrollPosition: {x: 1294.5173, y: 38.77545}
-  conversationTitles:
-  - TestConvo1
-  - DescriptionBark
-  - Shopkeep
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.SurvivorCamp.Diane
-  - SwirlingIsle.SurvivorCamp.Will
-  - SwirlingIsle.PirateCamp.Boat
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Mate
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.PirateCamp.Sleepy
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.PirateCamp.Sloop
-  - SwirlingIsle.Temple.Captain
-  conversationTitlesForMenu:
-  - TestConvo1
-  - DescriptionBark
-  - Shopkeep
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.SurvivorCamp.Diane
-  - SwirlingIsle.SurvivorCamp.Will
-  - SwirlingIsle.PirateCamp.Boat
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Mate
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.PirateCamp.Sleepy
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.PirateCamp.Sloop
-  - SwirlingIsle.Temple.Captain
-  conversationIndex: 15
-  confirmDelete: 1
-  trimWhitespaceAroundPipes: 1
-  conversationTitleFilter: 
-  prevConversationStack:
-  - DescriptionBark
-  - TestConvo1
-  - DescriptionBark
-  - TestConvo1
-  - New Conversation 3
-  - TestConvo1
-  - Shopkeep
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - Shopkeep
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - DescriptionBark
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Corpse
-  - TestConvo1
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.PirateCamp.Mate
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.SurvivorCamp.Diane
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.PirateCamp.Sleepy
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Mate
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.SurvivorCamp.Charles
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.PirateCamp.Boat
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.PirateCamp.Boat
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Boat
-  - SwirlingIsle.PirateCamp.Cask
-  - SwirlingIsle.PirateCamp.Boat
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Boat
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Sloop
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.PirateCamp.Sloop
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.PirateCamp.Sloop
-  - SwirlingIsle.PirateCamp.Arrival
-  - SwirlingIsle.PirateCamp.Sloop
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.PirateCamp.Sloop
-  - SwirlingIsle.Beach.Corpse
-  - SwirlingIsle.Beach.Wreck
-  - SwirlingIsle.Temple.Captain
-  - SwirlingIsle.PirateCamp.Captain
-  - SwirlingIsle.Temple.Captain
-  - SwirlingIsle.SurvivorCamp.Triggs
-  - SwirlingIsle.Temple.Captain
-  nextConversationStack: []
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1492,10 +1555,10 @@ MonoBehaviour:
     m_TextWithWhitespace: "Animator\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 404
-    y: 87
-    width: 998
-    height: 633
+    x: 403
+    y: 79
+    width: 996
+    height: 517
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1531,14 +1594,14 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
-    - e00: 0.76792455
+    - e00: 0.6236932
       e01: 0
       e02: 0
-      e03: -23.39624
+      e03: 36.404816
       e10: 0
-      e11: 0.76792455
+      e11: 0.6236932
       e12: 0
-      e13: 204.84906
+      e13: 234.55293
       e20: 0
       e21: 0
       e22: 1
@@ -1596,7 +1659,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 543
-    width: 1401
+    width: 1404
     height: 398
   m_MinSize: {x: 231, y: 276}
   m_MaxSize: {x: 10001, y: 10026}
@@ -1606,7 +1669,7 @@ MonoBehaviour:
   - {fileID: 14}
   - {fileID: 15}
   m_Selected: 0
-  m_LastSelected: 2
+  m_LastSelected: 1
 --- !u!114 &13
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1630,7 +1693,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 622
-    width: 1400
+    width: 1403
     height: 372
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1656,7 +1719,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Scripts/UniqueScripts
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1666,59 +1729,65 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 65
   m_LastFolders:
-  - Assets
+  - Assets/Scripts/UniqueScripts
   m_LastFoldersGridSize: 65
   m_LastProjectPath: C:\Users\Jackson\Arcane Isles
   m_LockTracker:
     m_IsLocked: 0
   m_LastLocalAssetsSearchArea: 1
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 31}
+    scrollPos: {x: 0, y: 352}
     m_SelectedIDs:
-    - m_Data: 66958
+    - m_Data: 198346
     m_LastClickedID:
-      m_Data: 66958
+      m_Data: 198346
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66958
-    - m_Data: 66960
-    - m_Data: 66962
-    - m_Data: 66964
-    - m_Data: 66966
-    - m_Data: 66968
-    - m_Data: 66970
-    - m_Data: 66972
-    - m_Data: 66974
-    - m_Data: 66976
-    - m_Data: 66978
-    - m_Data: 66980
-    - m_Data: 66982
-    - m_Data: 66984
-    - m_Data: 66986
-    - m_Data: 66988
-    - m_Data: 66990
-    - m_Data: 66992
-    - m_Data: 66994
-    - m_Data: 66996
-    - m_Data: 66998
-    - m_Data: 67000
-    - m_Data: 67002
-    - m_Data: 67004
-    - m_Data: 67006
-    - m_Data: 67008
-    - m_Data: 67010
-    - m_Data: 67012
-    - m_Data: 67014
-    - m_Data: 67016
-    - m_Data: 67018
-    - m_Data: 67020
-    - m_Data: 67022
-    - m_Data: 67024
-    - m_Data: 67026
-    - m_Data: 72788
-    - m_Data: 72792
-    - m_Data: 72796
-    - m_Data: 96974
+    - m_Data: 69668
+    - m_Data: 69670
+    - m_Data: 69672
+    - m_Data: 69674
+    - m_Data: 69676
+    - m_Data: 69678
+    - m_Data: 69680
+    - m_Data: 69682
+    - m_Data: 69684
+    - m_Data: 69686
+    - m_Data: 69688
+    - m_Data: 69690
+    - m_Data: 69692
+    - m_Data: 69694
+    - m_Data: 69696
+    - m_Data: 69698
+    - m_Data: 69700
+    - m_Data: 69702
+    - m_Data: 69704
+    - m_Data: 69706
+    - m_Data: 69708
+    - m_Data: 69710
+    - m_Data: 69712
+    - m_Data: 69714
+    - m_Data: 69716
+    - m_Data: 69718
+    - m_Data: 69720
+    - m_Data: 69722
+    - m_Data: 69724
+    - m_Data: 69726
+    - m_Data: 69728
+    - m_Data: 69730
+    - m_Data: 69732
+    - m_Data: 69734
+    - m_Data: 69736
+    - m_Data: 70270
+    - m_Data: 70286
+    - m_Data: 70290
+    - m_Data: 100566
+    - m_Data: 100570
+    - m_Data: 100582
+    - m_Data: 100596
+    - m_Data: 100604
+    - m_Data: 190682
+    - m_Data: 190684
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1752,41 +1821,41 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66958
-    - m_Data: 66960
-    - m_Data: 66962
-    - m_Data: 66964
-    - m_Data: 66966
-    - m_Data: 66968
-    - m_Data: 66970
-    - m_Data: 66972
-    - m_Data: 66974
-    - m_Data: 66976
-    - m_Data: 66978
-    - m_Data: 66980
-    - m_Data: 66982
-    - m_Data: 66984
-    - m_Data: 66986
-    - m_Data: 66988
-    - m_Data: 66990
-    - m_Data: 66992
-    - m_Data: 66994
-    - m_Data: 66996
-    - m_Data: 66998
-    - m_Data: 67000
-    - m_Data: 67002
-    - m_Data: 67004
-    - m_Data: 67006
-    - m_Data: 67008
-    - m_Data: 67010
-    - m_Data: 67012
-    - m_Data: 67014
-    - m_Data: 67016
-    - m_Data: 67018
-    - m_Data: 67020
-    - m_Data: 67022
-    - m_Data: 67024
-    - m_Data: 67026
+    - m_Data: 69668
+    - m_Data: 69670
+    - m_Data: 69672
+    - m_Data: 69674
+    - m_Data: 69676
+    - m_Data: 69678
+    - m_Data: 69680
+    - m_Data: 69682
+    - m_Data: 69684
+    - m_Data: 69686
+    - m_Data: 69688
+    - m_Data: 69690
+    - m_Data: 69692
+    - m_Data: 69694
+    - m_Data: 69696
+    - m_Data: 69698
+    - m_Data: 69700
+    - m_Data: 69702
+    - m_Data: 69704
+    - m_Data: 69706
+    - m_Data: 69708
+    - m_Data: 69710
+    - m_Data: 69712
+    - m_Data: 69714
+    - m_Data: 69716
+    - m_Data: 69718
+    - m_Data: 69720
+    - m_Data: 69722
+    - m_Data: 69724
+    - m_Data: 69726
+    - m_Data: 69728
+    - m_Data: 69730
+    - m_Data: 69732
+    - m_Data: 69734
+    - m_Data: 69736
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1815,9 +1884,9 @@ MonoBehaviour:
       m_ResourceFile: 
   m_ListAreaState:
     m_SelectedInstanceIDs:
-    - m_Data: 53832
+    - m_Data: -258414
     m_LastClickedEntityId:
-      m_Data: 53832
+      m_Data: -258414
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs:
     - m_Data: 337272
@@ -1831,6 +1900,7 @@ MonoBehaviour:
     - m_Data: 113082
     - m_Data: 172856
     - m_Data: 590470
+    - m_Data: 100446
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1882,10 +1952,10 @@ MonoBehaviour:
     m_TextWithWhitespace: "Animation\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 8
-    y: 749
-    width: 1391
-    height: 244
+    x: 0
+    y: 622
+    width: 1403
+    height: 372
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1902,7 +1972,7 @@ MonoBehaviour:
   m_LockTracker:
     m_IsLocked: 0
   m_LastSelectedObjectID:
-    m_Data: -125868
+    m_Data: -258414
 --- !u!114 &15
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1926,7 +1996,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 622
-    width: 1400
+    width: 1403
     height: 372
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1956,9 +2026,9 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 1401
+    x: 1404
     y: 0
-    width: 519
+    width: 516
     height: 941
   m_MinSize: {x: 276, y: 76}
   m_MaxSize: {x: 4001, y: 4026}
@@ -1988,9 +2058,9 @@ MonoBehaviour:
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1401
+    x: 1404
     y: 79
-    width: 518
+    width: 515
     height: 915
   m_SerializedDataModeController:
     m_DataMode: 0
