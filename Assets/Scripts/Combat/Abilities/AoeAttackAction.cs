@@ -64,4 +64,9 @@ public class AoeAttackAction : PointAction
         CombatManager.Instance.abilityEffectMarker.transform.position = target + new Vector3(0, 1, 0);
         CombatManager.Instance.abilityEffectMarker.GetComponent<DecalProjector>().size = new Vector3(radius * 2, radius * 2, 3f);
     }
+
+    public override string ActionInfo()
+    {
+        return "Action Points: " + actionCost + "\nDamage: " + damageDie + "D + " + "\nRange: " + range + "m" + "\nRadius: " + radius + "m"; //TODO: allow modifiers on AOE
+    }
 }

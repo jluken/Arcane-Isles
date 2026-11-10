@@ -470,8 +470,11 @@ public class CombatManager : MonoBehaviour
 
     public void ToggleSneak()
     {
-        Debug.Log("Toggle sneak");
-        sneaking = !sneaking;
+        if (!UIController.Instance.StopClock())
+        {
+            Debug.Log("Toggle sneak");
+            sneaking = !sneaking;
+        }        
     }
 
 }

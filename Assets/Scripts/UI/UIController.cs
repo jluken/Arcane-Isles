@@ -19,7 +19,7 @@ public class UIController : MonoBehaviour
     public MainMenu mainMenu;
     public LoadingScreen loadingScreen;
     public CharCreateMenu charCreateMenu;
-    public CharacterMenu initCharMenu;
+    //public CharacterMenu initCharMenu;
     public GameOverScreen gameOverScreen;
     public Slides slideScreen;
     public NavMapScript NavMap;
@@ -62,6 +62,7 @@ public class UIController : MonoBehaviour
     private Dictionary<string, MenuScreen> screenKeyCodes;
 
     private bool talking;
+    public bool intro;  // todo: find more elegant solution
 
     private void Awake()
     {
@@ -71,7 +72,7 @@ public class UIController : MonoBehaviour
             mainMenu,
             loadingScreen,
             charCreateMenu,
-            initCharMenu,
+            //initCharMenu,
             gameOverScreen,
             slideScreen,
             NavMap
@@ -167,14 +168,15 @@ public class UIController : MonoBehaviour
         bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking;
         if (OverlayMenus.Any(menu => menu.IsActive())) ActivateDefaultScreen();
         else if (!noButtonMenus) ActivatePauseMenu();
-        else if (initCharMenu.IsActive()) ActivateCharacterCreation();
+        else if (intro) ActivateCharacterCreation();
     }
     public void HandleJournalKey(string key)
     {
-        bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking;
+        bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking || intro;
         if (!noButtonMenus && !JournalLockMenus.Any(menu => menu.IsActive()))
         {
             var currOpen = screenKeyCodes[key].IsActive();
+            Debug.Log("Go close book");
             CloseLogbook();
             if (!currOpen)
             {
@@ -215,8 +217,9 @@ public class UIController : MonoBehaviour
     public void ActivateInitCharMenu()
     {
         DeactivateAllMenus();
-        initCharMenu.SetInitLevel(true);
-        initCharMenu.ActivateMenu();
+        intro = true;
+        characterMenu.SetInitLevel(true);
+        characterMenu.ActivateMenu();
     }
 
     public void StartSlides(SlideshowImages images)
@@ -274,9 +277,9 @@ public class UIController : MonoBehaviour
         menuDropdown.ActivateMenu();
     }
 
-    public void ActivateInfobox(string text)
+    public void ActivateInfobox(string title, string text)
     {
-        infoBox.SetInfo(SelectionController.MousePosition(), text);
+        infoBox.SetInfo(SelectionController.MousePosition(), title, text);
         infoBox.ActivateMenu();
     }
 

@@ -19,13 +19,13 @@ public class EntityInventory : MonoBehaviour
     public InventoryData initHoldMainHand;
     public InventoryData initHoldOffHand;
     public InventoryData initTorso;
-    public InventoryData initCoat;
+    //public InventoryData initCoat;
     public InventoryData initHead;
     public InventoryData initFace;
-    public InventoryData initLegs;
+    //public InventoryData initLegs;
     public InventoryData initBoots;
-    public InventoryData initNecklace;
-    public InventoryData initHands;
+    //public InventoryData initNecklace;
+    //public InventoryData initHands;
     //public InventoryData initLeftHand;
 
     public struct InventoryStack
@@ -50,13 +50,13 @@ public class EntityInventory : MonoBehaviour
         holdMainHand,
         holdOffHand,
         torso,
-        coat,
+        //coat,
         head,
         face,
-        legs,
+        //legs,
         boots,
-        neck,
-        hands,
+        //neck,
+        //hands,
         //leftHand,
         na
     };
@@ -65,13 +65,13 @@ public class EntityInventory : MonoBehaviour
         { EquipmentInvType.holdMainHand, new () { ItemType.weapon, ItemType.consumable, ItemType.misc } },
         { EquipmentInvType.holdOffHand, new () { ItemType.consumable, ItemType.misc } }, // TODO: feat that lets you put some weapons in offhand (cheaper AP than two mainhand attacks)
         { EquipmentInvType.torso, new () { ItemType.torso } },
-        { EquipmentInvType.coat, new () { ItemType.coat } },
+        //{ EquipmentInvType.coat, new () { ItemType.coat } },
         { EquipmentInvType.head, new () { ItemType.headwear } },
         { EquipmentInvType.face, new () { ItemType.face } },
-        { EquipmentInvType.legs, new () { ItemType.legwear } },
+        //{ EquipmentInvType.legs, new () { ItemType.legwear } },
         { EquipmentInvType.boots, new () { ItemType.footwear } },
-        { EquipmentInvType.neck, new () { ItemType.neckwear } },
-        { EquipmentInvType.hands, new () { ItemType.handwear } },
+        //{ EquipmentInvType.neck, new () { ItemType.neckwear } },
+        //{ EquipmentInvType.hands, new () { ItemType.handwear } },
         //{ EquipmentInvType.leftHand, new () { ItemType.handwear } }
     };
 
@@ -79,26 +79,26 @@ public class EntityInventory : MonoBehaviour
     {
         { ItemType.weapon, new() { EquipmentInvType.holdMainHand } }, // TODO: add offhand when perk is on
         { ItemType.torso, new() { EquipmentInvType.torso } },
-        { ItemType.coat, new() { EquipmentInvType.coat } },
+        //{ ItemType.coat, new() { EquipmentInvType.coat } },
         { ItemType.headwear, new() { EquipmentInvType.head } },
         { ItemType.face, new() { EquipmentInvType.face } },
-        { ItemType.legwear, new() { EquipmentInvType.legs } },
+        //{ ItemType.legwear, new() { EquipmentInvType.legs } },
         { ItemType.footwear, new() { EquipmentInvType.boots } },
-        { ItemType.neckwear, new() { EquipmentInvType.neck } },
-        { ItemType.handwear, new() { EquipmentInvType.hands } }
+        //{ ItemType.neckwear, new() { EquipmentInvType.neck } },
+        //{ ItemType.handwear, new() { EquipmentInvType.hands } }
     };
 
     public Dictionary<EquipmentInvType, InventoryData> equipment = new Dictionary<EquipmentInvType, InventoryData>() {
         { EquipmentInvType.holdMainHand, null },
         { EquipmentInvType.holdOffHand, null },
         { EquipmentInvType.torso, null },
-        { EquipmentInvType.coat, null },
+        //{ EquipmentInvType.coat, null },
         { EquipmentInvType.head, null },
         { EquipmentInvType.face, null },
-        { EquipmentInvType.legs, null },
+        //{ EquipmentInvType.legs, null },
         { EquipmentInvType.boots, null },
-        { EquipmentInvType.neck, null },
-        { EquipmentInvType.hands, null },
+        //{ EquipmentInvType.neck, null },
+        //{ EquipmentInvType.hands, null },
         //{ EquipmentInvType.leftHand, null }
     };
 
@@ -122,13 +122,13 @@ public class EntityInventory : MonoBehaviour
         equipment[EquipmentInvType.holdMainHand] = initHoldMainHand;
         equipment[EquipmentInvType.holdOffHand] = initHoldOffHand;
         equipment[EquipmentInvType.torso] = initTorso;
-        equipment[EquipmentInvType.coat] = initCoat;
+        //equipment[EquipmentInvType.coat] = initCoat;
         equipment[EquipmentInvType.head] = initHead;
         equipment[EquipmentInvType.face] = initFace;
-        equipment[EquipmentInvType.legs] = initLegs;
+        //equipment[EquipmentInvType.legs] = initLegs;
         equipment[EquipmentInvType.boots] = initBoots;
-        equipment[EquipmentInvType.neck] = initNecklace;
-        equipment[EquipmentInvType.hands] = initHands;
+        //equipment[EquipmentInvType.neck] = initNecklace;
+        //equipment[EquipmentInvType.hands] = initHands;
         //equipment[EquipmentInvType.leftHand] = initLeftHand;
     }
 

@@ -13,5 +13,5 @@ public class GameSaveData
     public Dictionary<string, SceneSaveData> SceneData;
     public Dictionary<string, byte[]> MapData;
     public string dialogData;
-    public float gameTime;
+    public double gameTime;
 }

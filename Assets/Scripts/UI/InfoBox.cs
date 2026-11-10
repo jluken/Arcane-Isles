@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class InfoBox : MenuScreen
 {
     public GameObject infoBox;
+    public TMP_Text titleText;
     public TMP_Text infoText;
     // TODO: maybe add option for icon in horizontal layout?
 
@@ -26,8 +27,9 @@ public class InfoBox : MenuScreen
         infoActive = false;
     }
 
-    public void SetInfo(Vector3 pos, string text)
+    public void SetInfo(Vector3 pos, string title, string text)
     {
+        titleText.text = title;
         infoText.text = text;
 
         var menuDims = infoBox.GetComponent<RectTransform>().rect;

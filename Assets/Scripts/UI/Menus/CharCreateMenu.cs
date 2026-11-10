@@ -13,16 +13,24 @@ public class CharCreateMenu : MenuScreen
 
     private bool active;
 
-    public int remainingPoints { get; private set; } = 2;
+    public int remainingPoints { get; private set; } = 7;
 
     private Dictionary<StatVal, int> attrPoints = new Dictionary<StatVal, int>()
     {
-        { StatVal.vigor, 3},
-        { StatVal.finesse, 3},
-        { StatVal.psyche, 3}
+        { StatVal.vigor, 1},
+        { StatVal.finesse, 1},
+        { StatVal.psyche, 1}
     };
 
-    public TMP_InputField nameField;
+    public int age;
+    public TMP_Text ageTxt;
+    public Button ageUp;
+    public Button ageDown;
+    public int maxAge = 30;
+    public int minAge = 18;
+
+    public TMP_InputField firstNameField;
+    public TMP_InputField lastNameField;
     public TMP_Dropdown genderField;
     public Image portrait;
 
@@ -57,11 +65,11 @@ public class CharCreateMenu : MenuScreen
     {
         attrPoints = new Dictionary<StatVal, int>()
         {
-            { StatVal.vigor, 3},
-            { StatVal.finesse, 3},
-            { StatVal.psyche, 3}
+            { StatVal.vigor, 1},
+            { StatVal.finesse, 1},
+            { StatVal.psyche, 1}
         };
-        remainingPoints = 2;
+        remainingPoints = 7;
         PartyController.Instance.playerChar.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMesh = meshes[0];
         PartyController.Instance.playerChar.renderBody.GetComponent<SkinnedMeshRenderer>().material = colors[0];
 
@@ -75,7 +83,10 @@ public class CharCreateMenu : MenuScreen
         charCreateMenu.SetActive(true);
         active = true;
 
-        foreach (AbilityBar a in abilityBars) a.Populate(3);
+        foreach (AbilityBar a in abilityBars) a.Populate(attrPoints[a.ability]);
+        CheckRemaining();
+
+        ageTxt.text = age.ToString();
 
         List<string> colorOptions = new();
         colorMap = new();
@@ -127,8 +138,7 @@ public class CharCreateMenu : MenuScreen
         if (remainingPoints < 1) return;
         remainingPoints -= 1;
         attrPoints[attr] += 1;
-        pointLeftTxt.text = remainingPoints.ToString();
-        proceed.interactable = remainingPoints == 0;
+        CheckRemaining();
     }
 
     public void DecreaseAttr(StatVal attr)
@@ -137,8 +147,51 @@ public class CharCreateMenu : MenuScreen
         if (attrPoints[attr] <= 1) return;
         remainingPoints += 1;
         attrPoints[attr] -= 1;
+        CheckRemaining();
+    }
+
+    public void IncreaseAge()
+    {
+        age++;
+        ageDown.interactable = true;  // TODO: make this into a "button" util
+        ageDown.GetComponent<CanvasGroup>().alpha = 1f;
+        if (age >= maxAge)
+        {
+            age = maxAge;
+            ageUp.interactable = false;  // TODO: make this into a "button" util
+            ageUp.GetComponent<CanvasGroup>().alpha = 0.5f;
+        }
+        ageTxt.text = age.ToString();
+    }
+
+    public void DecreaseAge()
+    {
+        age--;
+        ageUp.interactable = true;  // TODO: make this into a "button" util
+        ageUp.GetComponent<CanvasGroup>().alpha = 1f;
+        if (age <= minAge)
+        {
+            age = minAge;
+            ageDown.interactable = false;  // TODO: make this into a "button" util
+            ageDown.GetComponent<CanvasGroup>().alpha = 0.5f;
+        }
+        ageTxt.text = age.ToString();
+    }
+
+    public void CheckRemaining()
+    {
         pointLeftTxt.text = remainingPoints.ToString();
-        proceed.interactable = remainingPoints == 0;
+        var nameFilled = !string.IsNullOrEmpty(firstNameField.text) || !string.IsNullOrEmpty(lastNameField.text);
+        if (remainingPoints > 0 || !nameFilled)
+        {
+            proceed.interactable = false;  // TODO: make this into a "button" util
+            proceed.GetComponent<CanvasGroup>().alpha = 0.5f;
+        }
+        else
+        {
+            proceed.interactable = true;
+            proceed.GetComponent<CanvasGroup>().alpha = 1f;
+        }
     }
 
     public void UpdateAppearance()
@@ -165,11 +218,14 @@ public class CharCreateMenu : MenuScreen
     {
         Debug.Log("Finish creation");
         Debug.Log("Remaining points: " + remainingPoints);
-        if (remainingPoints > 0) return; // TODO: check for name
+
+        if (remainingPoints > 0 || (string.IsNullOrEmpty(firstNameField.text) && string.IsNullOrEmpty(lastNameField.text))) return;
         PartyController.Instance.playerChar.charStats.SetStat(StatVal.vigor, attrPoints[StatVal.vigor]);
         PartyController.Instance.playerChar.charStats.SetStat(StatVal.finesse, attrPoints[StatVal.finesse]);
         PartyController.Instance.playerChar.charStats.SetStat(StatVal.psyche, attrPoints[StatVal.psyche]);
-        PartyController.Instance.playerChar.charStats.charName = nameField.text;
+        PartyController.Instance.playerChar.charStats.setDerivedStats();
+        var mononym = string.IsNullOrEmpty(firstNameField.text) ? lastNameField.text : string.IsNullOrEmpty(lastNameField.text) ? firstNameField.text : null;
+        PartyController.Instance.playerChar.charStats.charName = mononym ?? (firstNameField.text + " " + lastNameField.text);
         PartyController.Instance.playerChar.charStats.charImage = portrait.sprite;
         string gender = genderField.options[genderField.value].text;
         if (gender == "M") {
@@ -178,7 +234,6 @@ public class CharCreateMenu : MenuScreen
             DialogueLua.SetVariable("PlayerTheir", "his");
             DialogueLua.SetVariable("PlayerTheirs", "his");
             DialogueLua.SetVariable("PlayerThey're", "he's");
-            DialogueLua.SetVariable("PlayerFirstName", nameField.text);
             DialogueLua.SetVariable("PlayerFormal", "gentleman");
             DialogueLua.SetVariable("PlayerInformal", "lad");
         }
@@ -189,7 +244,6 @@ public class CharCreateMenu : MenuScreen
             DialogueLua.SetVariable("PlayerTheir", "her");
             DialogueLua.SetVariable("PlayerTheirs", "hers");
             DialogueLua.SetVariable("PlayerThey're", "she's");
-            DialogueLua.SetVariable("PlayerFirstName", nameField.text);
             DialogueLua.SetVariable("PlayerFormal", "lady");
             DialogueLua.SetVariable("PlayerInformal", "lass");
         }
@@ -200,11 +254,13 @@ public class CharCreateMenu : MenuScreen
             DialogueLua.SetVariable("PlayerTheir", "their");
             DialogueLua.SetVariable("PlayerTheirs", "theirs");
             DialogueLua.SetVariable("PlayerThey're", "they're");
-            DialogueLua.SetVariable("PlayerFirstName", nameField.text);
             DialogueLua.SetVariable("PlayerFormal", "gentleperson");
             DialogueLua.SetVariable("PlayerInformal", "kid");
         }
+        DialogueLua.SetVariable("PlayerFirstName", mononym ?? firstNameField.text);
+        DialogueLua.SetVariable("PlayerLastName", mononym ?? lastNameField.text);
         PartyController.Instance.playerChar.charStats.gender = gender;  // TODO: maybe just create function to get pronouns instead of Lua variables
+        PartyController.Instance.playerChar.charStats.age = age;
 
         //DeactivateMenu();
         UIController.Instance.ActivateInitCharMenu();

@@ -7,7 +7,7 @@ public class WanderState : IdleState
 {
     private Character npc;
     private bool waiting = false;
-    private float waitTime = 0f;
+    private double waitTime = 0f;
     public WanderState(Character npc, CharStateMachine enemyStateMachine, List<SelectionData> actions) : base(npc, enemyStateMachine, actions)
     {
         //mover = enemy.mover;

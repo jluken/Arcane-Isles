@@ -5,11 +5,11 @@ public class GameData : MonoBehaviour
 {
     public static GameData Instance { get; private set; }
 
-    public float gameTime;
+    public double gameTime;
 
-    private static long secsInDay = 86400;
-    private static long daysInMonth = 30;
-    private static long monthsInYear = 12;
+    private static int secsInDay = 86400;
+    private static int daysInMonth = 30;
+    private static int monthsInYear = 12;
 
     public static string[] months = {  // TODO: make more months
         "Month 1",
@@ -30,7 +30,7 @@ public class GameData : MonoBehaviour
     public int startYear = 715;
     public int startMonth = 7;
     public int startDay = 30; // 31; (only 30 days a month for now)
-    public float startSecs = 28800;
+    public int startSecs = 28800;
 
     void Awake()
     {
@@ -44,7 +44,7 @@ public class GameData : MonoBehaviour
         gameTime = DateToSec(startYear, startMonth, startDay, startSecs);
     }
 
-    public float DateToSec(long year, long month, long day, float seconds)
+    public double DateToSec(long year, long month, long day, double seconds)
     {
         Debug.Log("Year secs: " + (year * monthsInYear * daysInMonth * secsInDay));
         Debug.Log("Month secs: " + (month * daysInMonth * secsInDay));
@@ -55,7 +55,7 @@ public class GameData : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!CombatManager.Instance.combatActive || !UIController.Instance.StopClock()) gameTime += Time.deltaTime;  // Time incremented by CombatManager during combat
+        if (!CombatManager.Instance.combatActive || !UIController.Instance.StopClock()){ gameTime += Time.deltaTime;}  // Time incremented by CombatManager during combat
     }
 
     public static string DateString(float time)  // TODO: make calendar system

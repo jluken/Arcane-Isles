@@ -18,7 +18,7 @@ public class CharacterMenu : MenuScreen
 
     public GameObject CharMenu;
     public List<SkillBar> skillBars;
-    private Dictionary<StatVal, int> statIncreases;
+    //private Dictionary<StatVal, int> statIncreases;
     public TMP_Text vigor;
     public TMP_Text finesse;
     public TMP_Text psyche;
@@ -30,6 +30,7 @@ public class CharacterMenu : MenuScreen
     public Image portrait;
     public TMP_Text nameField;
     public TMP_Text gender;
+    public TMP_Text age;
 
     public TMP_Text level;
     public TMP_Text levelChange;
@@ -53,6 +54,7 @@ public class CharacterMenu : MenuScreen
     public Sprite emptySprite;
     public Sprite availableSprite;
     public Sprite extraAvailableSprite;
+    public Sprite extraTempSetSprite;
     public Sprite extraTempFilledSprite;
     public Sprite bonusSprite;
     public Sprite penaltySprite;
@@ -67,7 +69,8 @@ public class CharacterMenu : MenuScreen
     public Button prepareSigils;
 
     public GameObject Tabs;
-    private bool initLevel;
+    public GameObject InitTabs;
+    private bool initLevel; // TODO: find more elegant way to handle this
 
     public GameObject emptyButtonPrefab;
 
@@ -79,12 +82,12 @@ public class CharacterMenu : MenuScreen
         //etchedSigilObjs = new List<GameObject>();
         //preparedSigilObjs = new List<GameObject>();
 
-        statIncreases = new Dictionary<StatVal, int>();
+        //statIncreases = new Dictionary<StatVal, int>();
     }
 
     private void Start()
     {
-        levelUpButton.onClick.AddListener(AttemptLevel);
+        levelUpButton.onClick.AddListener(LevelUp);
     }
 
     public override void DeactivateMenu()
@@ -99,9 +102,7 @@ public class CharacterMenu : MenuScreen
     {
         UIActive = true;
         currChar = PartyController.Instance.selectedPartyMember;
-
-        initLevel = false;
-        Tabs.SetActive(true);
+        //SetInitLevel(false);
 
         int xpLevel = PartyController.Instance.GetLevelByXP();
         bool levelUp = xpLevel > currChar.charStats.GetCurrStat(StatVal.level) && currChar == PartyController.Instance.playerChar;
@@ -111,7 +112,7 @@ public class CharacterMenu : MenuScreen
         Debug.Log("Set char menu");
 
         foreach (SkillBar s in skillBars) s.Populate(currChar, levelUp);
-        foreach (StatVal skill in CharStats.Skills) statIncreases[skill] = 0;
+        //foreach (StatVal skill in CharStats.Skills) statIncreases[skill] = 0;
         vigor.text = currChar.charStats.GetCurrStat(StatVal.vigor, false).ToString();
         finesse.text = currChar.charStats.GetCurrStat(StatVal.finesse, false).ToString();
         psyche.text = currChar.charStats.GetCurrStat(StatVal.psyche, false).ToString();
@@ -119,6 +120,7 @@ public class CharacterMenu : MenuScreen
         portrait.sprite = currChar.charStats.charImage;
         nameField.text = currChar.charStats.charName;
         gender.text = currChar.charStats.gender;
+        age.text = currChar.charStats.age.ToString();
 
         level.text = currChar.charStats.GetRawStat(StatVal.level).ToString();
         HP.text = currChar.charStats.GetRawStat(StatVal.maxHealth).ToString();
@@ -138,7 +140,7 @@ public class CharacterMenu : MenuScreen
         skillPointText.gameObject.SetActive(levelUp);
         skillPoints.gameObject.SetActive(levelUp);
         if (levelUp) {
-            availPoints = (2 * xpLevel) - currChar.charStats.GetTotalSkillPoints(); // 2 skill points per level up, but skill bar won't let two on the same skill
+            availPoints = (1 * xpLevel) - currChar.charStats.GetTotalSkillPoints(); // 1 skill point per level up, but skill bar won't let two on the same skill
             skillPoints.text = availPoints.ToString();
             PreviewStats();
         }
@@ -148,15 +150,17 @@ public class CharacterMenu : MenuScreen
 
     public void SetInitLevel(bool isInit)
     {
+        Debug.Log("Set init level: " + isInit);
         initLevel = isInit;
         Tabs.SetActive(!isInit);
+        InitTabs.SetActive(isInit);
     }
 
     public void SpendPoints(StatVal skill, int amount = 1)
     {
         availPoints -= amount;
-        if (amount > 0) statIncreases[skill] += 1;
-        else statIncreases[skill] -= 1;
+        //if (amount > 0) statIncreases[skill] += 1;
+        //else statIncreases[skill] -= 1;
         skillPoints.text = availPoints.ToString();
         foreach (SkillBar s in skillBars) s.UpdateBoxes(currChar);
         PreviewStats();
@@ -166,13 +170,17 @@ public class CharacterMenu : MenuScreen
     {
         var newLevel = PartyController.Instance.GetLevelByXP();
         // TODO: possibly refactor to avoid mismatch
-        var newHp = 10 + newLevel * currChar.charStats.GetCurrStat(StatVal.vigor);
-        var newMp = newLevel + 2 * (currChar.charStats.GetCurrStat(StatVal.arcana) + statIncreases[StatVal.arcana]);
-        var newAp = 6 + currChar.charStats.GetCurrStat(StatVal.finesse);
-        var newSpeed = (currChar.charStats.GetCurrStat(StatVal.athletics) + statIncreases[StatVal.athletics]) / 3.0f;
+        var newEndurance = skillBars.First(bar => bar.stat == StatVal.endurance).NewPoints();
+        var newHp = CharStats.MaxHealthCalc(currChar.charStats.GetCurrStat(StatVal.endurance) + newEndurance);
+        var newArcana = skillBars.First(bar => bar.stat == StatVal.arcana).NewPoints();
+        var newMp = CharStats.MaxMagickCalc(currChar.charStats.GetCurrStat(StatVal.arcana) + newArcana);
+        Debug.Log("new endurance: " + newEndurance);
+        var newAp = currChar.charStats.GetRawStat(StatVal.actionPoints);  // TODO: put attribute vals in character creator
+        var newAthletics = skillBars.First(bar => bar.stat == StatVal.athletics).NewPoints();
+        var newSpeed = CharStats.MaxMagickCalc(currChar.charStats.GetCurrStat(StatVal.athletics) + newAthletics);
 
-        if (newLevel > currChar.charStats.level) levelChange.text = "+" + (newLevel - currChar.charStats.level);
-        else levelChange.text = "";
+        //if (newLevel > currChar.charStats.level) levelChange.text = "+" + (newLevel - currChar.charStats.level);
+        //else levelChange.text = "";
         if (newHp > currChar.charStats.GetRawStat(StatVal.maxHealth)) hpChange.text = "+" + (newHp - currChar.charStats.GetRawStat(StatVal.maxHealth));
         else hpChange.text = "";
         if (newMp > currChar.charStats.GetRawStat(StatVal.maxMagick)) mpChange.text = "+" + (newMp - currChar.charStats.GetRawStat(StatVal.maxMagick));
@@ -183,7 +191,7 @@ public class CharacterMenu : MenuScreen
         else speedChange.text = "";
     }
 
-    public void AttemptLevel()
+    public void AttemptLevel()  // TODO: maybe not necessary with new system
     {
         if (availPoints == 0) LevelUp();
         else LevelWarning.SetActive(true);
@@ -197,12 +205,13 @@ public class CharacterMenu : MenuScreen
     public void LevelUp()
     {
         CloseWarning();
-        int xpLevel = PartyController.Instance.GetLevelByXP();
-        currChar.charStats.SetStat(StatVal.level, xpLevel);
-        foreach (SkillBar s in skillBars) { s.ApplyChanges(currChar); s.Populate(currChar); }
+        //int xpLevel = PartyController.Instance.GetLevelByXP();
+        int addedPoints = 0;
+        foreach (SkillBar s in skillBars) { addedPoints += s.ApplyChanges(currChar); }
+        currChar.charStats.SetStat(StatVal.level, currChar.charStats.GetCurrStat(StatVal.level) + addedPoints);
         currChar.charStats.setDerivedStats();
-        if (initLevel) ActivateMenu();
-        else SceneLoader.Instance.InitSpawn();
+        if (!initLevel) ActivateMenu();
+        else { UIController.Instance.intro = false; SceneLoader.Instance.InitSpawn(); }
     }
 
     private void DisplaySigils()

@@ -10,6 +10,7 @@ public class CharStats : MonoBehaviour
     public Sprite charImage;
     public string charName;
     public string gender = "X";
+    public int age = 20;
 
     public Character character => gameObject.GetComponent<Character>();
 
@@ -73,6 +74,21 @@ public class CharStats : MonoBehaviour
     };
 
     public Dictionary<StatVal, int> statMap = new Dictionary<StatVal, int>(); // current vals 
+    public Dictionary<StatVal, int> skillBoxMap = new Dictionary<StatVal, int>() // Available options in level up screen
+    {
+        { StatVal.athletics, 1 },
+        { StatVal.survival, 1 },
+        { StatVal.endurance, 1 },
+        { StatVal.intimidation, 1 },
+        { StatVal.guile, 1 },
+        { StatVal.precision, 1 },
+        { StatVal.sleightOfHand, 1 },
+        { StatVal.stealth, 1 },
+        { StatVal.persuasion, 1 },
+        { StatVal.insight, 1 },
+        { StatVal.arcana, 1 },
+        { StatVal.physick, 1 },
+    }; 
 
     public static List<StatVal> Attributes = new List<StatVal>() { StatVal.vigor, StatVal.finesse, StatVal.psyche};
 
@@ -90,13 +106,19 @@ public class CharStats : MonoBehaviour
         { StatVal.arcana, StatVal.psyche },
         { StatVal.physick, StatVal.psyche },
     };
+    private static Dictionary<StatVal, StatVal[]> AttrSkillMap = new Dictionary<StatVal, StatVal[]>() // inverse of above
+    {
+        { StatVal.vigor, new StatVal[] {StatVal.athletics, StatVal.survival, StatVal.endurance, StatVal.intimidation} },
+        { StatVal.finesse, new StatVal[] {StatVal.guile, StatVal.precision, StatVal.sleightOfHand, StatVal.stealth} },
+        { StatVal.psyche, new StatVal[] {StatVal.persuasion, StatVal.insight, StatVal.arcana, StatVal.physick} }
+    };
     public static bool IsAttribute(StatVal statVal) => Attributes.Contains(statVal);
 
     public static List<StatVal> Skills => SkillAttrMap.Keys.ToList();
     public static bool IsSkill(StatVal stat) => SkillAttrMap.Keys.Contains(stat);
 
     private Dictionary<int, (StatVal, int)> modifiers = new Dictionary<int, (StatVal, int)>(); // id: (stat, amount)
-    private Dictionary<int, float> modifierTimeouts = new Dictionary<int, float>(); // id: (stat, endTime)
+    private Dictionary<int, double> modifierTimeouts = new Dictionary<int, double>(); // id: (stat, endTime)
 
     private Random rnd;
 
@@ -129,7 +151,7 @@ public class CharStats : MonoBehaviour
 
         statMap[StatVal.intimidation] = statData.intimidation;
         statMap[StatVal.athletics] = statData.athletics;
-        statMap[StatVal.survival] = statData.melee;
+        statMap[StatVal.survival] = statData.survival;
         statMap[StatVal.endurance] = statData.endurance;
 
         statMap[StatVal.guile] = statData.guile;
@@ -137,10 +159,25 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.sleightOfHand] = statData.sleightOfHand;
         statMap[StatVal.stealth] = statData.stealth;
 
-        statMap[StatVal.physick] = statData.survival;
+        statMap[StatVal.physick] = statData.physick;
         statMap[StatVal.insight] = statData.perception;
         statMap[StatVal.arcana] = statData.arcana;
         statMap[StatVal.persuasion] = statData.persuasion;
+
+        skillBoxMap[StatVal.intimidation] = statData.intimidationBoxes;
+        skillBoxMap[StatVal.athletics] = statData.athleticsBoxes;
+        skillBoxMap[StatVal.survival] = statData.survivalBoxes;
+        skillBoxMap[StatVal.endurance] = statData.enduranceBoxes;
+
+        skillBoxMap [StatVal.guile] = statData.guileBoxes;
+        skillBoxMap[StatVal.precision] = statData.precisionBoxes;
+        skillBoxMap[StatVal.sleightOfHand] = statData.sleightOfHandBoxes;
+        skillBoxMap[StatVal.stealth] = statData.stealthBoxes;
+
+        skillBoxMap[StatVal.physick] = statData.physickBoxes;
+        skillBoxMap[StatVal.insight] = statData.perceptionBoxes;
+        skillBoxMap[StatVal.arcana] = statData.arcanaBoxes;
+        skillBoxMap[StatVal.persuasion] = statData.persuasionBoxes;
 
         setDerivedStats();
 
@@ -148,14 +185,18 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.magick] = statData.magick;
     }
 
-    private int maxHealth => 12 + (2 * GetCurrStat(StatVal.endurance));
-    private int maxMagick => 2 * GetCurrStat(StatVal.arcana);
+    public static int MaxHealthCalc(int endurance) { return 12 + (2 * endurance);  }
+    private int maxHealth => MaxHealthCalc(GetCurrStat(StatVal.endurance));
+    public static int MaxMagickCalc(int arcana) { return 2 * arcana; }
+    private int maxMagick => MaxMagickCalc(GetCurrStat(StatVal.arcana));
     private int sigilSlots => (GetCurrStat(StatVal.arcana) + 1) / 2;
-    private int actionPoints => 6 + GetCurrStat(StatVal.finesse);
+    public static int ActionPointsCalc(int finesse) { return 6 + finesse; }
+    private int actionPoints => ActionPointsCalc(GetCurrStat(StatVal.finesse));
     private int evade => GetCurrStat(StatVal.finesse) + 6;  // TODO: make it easier to hit? Is this used?
     public int strengthBonus => GetCurrStat(StatVal.vigor) / 2;
 
-    public float runModifier => GetCurrStat(StatVal.athletics) / 3.0f;
+    public float RunModCalc(int athletics) { return athletics / 3f; }
+    public float runModifier => RunModCalc(GetCurrStat(StatVal.athletics));
     public float barterModifier => GetCurrStat(StatVal.persuasion) / 6.0f;
 
     public void setDerivedStats()  // TODO: is this necessary? just reference directly.
@@ -185,19 +226,31 @@ public class CharStats : MonoBehaviour
         statMap[StatVal.finesse] = finesse;
 
         statMap[StatVal.intimidation] = intimidation;
+        skillBoxMap[StatVal.intimidation] = vigor;
         statMap[StatVal.athletics] = athletics;
+        skillBoxMap[StatVal.athletics] = vigor;
         statMap[StatVal.survival] = survival;
+        skillBoxMap[StatVal.survival] = vigor;
         statMap[StatVal.endurance] = endurance;
+        skillBoxMap[StatVal.endurance] = vigor;
 
         statMap[StatVal.guile] = guile;
+        skillBoxMap[StatVal.guile] = finesse;
         statMap[StatVal.precision] = precision;
+        skillBoxMap[StatVal.precision] = finesse;
         statMap[StatVal.sleightOfHand] = sleightOfHand;
+        skillBoxMap[StatVal.sleightOfHand] = finesse;
         statMap[StatVal.stealth] = stealth;
+        skillBoxMap[StatVal.stealth] = finesse;
 
         statMap[StatVal.physick] = physick;
+        skillBoxMap[StatVal.physick] = psyche;
         statMap[StatVal.insight] = insight;
+        skillBoxMap[StatVal.insight] = psyche;
         statMap[StatVal.arcana] = arcana;
+        skillBoxMap[StatVal.arcana] = psyche;
         statMap[StatVal.persuasion] = persuasion;
+        skillBoxMap[StatVal.persuasion] = psyche;
 
         setDerivedStats();
         maxBars();
@@ -232,7 +285,7 @@ public class CharStats : MonoBehaviour
         return newId;
     }
 
-    private void CheckForExpiration(float time)
+    private void CheckForExpiration(double time)
     {
         var expired = modifierTimeouts.Where(pair => pair.Value >= time).Select(pair => pair.Key);
         foreach (var modId in expired) { 
@@ -269,8 +322,26 @@ public class CharStats : MonoBehaviour
 
     public void SetStat(StatVal stat, int val)
     {
+        int statChange = val - statMap[stat];
         statMap[stat] = val;
+        if (Attributes.Contains(stat))
+        {  
+            foreach (var skill in AttrSkillMap[stat])
+            {
+                skillBoxMap[skill] += statChange;
+            }
+        }
         PartyController.Instance.UpdateParty();
+    }
+
+    public void SetStatBoxes(StatVal stat, int val)
+    {
+        skillBoxMap[stat] = val;
+    }
+
+    public int GetStatBoxes(StatVal stat)
+    {
+        return skillBoxMap[stat];
     }
 
     public void ResetSkills() { foreach (var skill in SkillAttrMap.Keys) statMap[skill] = 0; }

@@ -76,7 +76,7 @@ public class NavMapPage : MonoBehaviour, IPointerClickHandler
 
             if (AccessibleTerrain(newMapPos))
             {
-                GameData.Instance.gameTime += Time.unscaledDeltaTime * 600; // TODO: figure out actual travel time
+                GameData.Instance.gameTime += (long)Time.unscaledDeltaTime * 600; // TODO: figure out actual travel time
 
                 PartyController.Instance.worldMapPos = newMapPos;
 

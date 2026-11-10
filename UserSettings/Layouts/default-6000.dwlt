@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 112}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 105483
+  controlID: 55
   draggingID: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 112}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 105407
+  controlID: 56
   draggingID: 0
 --- !u!114 &7
 MonoBehaviour:
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 56}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 105408
+  controlID: 57
   draggingID: 0
 --- !u!114 &8
 MonoBehaviour:
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: DialogueEditorWindow
+  m_Name: SceneView
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -219,16 +219,16 @@ MonoBehaviour:
     y: 0
     width: 1001
     height: 543
-  m_MinSize: {x: 722, y: 266}
+  m_MinSize: {x: 202, y: 226}
   m_MaxSize: {x: 4002, y: 4026}
-  m_ActualView: {fileID: 13}
+  m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 16}
   - {fileID: 17}
   - {fileID: 13}
   - {fileID: 18}
-  m_Selected: 2
-  m_LastSelected: 0
+  m_Selected: 0
+  m_LastSelected: 1
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -256,7 +256,7 @@ MonoBehaviour:
   - {fileID: 20}
   - {fileID: 21}
   m_Selected: 0
-  m_LastSelected: 1
+  m_LastSelected: 2
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -570,8 +570,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Dialogue\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 404
-    y: 24
+    x: 403
+    y: 79
     width: 999
     height: 517
   m_SerializedDataModeController:
@@ -598,7 +598,7 @@ MonoBehaviour:
   actorTexturesFoldout: 1
   actorSpritesFoldout: 1
   showNodeEditor: 1
-  currentConversationID: 22
+  currentConversationID: 20
   globalSearchText: 
   globalReplaceText: 
   globalSearchSpecificConversation: 0
@@ -638,7 +638,7 @@ MonoBehaviour:
   isSearchBarOpen: 0
   searchString: 
   searchCaseSensitive: 0
-  currentEntryID: -1
+  currentEntryID: 14
   itemFoldouts:
     propertiesKeys: 
     propertiesValues: 
@@ -739,10 +739,10 @@ MonoBehaviour:
   - Stranded
   luaCommand: 
   zoomLocked: 0
-  _zoom: 1
+  _zoom: 0.5800004
   canvasRectWidthMultiplier: 1
   canvasScrollView: {x: 100000, y: 100000}
-  canvasScrollPosition: {x: 0, y: 0}
+  canvasScrollPosition: {x: 153.44824, y: 222.41357}
   conversationTitles:
   - TestConvo1
   - DescriptionBark
@@ -762,7 +762,7 @@ MonoBehaviour:
   - SwirlingIsle.PirateCamp.Sloop
   - SwirlingIsle.Temple.Captain
   - SwirlingIsle.Temple.EnterSide
-  - SwirlingIsle.Temple.MagicText
+  - SwirlingIsle.Temple.MagicPool
   - SwirlingIsle.Temple.Teleport1
   - SwirlingIsle.Temple.Teleport2
   - SwirlingIsle.Temple.Idol
@@ -785,11 +785,11 @@ MonoBehaviour:
   - SwirlingIsle.PirateCamp.Sloop
   - SwirlingIsle.Temple.Captain
   - SwirlingIsle.Temple.EnterSide
-  - SwirlingIsle.Temple.MagicText
+  - SwirlingIsle.Temple.MagicPool
   - SwirlingIsle.Temple.Teleport1
   - SwirlingIsle.Temple.Teleport2
   - SwirlingIsle.Temple.Idol
-  conversationIndex: 21
+  conversationIndex: 19
   confirmDelete: 1
   trimWhitespaceAroundPipes: 1
   conversationTitleFilter: 
@@ -968,6 +968,50 @@ MonoBehaviour:
   - SwirlingIsle.PirateCamp.Arrival
   - SwirlingIsle.Temple.Captain
   - SwirlingIsle.PirateCamp.Arrival
+  - SwirlingIsle.Temple.Idol
+  - SwirlingIsle.Temple.EnterSide
+  - SwirlingIsle.Temple.MagicText
+  - SwirlingIsle.Temple.EnterSide
+  - SwirlingIsle.Temple.Captain
+  - SwirlingIsle.Temple.EnterSide
+  - SwirlingIsle.Temple.MagicText
+  - SwirlingIsle.Temple.EnterSide
+  - SwirlingIsle.Temple.MagicText
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.Temple.MagicPool
+  - SwirlingIsle.Temple.Captain
+  - SwirlingIsle.Temple.MagicPool
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.Temple.Idol
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.PirateCamp.Rowboat
+  - SwirlingIsle.PirateCamp.Sloop
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.Temple.Teleport2
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.Temple.Idol
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.Temple.Idol
+  - SwirlingIsle.Temple.EnterSide
+  - SwirlingIsle.Temple.Idol
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.Temple.Idol
+  - SwirlingIsle.PirateCamp.Cask
+  - SwirlingIsle.Temple.Idol
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.Temple.Idol
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.Temple.Teleport2
+  - SwirlingIsle.Temple.Teleport1
+  - SwirlingIsle.Temple.Teleport2
   nextConversationStack: []
 --- !u!114 &14
 MonoBehaviour:
@@ -1014,17 +1058,7 @@ MonoBehaviour:
       m_LastClickedID:
         m_Data: 0
       m_ExpandedIDs:
-      - m_Data: -244522
-      - m_Data: -238888
-      - m_Data: -197600
-      - m_Data: -46768
-      - m_Data: -44150
-      - m_Data: -28402
-      - m_Data: -1376
-      - m_Data: -1374
-      - m_Data: -1370
-      - m_Data: -1366
-      - m_Data: -1362
+      - m_Data: -1346
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1096,72 +1130,35 @@ MonoBehaviour:
       m_LastClickedID:
         m_Data: 0
       m_ExpandedIDs:
-      - m_Data: -244522
-      - m_Data: -238888
-      - m_Data: -223064
-      - m_Data: -223056
-      - m_Data: -223054
-      - m_Data: -223050
-      - m_Data: -205492
-      - m_Data: -198352
-      - m_Data: -198350
-      - m_Data: -198348
-      - m_Data: -198344
-      - m_Data: -198260
-      - m_Data: -197600
-      - m_Data: -193996
-      - m_Data: -193654
-      - m_Data: -193430
-      - m_Data: -189808
-      - m_Data: -187638
-      - m_Data: -177720
-      - m_Data: -169906
-      - m_Data: -151364
-      - m_Data: -151362
-      - m_Data: -151360
-      - m_Data: -151350
-      - m_Data: -151340
-      - m_Data: -151338
-      - m_Data: -151336
-      - m_Data: -151322
-      - m_Data: -151320
-      - m_Data: -151318
-      - m_Data: -151292
-      - m_Data: -149458
-      - m_Data: -141808
-      - m_Data: -141806
-      - m_Data: -108008
-      - m_Data: -83238
-      - m_Data: -79816
-      - m_Data: -9904
-      - m_Data: -1376
-      - m_Data: -1374
-      - m_Data: -1372
-      - m_Data: -1370
-      - m_Data: -1366
-      - m_Data: -1362
-      - m_Data: -1352
-      - m_Data: 65268
-      - m_Data: 65324
-      - m_Data: 65386
-      - m_Data: 65576
-      - m_Data: 65872
-      - m_Data: 65982
-      - m_Data: 66034
-      - m_Data: 66162
-      - m_Data: 66848
-      - m_Data: 66874
-      - m_Data: 66878
-      - m_Data: 66882
-      - m_Data: 66894
-      - m_Data: 122400
-      - m_Data: 122524
-      - m_Data: 129434
-      - m_Data: 149878
-      - m_Data: 149890
-      - m_Data: 205234
-      - m_Data: 205428
-      - m_Data: 205588
+      - m_Data: -1346
+      - m_Data: -1328
+      - m_Data: 56204
+      - m_Data: 56328
+      - m_Data: 56550
+      - m_Data: 57138
+      - m_Data: 57600
+      - m_Data: 57960
+      - m_Data: 58106
+      - m_Data: 58570
+      - m_Data: 58728
+      - m_Data: 59174
+      - m_Data: 59220
+      - m_Data: 59298
+      - m_Data: 59766
+      - m_Data: 59988
+      - m_Data: 60056
+      - m_Data: 60116
+      - m_Data: 60696
+      - m_Data: 61042
+      - m_Data: 61144
+      - m_Data: 61620
+      - m_Data: 62046
+      - m_Data: 62208
+      - m_Data: 62684
+      - m_Data: 63598
+      - m_Data: 63930
+      - m_Data: 64104
+      - m_Data: 94290
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1209,8 +1206,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Scene\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 403
-    y: 79
+    x: 404
+    y: 24
     width: 999
     height: 517
   m_SerializedDataModeController:
@@ -1769,9 +1766,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 142.9872, y: -67.25062, z: -516.9017}
+    m_Target: {x: 1313, y: 272, z: 0}
     speed: 2
-    m_Value: {x: 142.9872, y: -67.25062, z: -516.9017}
+    m_Value: {x: 1313, y: 272, z: 0}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1818,13 +1815,13 @@ MonoBehaviour:
     m_gridOpacity: 0.5
     m_NearestPlaneToHandleMode: 0
   m_Rotation:
-    m_Target: {x: -0.06507454, y: -0.90513915, z: 0.39246288, w: -0.14407746}
+    m_Target: {x: 0, y: 0, z: 0, w: 1}
     speed: 2
-    m_Value: {x: 0.06507454, y: 0.90513915, z: -0.39246288, w: 0.14407746}
+    m_Value: {x: -0, y: 0, z: -0, w: -1}
   m_Size:
-    m_Target: 54.49789
+    m_Target: 550.12286
     speed: 2
-    m_Value: 54.49789
+    m_Value: 550.12286
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -2118,7 +2115,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Scripts/UI/Menus/InventoryMenus
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -2128,65 +2125,66 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 65
   m_LastFolders:
-  - Assets
+  - Assets/Scripts/UI/Menus/InventoryMenus
   m_LastFoldersGridSize: 65
   m_LastProjectPath: C:\Users\Jackson\Arcane Isles
   m_LockTracker:
     m_IsLocked: 0
   m_LastLocalAssetsSearchArea: 1
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 31}
+    scrollPos: {x: 0, y: 623}
     m_SelectedIDs:
-    - m_Data: 69668
+    - m_Data: 67526
     m_LastClickedID:
-      m_Data: 69668
+      m_Data: 67526
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 67026
-    - m_Data: 67028
-    - m_Data: 67030
-    - m_Data: 67032
-    - m_Data: 67034
-    - m_Data: 67036
-    - m_Data: 67038
-    - m_Data: 67040
-    - m_Data: 67042
-    - m_Data: 67044
-    - m_Data: 67046
-    - m_Data: 67048
-    - m_Data: 67050
-    - m_Data: 67052
-    - m_Data: 67054
-    - m_Data: 67056
-    - m_Data: 67058
-    - m_Data: 67060
-    - m_Data: 67062
-    - m_Data: 67064
-    - m_Data: 67066
-    - m_Data: 67068
-    - m_Data: 67070
-    - m_Data: 67072
-    - m_Data: 67074
-    - m_Data: 67076
-    - m_Data: 67078
-    - m_Data: 67080
-    - m_Data: 67082
-    - m_Data: 67084
-    - m_Data: 67086
-    - m_Data: 67088
-    - m_Data: 67090
-    - m_Data: 67092
-    - m_Data: 67094
-    - m_Data: 67096
-    - m_Data: 67098
-    - m_Data: 67100
-    - m_Data: 67102
-    - m_Data: 67104
-    - m_Data: 67106
-    - m_Data: 67108
-    - m_Data: 67110
-    - m_Data: 67112
-    - m_Data: 67114
+    - m_Data: 69020
+    - m_Data: 69022
+    - m_Data: 69024
+    - m_Data: 69026
+    - m_Data: 69028
+    - m_Data: 69030
+    - m_Data: 69032
+    - m_Data: 69034
+    - m_Data: 69036
+    - m_Data: 69038
+    - m_Data: 69040
+    - m_Data: 69042
+    - m_Data: 69044
+    - m_Data: 69046
+    - m_Data: 69048
+    - m_Data: 69050
+    - m_Data: 69052
+    - m_Data: 69054
+    - m_Data: 69056
+    - m_Data: 69058
+    - m_Data: 69060
+    - m_Data: 69062
+    - m_Data: 69064
+    - m_Data: 69066
+    - m_Data: 69068
+    - m_Data: 69070
+    - m_Data: 69072
+    - m_Data: 69074
+    - m_Data: 69076
+    - m_Data: 69078
+    - m_Data: 69080
+    - m_Data: 69082
+    - m_Data: 69084
+    - m_Data: 69086
+    - m_Data: 69088
+    - m_Data: 69090
+    - m_Data: 69092
+    - m_Data: 69094
+    - m_Data: 69096
+    - m_Data: 69098
+    - m_Data: 69100
+    - m_Data: 69102
+    - m_Data: 69104
+    - m_Data: 69106
+    - m_Data: 69108
+    - m_Data: 69110
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2220,51 +2218,52 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 67026
-    - m_Data: 67028
-    - m_Data: 67030
-    - m_Data: 67032
-    - m_Data: 67034
-    - m_Data: 67036
-    - m_Data: 67038
-    - m_Data: 67040
-    - m_Data: 67042
-    - m_Data: 67044
-    - m_Data: 67046
-    - m_Data: 67048
-    - m_Data: 67050
-    - m_Data: 67052
-    - m_Data: 67054
-    - m_Data: 67056
-    - m_Data: 67058
-    - m_Data: 67060
-    - m_Data: 67062
-    - m_Data: 67064
-    - m_Data: 67066
-    - m_Data: 67068
-    - m_Data: 67070
-    - m_Data: 67072
-    - m_Data: 67074
-    - m_Data: 67076
-    - m_Data: 67078
-    - m_Data: 67080
-    - m_Data: 67082
-    - m_Data: 67084
-    - m_Data: 67086
-    - m_Data: 67088
-    - m_Data: 67090
-    - m_Data: 67092
-    - m_Data: 67094
-    - m_Data: 67096
-    - m_Data: 67098
-    - m_Data: 67100
-    - m_Data: 67102
-    - m_Data: 67104
-    - m_Data: 67106
-    - m_Data: 67108
-    - m_Data: 67110
-    - m_Data: 67112
-    - m_Data: 67114
+    - m_Data: 69020
+    - m_Data: 69022
+    - m_Data: 69024
+    - m_Data: 69026
+    - m_Data: 69028
+    - m_Data: 69030
+    - m_Data: 69032
+    - m_Data: 69034
+    - m_Data: 69036
+    - m_Data: 69038
+    - m_Data: 69040
+    - m_Data: 69042
+    - m_Data: 69044
+    - m_Data: 69046
+    - m_Data: 69048
+    - m_Data: 69050
+    - m_Data: 69052
+    - m_Data: 69054
+    - m_Data: 69056
+    - m_Data: 69058
+    - m_Data: 69060
+    - m_Data: 69062
+    - m_Data: 69064
+    - m_Data: 69066
+    - m_Data: 69068
+    - m_Data: 69070
+    - m_Data: 69072
+    - m_Data: 69074
+    - m_Data: 69076
+    - m_Data: 69078
+    - m_Data: 69080
+    - m_Data: 69082
+    - m_Data: 69084
+    - m_Data: 69086
+    - m_Data: 69088
+    - m_Data: 69090
+    - m_Data: 69092
+    - m_Data: 69094
+    - m_Data: 69096
+    - m_Data: 69098
+    - m_Data: 69100
+    - m_Data: 69102
+    - m_Data: 69104
+    - m_Data: 69106
+    - m_Data: 69108
+    - m_Data: 69110
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2293,10 +2292,10 @@ MonoBehaviour:
       m_ResourceFile: 
   m_ListAreaState:
     m_SelectedInstanceIDs:
-    - m_Data: -1374
+    - m_Data: 59382
     m_LastClickedEntityId:
-      m_Data: -1374
-    m_HadKeyboardFocusLastEvent: 0
+      m_Data: 59382
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs:
     - m_Data: 337272
     - m_Data: 21026
@@ -2466,7 +2465,7 @@ MonoBehaviour:
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectEntityId:
     m_Data: 0
-  m_LastVerticalScrollValue: 0
+  m_LastVerticalScrollValue: 216
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:

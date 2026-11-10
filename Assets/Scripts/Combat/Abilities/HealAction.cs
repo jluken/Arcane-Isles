@@ -53,4 +53,9 @@ public class HealAction : InteractionAction
         else if (target != null) Cursor.SetCursor(CombatManager.Instance.attackCursorNull, Vector2.zero, CursorMode.Auto);
         else Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
     }
+
+    public override string ActionInfo()
+    {
+        return "Heal top " + actor.charStats.GetCurrStat(StatVal.physick) + "D of " + healthSlots;
+    }
 }

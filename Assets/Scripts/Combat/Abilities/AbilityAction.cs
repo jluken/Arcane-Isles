@@ -49,4 +49,9 @@ public abstract class AbilityAction
     {
         return action is MoveToPoint;
     }
+
+    public virtual string ActionInfo()
+    {
+        return "Action Points: " + actionCost;
+    }
 }

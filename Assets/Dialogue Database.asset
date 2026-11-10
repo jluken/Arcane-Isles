@@ -605,7 +605,7 @@ MonoBehaviour:
     - title: Name
       value: SwirlingIsle.Camp.RecruitCharles
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Initial Value
       value: False
       type: 2
@@ -613,7 +613,7 @@ MonoBehaviour:
     - title: Description
       value: 
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
   - id: 19
     fields:
     - title: Name
@@ -820,6 +820,20 @@ MonoBehaviour:
       value: False
       type: 2
       typeString: CustomFieldType_Boolean
+    - title: Description
+      value: 
+      type: 0
+      typeString: 
+  - id: 34
+    fields:
+    - title: Name
+      value: PlayerAge
+      type: 0
+      typeString: 
+    - title: Initial Value
+      value: 20
+      type: 1
+      typeString: CustomFieldType_Number
     - title: Description
       value: 
       type: 0

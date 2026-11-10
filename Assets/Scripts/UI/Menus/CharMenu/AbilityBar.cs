@@ -36,6 +36,7 @@ public class AbilityBar : SkillBar
 
     public override void BoxClicked(int boxId)
     {
+        if (boxId == 0) return;  // Min of 1 in each attribute
         bool anotherBox = boxId < CharStats.MaxSkillVal;
         if (boxId != storedAbilityVal && boxId != (storedAbilityVal - 1)) return;
         //if (boxId != lastMarked && boxId != lastMarked + 1) return;

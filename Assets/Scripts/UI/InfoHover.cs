@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 // Use only on UI elements
 public class InfoHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public string title;
     public string text;
 
     private bool isMouseOver;
@@ -13,7 +14,7 @@ public class InfoHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (isMouseOver)
         {
-            UIController.Instance.ActivateInfobox(text);
+            UIController.Instance.ActivateInfobox(title, text);
         }
     }
 

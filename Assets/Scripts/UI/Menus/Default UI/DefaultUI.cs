@@ -127,7 +127,8 @@ public class DefaultUI : MenuScreen
                 //var nextActionButton = Instantiate(ActionButtonPrefab, ActionMenu.transform);
                 //actionButtons.Add(nextActionButton);
                 actionButtons[i].GetComponent<Button>().image.sprite = actions[i] == null ? null : actions[i].icon;
-                actionButtons[i].GetComponent<InfoHover>().text = actions[i] == null ? "" : actions[i].actionName;
+                actionButtons[i].GetComponent<InfoHover>().title = actions[i] == null ? "" : actions[i].actionName;
+                actionButtons[i].GetComponent<InfoHover>().text = actions[i] == null ? "" : actions[i].ActionInfo();
                 int iCopy = i;
                 actionButtons[i].GetComponent<Button>().onClick.AddListener(() => CombatManager.Instance.SetCurrentAction(iCopy));
                 if (selectedNPC != PartyController.Instance.activePartyMember || CombatManager.Instance.InAction()) actionButtons[i].GetComponent<Button>().interactable = false;

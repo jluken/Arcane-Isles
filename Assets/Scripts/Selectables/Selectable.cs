@@ -114,7 +114,7 @@ public class Selectable : MonoBehaviour
         GetComponent<Outline>().enabled = true;
         GetComponent<Outline>().OutlineWidth = 1;
         GetComponent<Outline>().OutlineColor = Color.white;
-        if(!string.IsNullOrEmpty(hoverInfo)) UIController.Instance.ActivateInfobox(hoverInfo);
+        if(!string.IsNullOrEmpty(hoverInfo)) UIController.Instance.ActivateInfobox(hoverInfo, "");
         EventHandler.Instance.TriggerObjHover(this);
     }
 

@@ -284,13 +284,9 @@ MonoBehaviour:
   initHoldMainHand: {fileID: 0}
   initHoldOffHand: {fileID: 0}
   initTorso: {fileID: 0}
-  initCoat: {fileID: 0}
   initHead: {fileID: 0}
   initFace: {fileID: 0}
-  initLegs: {fileID: 0}
   initBoots: {fileID: 0}
-  initNecklace: {fileID: 0}
-  initHands: {fileID: 0}
   hasEquip: 0
   money: 0
   merchant: 0
@@ -316,7 +312,7 @@ MonoBehaviour:
   intimidation: 0
   athletics: 0
   survival: 0
-  repair: 0
+  endurance: 0
   guile: 0
   precision: 0
   sleightOfHand: 0
@@ -363,6 +359,7 @@ MonoBehaviour:
   reach: 1
   defaultWeapon: {fileID: 0}
   wanderZone: {fileID: 111872247}
+  charConversation: 
   combatantType: 2
   CombatBehavior: {fileID: 11400000, guid: c7642238240f56d46a5fefc7c55f6c1e, type: 2}
   PathMarkers: []
@@ -525,7 +522,7 @@ Transform:
   m_GameObject: {fileID: 111872245}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.66513, y: 0, z: -0.07841015}
+  m_LocalPosition: {x: 7.5, y: 0, z: -3.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1105,6 +1102,7 @@ MonoBehaviour:
   reach: 1
   defaultWeapon: {fileID: 0}
   wanderZone: {fileID: 810637600}
+  charConversation: 
   combatantType: 2
   CombatBehavior: {fileID: 11400000, guid: c7642238240f56d46a5fefc7c55f6c1e, type: 2}
   PathMarkers: []
@@ -1204,13 +1202,9 @@ MonoBehaviour:
   initHoldMainHand: {fileID: 0}
   initHoldOffHand: {fileID: 0}
   initTorso: {fileID: 0}
-  initCoat: {fileID: 0}
   initHead: {fileID: 0}
   initFace: {fileID: 0}
-  initLegs: {fileID: 0}
   initBoots: {fileID: 0}
-  initNecklace: {fileID: 0}
-  initHands: {fileID: 0}
   hasEquip: 0
   money: 0
   merchant: 0
@@ -1236,7 +1230,7 @@ MonoBehaviour:
   intimidation: 0
   athletics: 0
   survival: 0
-  repair: 0
+  endurance: 0
   guile: 0
   precision: 0
   sleightOfHand: 0
@@ -1978,6 +1972,7 @@ MonoBehaviour:
   reach: 1
   defaultWeapon: {fileID: 0}
   wanderZone: {fileID: 0}
+  charConversation: 
   combatantType: 2
   CombatBehavior: {fileID: 11400000, guid: c7642238240f56d46a5fefc7c55f6c1e, type: 2}
   PathMarkers: []
@@ -2077,13 +2072,9 @@ MonoBehaviour:
   initHoldMainHand: {fileID: 0}
   initHoldOffHand: {fileID: 0}
   initTorso: {fileID: 0}
-  initCoat: {fileID: 0}
   initHead: {fileID: 0}
   initFace: {fileID: 0}
-  initLegs: {fileID: 0}
   initBoots: {fileID: 0}
-  initNecklace: {fileID: 0}
-  initHands: {fileID: 0}
   hasEquip: 0
   money: 0
   merchant: 0
@@ -2109,7 +2100,7 @@ MonoBehaviour:
   intimidation: 0
   athletics: 0
   survival: 0
-  repair: 0
+  endurance: 0
   guile: 0
   precision: 0
   sleightOfHand: 0
@@ -5031,13 +5022,9 @@ MonoBehaviour:
   initHoldMainHand: {fileID: 0}
   initHoldOffHand: {fileID: 0}
   initTorso: {fileID: 0}
-  initCoat: {fileID: 0}
   initHead: {fileID: 0}
   initFace: {fileID: 0}
-  initLegs: {fileID: 0}
   initBoots: {fileID: 0}
-  initNecklace: {fileID: 0}
-  initHands: {fileID: 0}
   hasEquip: 0
   money: 0
   merchant: 0
@@ -5785,13 +5772,9 @@ MonoBehaviour:
   initHoldMainHand: {fileID: 0}
   initHoldOffHand: {fileID: 0}
   initTorso: {fileID: 0}
-  initCoat: {fileID: 0}
   initHead: {fileID: 0}
   initFace: {fileID: 0}
-  initLegs: {fileID: 0}
   initBoots: {fileID: 0}
-  initNecklace: {fileID: 0}
-  initHands: {fileID: 0}
   hasEquip: 0
   money: 0
   merchant: 0

@@ -17,17 +17,29 @@ public class PartyData
         public int finesse;
         public int psyche;
         public int intimidation;
+        public int intimidationBoxes;
         public int athletics;
-        public int melee;
-        public int endurance;
-        public int guile;
-        public int precision;
-        public int sleightOfHand;
-        public int stealth;
-        public int persuasion;
+        public int athleticsBoxes;
         public int survival;
+        public int survivalBoxes;
+        public int endurance;
+        public int enduranceBoxes;
+        public int guile;
+        public int guileBoxes;
+        public int precision;
+        public int precisionBoxes;
+        public int sleightOfHand;
+        public int sleightOfHandBoxes;
+        public int stealth;
+        public int stealthBoxes;
+        public int persuasion;
+        public int persuasionBoxes;
+        public int physick;
+        public int physickBoxes;
         public int perception;
+        public int perceptionBoxes;
         public int arcana;
+        public int arcanaBoxes;
     }
 
     [System.Serializable]
@@ -87,17 +99,29 @@ public class PartyData
         charStatData.vigor = charStats.GetCurrStat(CharStats.StatVal.vigor, false);
         charStatData.finesse = charStats.GetCurrStat(CharStats.StatVal.finesse, false);
         charStatData.intimidation = charStats.GetCurrStat(CharStats.StatVal.intimidation, false);
+        charStatData.intimidationBoxes = charStats.GetStatBoxes(CharStats.StatVal.intimidation);
         charStatData.athletics = charStats.GetCurrStat(CharStats.StatVal.athletics, false);
-        charStatData.melee = charStats.GetCurrStat(CharStats.StatVal.survival, false);
+        charStatData.athleticsBoxes = charStats.GetStatBoxes(CharStats.StatVal.athletics);
+        charStatData.survival = charStats.GetCurrStat(CharStats.StatVal.survival, false);
+        charStatData.survivalBoxes = charStats.GetStatBoxes(CharStats.StatVal.intimidation);
         charStatData.endurance = charStats.GetCurrStat(CharStats.StatVal.endurance, false);
+        charStatData.enduranceBoxes = charStats.GetStatBoxes(CharStats.StatVal.endurance);
         charStatData.guile = charStats.GetCurrStat(CharStats.StatVal.guile, false);
+        charStatData.guileBoxes = charStats.GetStatBoxes(CharStats.StatVal.guile);
         charStatData.precision = charStats.GetCurrStat(CharStats.StatVal.precision, false);
+        charStatData.precisionBoxes = charStats.GetStatBoxes(CharStats.StatVal.precision);
         charStatData.sleightOfHand = charStats.GetCurrStat(CharStats.StatVal.sleightOfHand, false);
+        charStatData.sleightOfHandBoxes = charStats.GetStatBoxes(CharStats.StatVal.sleightOfHand);
         charStatData.stealth = charStats.GetCurrStat(CharStats.StatVal.stealth, false);
+        charStatData.stealthBoxes = charStats.GetStatBoxes(CharStats.StatVal.stealth);
         charStatData.persuasion = charStats.GetCurrStat(CharStats.StatVal.persuasion, false);
-        charStatData.survival = charStats.GetCurrStat(CharStats.StatVal.physick, false);
+        charStatData.persuasionBoxes = charStats.GetStatBoxes(CharStats.StatVal.persuasion);
+        charStatData.physick = charStats.GetCurrStat(CharStats.StatVal.physick, false);
+        charStatData.physickBoxes = charStats.GetStatBoxes(CharStats.StatVal.physick);
         charStatData.perception = charStats.GetCurrStat(CharStats.StatVal.insight, false);
+        charStatData.perceptionBoxes = charStats.GetStatBoxes(CharStats.StatVal.insight);
         charStatData.arcana = charStats.GetCurrStat(CharStats.StatVal.arcana, false);
+        charStatData.arcanaBoxes = charStats.GetStatBoxes(CharStats.StatVal.arcana);
 
         return charStatData;
     }

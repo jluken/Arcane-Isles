@@ -68,9 +68,14 @@ public class AttackAction : InteractionAction
 
             var victim = target.GetComponent<Character>();
             var hitTarget = -1 * ((precisionAttack ? actor.charStats.GetCurrStat(StatVal.precision) : actor.charStats.GetCurrStat(StatVal.finesse)) - (victim.charStats.GetCurrStat(StatVal.finesse) + 6));
-            UIController.Instance.ActivateInfobox("To hit: " + (Dice.TwoDSixProb(hitTarget) * 100) + "%");
+            UIController.Instance.ActivateInfobox("To hit", (Dice.TwoDSixProb(hitTarget) * 100) + "%");
         }
         else if (target != null) Cursor.SetCursor(CombatManager.Instance.attackCursorNull, Vector2.zero, CursorMode.Auto);
         else Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+    }
+
+    public override string ActionInfo()
+    {
+        return "Action Points: " + actionCost + "\nDamage: " + damageDie + "D + " + modifier + "\nRange: " + range + "m";
     }
 }

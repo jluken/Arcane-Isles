@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
@@ -10,8 +11,7 @@ public class SkillBar : MonoBehaviour
     public StatVal stat;
     public List<SkillBox> SkillBoxes;
 
-    private int storedRankUp;
-    //private int lastMarked;
+    private int lastMarked;
 
     private bool levelUp;
 
@@ -21,18 +21,17 @@ public class SkillBar : MonoBehaviour
     {
         //Debug.Log("Populate skill bar " + stat);
         levelUp = skillsAvailable;
-        storedRankUp = 0;
         for (int i = 0; i < SkillBoxes.Count; i++) { SkillBoxes[i].boxId = i; SkillBoxes[i].Populate(SkillBox.BoxState.na); }
         int currStat = character.charStats.GetRawStat(stat);
         for (int i = 0; i < currStat; i++) { SkillBoxes[i].Populate(SkillBox.BoxState.filled); }
-        int currAbility = character.charStats.GetCurrStat(CharStats.GetSkillAbility(stat), false);
-        for (int i = currStat; i < currAbility; i++) { SkillBoxes[i].Populate(SkillBox.BoxState.empty); }
+        int currBoxes = character.charStats.GetStatBoxes(stat);
+        for (int i = currStat; i < currBoxes; i++) { SkillBoxes[i].Populate(SkillBox.BoxState.empty); }
 
-        //lastMarked = currStat - 1;
+        lastMarked = currStat - 1;
 
         if (skillsAvailable)
         {
-            if (currStat < currAbility) SkillBoxes[currStat].Populate(SkillBox.BoxState.available);
+            if (currStat < currBoxes) SkillBoxes[currStat].Populate(SkillBox.BoxState.available);
             else if (currStat < CharStats.MaxSkillVal) SkillBoxes[currStat].Populate(SkillBox.BoxState.newBoxAvailable);
         }
         if (modifiers)
@@ -66,40 +65,67 @@ public class SkillBar : MonoBehaviour
 
     public virtual void BoxClicked(int boxId)
     {
+        if (boxId != lastMarked && !(boxId == (lastMarked + 1) && CharacterMenu.Instance.availPoints > 0)) return;
         bool anotherBox = boxId < MaxSkillVal;
         //if (boxId != lastMarked && boxId != lastMarked + 1) return;
+        int spendPoints = SkillBoxes[boxId].SetClickedBox(CharacterMenu.Instance.availPoints > 0);
+        bool relinquishedBox = SkillBoxes[boxId].boxState == SkillBox.BoxState.available || SkillBoxes[boxId].boxState == SkillBox.BoxState.newBoxAvailable;
+        lastMarked = relinquishedBox ? boxId - 1 : boxId;
+        CharacterMenu.Instance.SpendPoints(stat, spendPoints);
+        bool stillWorkingOnBox = SkillBoxes[boxId].boxState == SkillBox.BoxState.newBoxSet;
+        if (anotherBox && CharacterMenu.Instance.availPoints > 0 && !stillWorkingOnBox) SkillBoxes[boxId + 1].SetNextBox(relinquishedBox);
 
-        if (CharacterMenu.Instance.availPoints > 0 && SkillBoxes[boxId].boxState == SkillBox.BoxState.available)  // select new valid skill point
-        {
-            storedRankUp++;
-            SkillBoxes[boxId].Populate(SkillBox.BoxState.tempFilled);
-            CharacterMenu.Instance.SpendPoints(stat);
-        }
-        else if (SkillBoxes[boxId].boxState == SkillBox.BoxState.tempFilled) // Undo skill point selection
-        {
-            storedRankUp--;
-            SkillBoxes[boxId].Populate(SkillBox.BoxState.available);
-            CharacterMenu.Instance.SpendPoints(stat, -1);
-        }
-        else if (CharacterMenu.Instance.availPoints > 1 && SkillBoxes[boxId].boxState == SkillBox.BoxState.newBoxAvailable)  // Select extension point
-        {
-            storedRankUp++;
-            SkillBoxes[boxId].Populate(SkillBox.BoxState.newBoxFilled);
-            CharacterMenu.Instance.SpendPoints(stat, 2);
-        }
-        else if (SkillBoxes[boxId].boxState == SkillBox.BoxState.newBoxFilled)  // Undo extension point
-        {
-            storedRankUp--;
-            SkillBoxes[boxId].Populate(SkillBox.BoxState.newBoxAvailable);
-            //if (anotherBox) SkillBoxes[boxId + 1].OnDeck();
-            CharacterMenu.Instance.SpendPoints(stat, -2);
-        }
+
+
+        //if (SkillBoxes[boxId].boxState == SkillBox.BoxState.available)  // select new valid skill point
+        //{
+        //    storedRankUp++;
+        //    SkillBoxes[boxId].Populate(SkillBox.BoxState.tempFilled);
+        //    if(anotherBox) SkillBoxes[boxId + 1].
+
+        //    CharacterMenu.Instance.SpendPoints(stat);
+        //}
+        //else if (SkillBoxes[boxId].boxState == SkillBox.BoxState.tempFilled) // Undo skill point selection
+        //{
+        //    storedRankUp--;
+        //    SkillBoxes[boxId].Populate(SkillBox.BoxState.available);
+        //    CharacterMenu.Instance.SpendPoints(stat, -1);
+        //}
+        //else if (CharacterMenu.Instance.availPoints > 1 && SkillBoxes[boxId].boxState == SkillBox.BoxState.newBoxAvailable)  // Select extension point
+        //{
+        //    storedRankUp++;
+        //    SkillBoxes[boxId].Populate(SkillBox.BoxState.newBoxSet);
+        //    CharacterMenu.Instance.SpendPoints(stat, 2);
+        //}
+        //else if (SkillBoxes[boxId].boxState == SkillBox.BoxState.newBoxSet)  // Undo extension point
+        //{
+        //    storedRankUp--;
+        //    SkillBoxes[boxId].Populate(SkillBox.BoxState.newBoxAvailable);
+        //    //if (anotherBox) SkillBoxes[boxId + 1].OnDeck();
+        //    CharacterMenu.Instance.SpendPoints(stat, -2);
+        //}
     }
 
-    public void ApplyChanges(Character character)
+    public int NewPoints()
     {
-        character.charStats.SetStat(stat, character.charStats.GetRawStat(stat) + storedRankUp);
-        storedRankUp = 0;
+        SkillBox.BoxState[] newSkillPoints = { SkillBox.BoxState.tempFilled, SkillBox.BoxState.newBoxFilled };
+        return SkillBoxes.Where(box => newSkillPoints.Contains(box.boxState)).Count();
+    }
+
+    public virtual int ApplyChanges(Character character)
+    {
+        // Returns the number of points added
+        SkillBox.BoxState[] newSkillBoxes = { SkillBox.BoxState.newBoxSet, SkillBox.BoxState.newBoxFilled };
+
+        int newPoints = NewPoints();
+        int newBoxes = SkillBoxes.Where(box => newSkillBoxes.Contains(box.boxState)).Count();
+
+        character.charStats.SetStat(stat, character.charStats.GetRawStat(stat) + newPoints);
+        character.charStats.SetStatBoxes(stat, character.charStats.GetStatBoxes(stat) + newBoxes);
+        //storedRankUp = 0;
+
+        Populate(character);
+        return newPoints;
     }
 
     //private void ChangeSkillGrowth(StatVal stat, bool open)

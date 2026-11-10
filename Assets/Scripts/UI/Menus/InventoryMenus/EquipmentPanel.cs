@@ -27,13 +27,13 @@ public class EquipmentPanel : InventoryPanel
             { EquipmentInvType.holdMainHand, holdMainHand },
             { EquipmentInvType.holdOffHand, holdOffHand },
             { EquipmentInvType.torso, torso },
-            { EquipmentInvType.coat, coat },
+            //{ EquipmentInvType.coat, coat },
             { EquipmentInvType.head, head },
             { EquipmentInvType.face, face },
-            { EquipmentInvType.legs, legs },
+            //{ EquipmentInvType.legs, legs },
             { EquipmentInvType.boots, boot },
-            { EquipmentInvType.neck, neck },
-            { EquipmentInvType.hands, hands },
+            //{ EquipmentInvType.neck, neck },
+            //{ EquipmentInvType.hands, hands },
            // { EquipmentInvType.leftHand, leftHand }
         };
     }
