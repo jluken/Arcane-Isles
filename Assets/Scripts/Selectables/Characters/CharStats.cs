@@ -299,8 +299,6 @@ public class CharStats : MonoBehaviour
         modifiers.Remove(id);
     }
 
-    
-
     public void updateHealth(int amount = 0)
     {
         statMap[StatVal.health] = GetCurrStat(StatVal.health) + amount;

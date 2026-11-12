@@ -38,13 +38,13 @@ public class CharCreateMenu : MenuScreen
     public List<AbilityBar> abilityBars;
 
     public List<Material> colors;
-    public List<GameObject> models;
+    //public List<GameObject> models;
     public List<Mesh> meshes;
     public List<Sprite> portraits;
 
     public TMP_Dropdown colorSelection;
     private Dictionary<string, Material> colorMap;
-    public TMP_Dropdown modelSelection;
+    public TMP_Dropdown meshSelection;
     private Dictionary<string, GameObject> modelMap;
 
     //public TMP_Text vigorTxt;
@@ -101,14 +101,14 @@ public class CharCreateMenu : MenuScreen
 
         List<string> modelOptions = new();
         modelMap = new();
-        for (int i = 0; i < models.Count; i++)
+        for (int i = 0; i < meshes.Count; i++)
         {
             var numString = (i + 1).ToString();
             modelOptions.Add(numString);
-            modelMap.Add(numString, models[i]);
+            //modelMap.Add(numString, meshes[i]);
         }
-        modelSelection.AddOptions(modelOptions);
-        modelSelection.RefreshShownValue();
+        meshSelection.AddOptions(modelOptions);
+        meshSelection.RefreshShownValue();
 
         UpdateAppearance();
     }
@@ -196,7 +196,7 @@ public class CharCreateMenu : MenuScreen
 
     public void UpdateAppearance()
     {
-        var selectedModel = models[modelSelection.value];
+        //var selectedModel = models[modelSelection.value];
         var selectedMat = colors[colorSelection.value];
         var oldModel = PartyController.Instance.playerChar.renderBody;
 
@@ -204,13 +204,13 @@ public class CharCreateMenu : MenuScreen
         //newModel.GetComponent<SkinnedMeshRenderer>().bones = oldModel.GetComponent<SkinnedMeshRenderer>().bones;
         //newModel.GetComponent<SkinnedMeshRenderer>().rootBone = oldModel.GetComponent<SkinnedMeshRenderer>().rootBone;
         oldModel.GetComponent<SkinnedMeshRenderer>().material = selectedMat;
-        oldModel.GetComponent<SkinnedMeshRenderer>().sharedMesh = meshes[modelSelection.value];
+        oldModel.GetComponent<SkinnedMeshRenderer>().sharedMesh = meshes[meshSelection.value];
         //Destroy(oldModel);  // TODO: maybe only swap out skinnedMeshRenderer
         //newModel.SetActive(true);
         //PartyController.Instance.playerChar.renderBody = newModel;
         UICharModel.Instance.SetChar(PartyController.Instance.playerChar.renderBody);
 
-        int portraitIdx = (colors.Count * modelSelection.value) + colorSelection.value;
+        int portraitIdx = (colors.Count * meshSelection.value) + colorSelection.value;
         portrait.sprite = portraits[portraitIdx];
     }
 

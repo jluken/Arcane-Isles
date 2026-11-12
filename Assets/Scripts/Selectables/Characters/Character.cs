@@ -98,6 +98,18 @@ public class Character : Selectable
         charStats.LoadFromSaveData(charSaveData.charStatData);
         inventory.LoadFromSaveData(charSaveData.inventory);
         if(sigils != null) sigils.LoadFromSaveData(charSaveData.charSigils);
+
+        //Debug.Log("Load material " + charSaveData.charMaterial);
+        Debug.Log("Curr materials " + renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials.Length);
+
+        var materials = new Material[charSaveData.charMaterials.Length];
+        for (int i = 0; i < charSaveData.charMaterials.Length; i++)
+        {
+            materials[i] = (Resources.Load<Material>("Materials/" + charSaveData.charMaterials[i]));
+        }
+        renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials = materials;
+        renderBody.GetComponent<SkinnedMeshRenderer>().sharedMesh = Resources.Load<Mesh>("Meshes/" + charSaveData.charMesh);
+
         mover.agent.Warp(new Vector3(charSaveData.pos[0], charSaveData.pos[1], charSaveData.pos[2]));
         transform.rotation = Quaternion.identity * Quaternion.Euler(charSaveData.rot[0], charSaveData.rot[1], charSaveData.rot[2]);
         Debug.Log("Loading State + " + charSaveData.stateName + " for " + charStats.charName);

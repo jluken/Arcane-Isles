@@ -125,6 +125,7 @@ public class SceneLoader : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.5f);
         Debug.Log("Load wait done");
         UIController.Instance.ActivateDefaultScreen();
+        SaveSystem.AutoSave();
     }
 
     public IEnumerator DeactivateLevelCoroutine(LevelManager level)
@@ -135,7 +136,6 @@ public class SceneLoader : MonoBehaviour
 
     public void DeactivateLevel(LevelManager level)
     {
-        SaveSystem.AutoSave();
         LevelData[level.LevelName] = new LevelSaveData(level.visRegions);
         foreach (string sceneName in level.levelScenes) { StartCoroutine(DeactivateSubscene(sceneName)); }
         SceneManager.UnloadSceneAsync(level.LevelName); ;

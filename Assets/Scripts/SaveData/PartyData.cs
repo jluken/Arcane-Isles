@@ -1,5 +1,6 @@
 
 using System;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -54,6 +55,9 @@ public class PartyData
         public EntityInventorySaveData inventory;
         public SigilSaveData charSigils;
         public string stateName;
+
+        public string[] charMaterials;
+        public string charMesh;
     }
 
     public CharSaveData[] partyMembers;
@@ -83,6 +87,11 @@ public class PartyData
         charSaveData.inventory = new EntityInventorySaveData(inv);
         charSaveData.charSigils = new SigilSaveData(charSigils);
         charSaveData.stateName = npc.StateName();
+
+        Debug.Log("Material: " + npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials[0]);
+        charSaveData.charMaterials = npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials.Select(mat => mat.name).ToArray();
+        Debug.Log("Shared mesh: " + npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMesh);
+        charSaveData.charMesh = npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMesh.name;
 
         return charSaveData;
     }
