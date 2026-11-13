@@ -165,6 +165,7 @@ public class UIController : MonoBehaviour
 
     private void HandleCancel()
     {
+        if (CombatManager.Instance.ValidSelectedAction()) { CombatManager.Instance.UnsetAction(); return; } // Canceling current action takes precedent
         bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking;
         if (OverlayMenus.Any(menu => menu.IsActive())) ActivateDefaultScreen();
         else if (!noButtonMenus) ActivatePauseMenu();

@@ -32,6 +32,7 @@ public class DefaultUI : MenuScreen
     public Sprite fullPip;
     public Sprite prepPip;
     public Sprite errPip;
+    public Sprite emptyPip;
 
     public ScrollRect chatWindowScroll;
     public GameObject chatWindowContent;
@@ -134,7 +135,7 @@ public class DefaultUI : MenuScreen
                 if (selectedNPC != PartyController.Instance.activePartyMember || CombatManager.Instance.InAction()) actionButtons[i].GetComponent<Button>().interactable = false;
                 else actionButtons[i].GetComponent<Button>().interactable = true;
                 //buttonActions.Add(action);
-                if(i == CombatManager.Instance.displayIdx) actionButtons[i].GetComponent<Button>().image.color = Color.red; // TODO: temp effect
+                if(i == CombatManager.Instance.selectedIdx) actionButtons[i].GetComponent<Button>().image.color = Color.red; // TODO: temp effect
                 else actionButtons[i].GetComponent<Button>().image.color = Color.white;
                 actionButtons[i].SetActive(true);
             }
@@ -203,6 +204,7 @@ public class DefaultUI : MenuScreen
             if (currentAP < prepAP && i < currentAP) ActionPointPips[i].GetComponent<Image>().sprite = errPip;
             else if (i < (currentAP- prepAP)) ActionPointPips[i].GetComponent<Image>().sprite = fullPip;
             else if (i < currentAP) ActionPointPips[i].GetComponent<Image>().sprite = prepPip;
+            else ActionPointPips[i].GetComponent<Image>().sprite = emptyPip;
         }
     }
 

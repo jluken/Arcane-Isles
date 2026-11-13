@@ -35,6 +35,7 @@ public class Character : Selectable
     public string charConversation;
 
     public CombatManager.CombatantType combatantType = CombatManager.CombatantType.Bystander;
+    public bool isAggroed = false;
 
     public override void Awake()
     {
@@ -210,6 +211,13 @@ public class Character : Selectable
     private void FixedUpdate()
     {
         StateMachine.CurrentPlayerState.PhysicsUpdate();
+    }
+
+    public virtual void FightMe()
+    {
+        combatantType = CombatManager.CombatantType.Enemy;
+        isAggroed = true;
+        //SetToCombat();
     }
 
     public virtual void SetToCombat()

@@ -50,6 +50,7 @@ public class AoeAttackAction : PointAction
         yield return new WaitForSeconds(1.0f);
         foreach(Character victim in victims) victim.takeDamage(damage);
         CombatManager.Instance.FinishAction();
+        foreach (Character victim in victims) victim.FightMe();
         yield break;
     }
 

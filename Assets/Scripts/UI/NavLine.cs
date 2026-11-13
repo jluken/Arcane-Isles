@@ -43,6 +43,8 @@ public class NavLine : MonoBehaviour
         {
             var onValid = i < validPath.corners.Length;
             var corner = onValid ? validPath.corners[i] : bothLines ? fullPath.corners[i - 1] : fullPath.corners[i];  // "- 1" on bothLines error segment because double count shared corner
+            //float elevation = 0.5f;
+            //corner += new Vector3(0, elevation, 0); // TODO: stopgap to elevate it above ground topology
             if(anyValid && onValid) validLine.SetPosition(i, corner);
 
             var lastValidIdx = validPath.corners.Length - 1;

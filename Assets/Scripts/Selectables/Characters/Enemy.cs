@@ -18,7 +18,7 @@ public class Enemy : Character
 
     public List<GameObject> AwarePlayers = new List<GameObject>();
 
-    public bool isAggroed = false;
+    
     
     
     public enum AnimationTriggerType
@@ -76,7 +76,7 @@ public class Enemy : Character
         StartCoroutine(CombatBehavior.CombatTurn(this));
     }
 
-    public void Alert()  // TODO: maybe move this to Character?
+    public void Alert()  // TODO: maybe move this to Character and make a more universal system?
     {
         if(onSight) isAggroed = true;
     }

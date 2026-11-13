@@ -57,7 +57,7 @@ public class charIcon : MonoBehaviour
         var newWidth = fullWidth * ((float)currHealth / maxHealth);
 
         healthBar.rectTransform.sizeDelta = new Vector2(newWidth, healthBar.rectTransform.sizeDelta.y);
-        healthBar.transform.localPosition = new Vector3(((fullWidth - newWidth) / -2.0f), 0, 0);
+        healthBar.transform.localPosition = new Vector3(((fullWidth - newWidth) / -2.0f), healthBar.transform.localPosition.y, healthBar.transform.localPosition.z);
         Health.text = currHealth + "/" + maxHealth;
 
         border.gameObject.SetActive(npcChar.IsActive);

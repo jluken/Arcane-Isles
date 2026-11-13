@@ -5,15 +5,17 @@ using static CharStats;
 
 public class AttackAction : InteractionAction
 {
-    public int damageDie;
-    public StatVal modifier;
+    public int damageDice;
+    public int modifier;
     public bool precisionAttack;
+    public bool powerAttack;
 
-    public AttackAction(int attackCost, int damageDie, StatVal modifier, bool precisionAttack = false, string name = "", Sprite icon = null, float range = 0f, Character actor = null, Selectable target = null, string animation = null) : base(name: name, actionCost: attackCost, icon: icon, range: range, actor: actor, target: target, animation: animation)
+    public AttackAction(int attackCost, int damageDice, int modifier, bool precisionAttack = false, bool powerAttack = false, string name = "", Sprite icon = null, float range = 0f, Character actor = null, Selectable target = null, string animation = null) : base(name: name, actionCost: attackCost, icon: icon, range: range, actor: actor, target: target, animation: animation)
     {
-        this.damageDie = damageDie;
+        this.damageDice = damageDice;
         this.modifier = modifier;
         this.precisionAttack = precisionAttack;
+        this.powerAttack = powerAttack;
     }
 
     public override bool CheckValidTarget(Selectable target)
@@ -30,7 +32,8 @@ public class AttackAction : InteractionAction
     public override IEnumerator UseAbility()
     {
         var victim = target.GetComponent<Character>();
-        var damage = Dice.RollDie(damageDie);
+        var damage = Dice.RollDie(damageDice);
+        damage = Math.Max(damage + modifier, 1) + (powerAttack ? actor.charStats.GetCurrStat(StatVal.vigor) / 2 : 0);
         if (CombatManager.Instance.sneaking) CombatManager.Instance.ToggleSneak();
         if(actor.animator != null) actor.animator.CrossFade(animation, 0.25f);  // TODO: generalize this
 
@@ -53,6 +56,7 @@ public class AttackAction : InteractionAction
         }
         else DialogueInterface.Instance.LogLine(actor.charStats.charName + " misses.");
         CombatManager.Instance.FinishAction();
+        victim.FightMe();
         yield break;
     }
 
@@ -76,6 +80,9 @@ public class AttackAction : InteractionAction
 
     public override string ActionInfo()
     {
-        return "Action Points: " + actionCost + "\nDamage: " + damageDie + "D + " + modifier + "\nRange: " + range + "m";
+        //var damageMod = modifier + (powerAttack ? actor.charStats.GetCurrStat(StatVal.vigor) / 2 : 0);
+        var minDamage = Math.Max(1 * damageDice + modifier, 1) + (powerAttack ? actor.charStats.GetCurrStat(StatVal.vigor) / 2 : 0);
+        var maxDamage = Math.Max(6 * damageDice + modifier, 1) + (powerAttack ? actor.charStats.GetCurrStat(StatVal.vigor) / 2 : 0);
+        return "Action Points: " + actionCost + "\nDamage: " + ((maxDamage > minDamage) ? minDamage + "-" + maxDamage : maxDamage) + "\nRange: " + range + "m";
     }
 }

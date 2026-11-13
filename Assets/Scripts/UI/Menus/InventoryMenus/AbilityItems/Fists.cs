@@ -10,11 +10,11 @@ public class Fists : WeaponItem
 
     public override AbilityAction DefaultAttack()
     {
-        return new AttackAction(name: "Punch", icon: punchIcon, range: 1.5f, damageDie: 4, attackCost: 4, modifier: StatVal.survival);
+        return new AttackAction(name: "Punch", icon: punchIcon, range: 1.5f, damageDice: 1, attackCost: 5, modifier: -5, powerAttack: true);
     }
 
     public override List<AbilityAction> ItemActions()
     {
-        return new List<AbilityAction>() { new AttackAction(name: "Punch", icon: punchIcon, range: 1.5f, damageDie: 4, attackCost: 4, modifier: StatVal.survival) };
+        return new List<AbilityAction>() { new AttackAction(name: "Punch", icon: punchIcon, range: 1.5f, damageDice: 1, attackCost: 5, modifier: -5, powerAttack: true) };
     }
 }
