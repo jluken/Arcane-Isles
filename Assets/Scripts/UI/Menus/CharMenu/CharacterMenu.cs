@@ -207,9 +207,11 @@ public class CharacterMenu : MenuScreen
         CloseWarning();
         //int xpLevel = PartyController.Instance.GetLevelByXP();
         int addedPoints = 0;
+        int preHealth = currChar.charStats.GetRawStat(CharStats.StatVal.maxHealth);
         foreach (SkillBar s in skillBars) { addedPoints += s.ApplyChanges(currChar); }
         currChar.charStats.SetStat(StatVal.level, currChar.charStats.GetCurrStat(StatVal.level) + addedPoints);
         currChar.charStats.setDerivedStats();
+        currChar.charStats.updateHealth(currChar.charStats.GetRawStat(CharStats.StatVal.maxHealth) - preHealth);  // Update health if max health went up
         if (!initLevel) ActivateMenu();
         else { UIController.Instance.intro = false; SceneLoader.Instance.InitSpawn(); }
     }

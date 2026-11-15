@@ -22,7 +22,7 @@ public class WanderState : IdleState
     public override void EnterState()
     {
         Debug.Log("Start Patrol");
-        if (npc.GetComponent<Enemy>() != null) npc.GetComponent<Enemy>().isAggroed = false;  // TODO: maybe make aggro logic generic to NPC
+        npc.combatantType = CombatManager.CombatantType.Bystander;  // TODO: maybe make aggro logic generic to NPC
         base.EnterState();
     }
 
@@ -50,7 +50,7 @@ public class WanderState : IdleState
         }
 
 
-        if (npc.GetComponent<Enemy>() != null && npc.GetComponent<Enemy>().isAggroed)
+        if (npc.combatantType == CombatManager.CombatantType.Enemy)
         {
             CombatManager.Instance.InitiateCombat();
         }

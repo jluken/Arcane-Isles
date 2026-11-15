@@ -15,6 +15,7 @@ public class CharStats : MonoBehaviour
     public Character character => gameObject.GetComponent<Character>();
 
     public int level = 0;
+    [SerializeField] public int naturalArmor;
 
     //Abilities
     [SerializeField] private int vigor;
@@ -140,6 +141,7 @@ public class CharStats : MonoBehaviour
 
     public void LoadFromSaveData(PartyData.CharStatData statData)
     {
+        Debug.Log("loaded endurance: " + statData.endurance);
         charName = statData.name;
         charImage = Resources.Load<Sprite>("Sprites/portraits/" + statData.charImageName);
 

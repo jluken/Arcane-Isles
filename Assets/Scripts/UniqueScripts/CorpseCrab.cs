@@ -15,7 +15,7 @@ public class CorpseCrab : MonoBehaviour
     {
         if (eventTag != "corpseCrab") return;
 
-        GetComponent<Enemy>().isAggroed = true;
+        GetComponent<Enemy>().FightMe();
     }
 
     public void MarkDead(Character npc)

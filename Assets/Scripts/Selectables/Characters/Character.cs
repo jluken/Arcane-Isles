@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Windows;
 using static PartyData;
 
 public class Character : Selectable
@@ -35,7 +36,10 @@ public class Character : Selectable
     public string charConversation;
 
     public CombatManager.CombatantType combatantType = CombatManager.CombatantType.Bystander;
-    public bool isAggroed = false;
+    public bool joinIn = false;  // Will character join in an active fight
+    public bool onSight = false;  // Will character attack on sight
+    public CombatManager.CombatantType SideToJoin = CombatManager.CombatantType.Bystander;  // Which side will they join if they see fight
+    //public bool isAggroed = false;
 
     public override void Awake()
     {
@@ -114,6 +118,7 @@ public class Character : Selectable
         mover.agent.Warp(new Vector3(charSaveData.pos[0], charSaveData.pos[1], charSaveData.pos[2]));
         transform.rotation = Quaternion.identity * Quaternion.Euler(charSaveData.rot[0], charSaveData.rot[1], charSaveData.rot[2]);
         Debug.Log("Loading State + " + charSaveData.stateName + " for " + charStats.charName);
+        if (!Enum.TryParse(charSaveData.combatantType, out combatantType)) combatantType = CombatManager.CombatantType.Bystander;
         LoadState(charSaveData.stateName);
     }
 
@@ -198,7 +203,7 @@ public class Character : Selectable
     public void takeDamage(int rawDamage, bool bypassArmor = false)
     {
         // TODO: alert
-        var totalArmor = bypassArmor ? 0 : inventory.GetEquipmentArmor();
+        var totalArmor = bypassArmor ? 0 : (charStats.naturalArmor + inventory.GetEquipmentArmor());
         var damage = Math.Max(rawDamage - totalArmor, 0);
         charStats.updateHealth(-1 * damage);
     }
@@ -216,8 +221,9 @@ public class Character : Selectable
     public virtual void FightMe()
     {
         combatantType = CombatManager.CombatantType.Enemy;
-        isAggroed = true;
+        //isAggroed = true;
         //SetToCombat();
+        CombatManager.Instance.InitiateCombat();
     }
 
     public virtual void SetToCombat()

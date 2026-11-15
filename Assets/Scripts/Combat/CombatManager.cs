@@ -121,7 +121,7 @@ public class CombatManager : MonoBehaviour
 
     public void insertIntoInitiative(Character character, CombatantType type)
     {
-        if (combatantInitiative.Any(entry => entry.character == character)) return;
+        if (type == CombatantType.Bystander || combatantInitiative.Any(entry => entry.character == character)) return;  // TODO: figure out different "bystander behaviors" like fleeing, wandering, etc
         var initiative = Dice.SkillCheck(6, character.charStats.GetCurrStat(CharStats.StatVal.finesse));
 
         int idx = 0;
@@ -177,6 +177,7 @@ public class CombatManager : MonoBehaviour
     public void InitiateCombat(List<Character> initialCombatants = null)
     {
         if (combatActive) return;
+        Debug.Log("initiate combat");
         combatActive = true;
         combatantInitiative = new List<InitiativeEntry>();
         foreach (var partyMember in PartyController.Instance.party)

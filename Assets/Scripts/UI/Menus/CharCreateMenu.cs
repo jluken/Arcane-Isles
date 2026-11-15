@@ -224,6 +224,7 @@ public class CharCreateMenu : MenuScreen
         PartyController.Instance.playerChar.charStats.SetStat(StatVal.finesse, attrPoints[StatVal.finesse]);
         PartyController.Instance.playerChar.charStats.SetStat(StatVal.psyche, attrPoints[StatVal.psyche]);
         PartyController.Instance.playerChar.charStats.setDerivedStats();
+        PartyController.Instance.playerChar.charStats.maxBars();
         var mononym = string.IsNullOrEmpty(firstNameField.text) ? lastNameField.text : string.IsNullOrEmpty(lastNameField.text) ? firstNameField.text : null;
         PartyController.Instance.playerChar.charStats.charName = mononym ?? (firstNameField.text + " " + lastNameField.text);
         PartyController.Instance.playerChar.charStats.charImage = portrait.sprite;

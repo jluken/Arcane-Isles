@@ -20,7 +20,7 @@ public class EnemyPatrolState: IdleState
     public override void EnterState()
     {
         Debug.Log("Start Patrol");
-        enemy.isAggroed = false;
+        enemy.combatantType = CombatManager.CombatantType.Bystander;
         base.EnterState();
     }
 
@@ -38,7 +38,7 @@ public class EnemyPatrolState: IdleState
         }
 
 
-        if (enemy.isAggroed)
+        if (enemy.combatantType == CombatManager.CombatantType.Enemy)
         {
             CombatManager.Instance.InitiateCombat();
         }

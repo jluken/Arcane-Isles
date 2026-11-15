@@ -55,6 +55,7 @@ public class PartyData
         public EntityInventorySaveData inventory;
         public SigilSaveData charSigils;
         public string stateName;
+        public string combatantType;
 
         public string[] charMaterials;
         public string charMesh;
@@ -87,6 +88,7 @@ public class PartyData
         charSaveData.inventory = new EntityInventorySaveData(inv);
         charSaveData.charSigils = new SigilSaveData(charSigils);
         charSaveData.stateName = npc.StateName();
+        charSaveData.combatantType = npc.combatantType.ToString();
 
         Debug.Log("Material: " + npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials[0]);
         charSaveData.charMaterials = npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials.Select(mat => mat.name).ToArray();
@@ -105,31 +107,31 @@ public class PartyData
         charStatData.level = charStats.GetCurrStat(CharStats.StatVal.level, false);
         charStatData.health = charStats.GetCurrStat(CharStats.StatVal.health, false);
         charStatData.magick = charStats.GetCurrStat(CharStats.StatVal.magick, false);
-        charStatData.vigor = charStats.GetCurrStat(CharStats.StatVal.vigor, false);
-        charStatData.finesse = charStats.GetCurrStat(CharStats.StatVal.finesse, false);
-        charStatData.intimidation = charStats.GetCurrStat(CharStats.StatVal.intimidation, false);
+        charStatData.vigor = charStats.GetRawStat(CharStats.StatVal.vigor);
+        charStatData.finesse = charStats.GetRawStat(CharStats.StatVal.finesse);
+        charStatData.intimidation = charStats.GetRawStat(CharStats.StatVal.intimidation);
         charStatData.intimidationBoxes = charStats.GetStatBoxes(CharStats.StatVal.intimidation);
-        charStatData.athletics = charStats.GetCurrStat(CharStats.StatVal.athletics, false);
+        charStatData.athletics = charStats.GetRawStat(CharStats.StatVal.athletics);
         charStatData.athleticsBoxes = charStats.GetStatBoxes(CharStats.StatVal.athletics);
-        charStatData.survival = charStats.GetCurrStat(CharStats.StatVal.survival, false);
+        charStatData.survival = charStats.GetRawStat(CharStats.StatVal.survival);
         charStatData.survivalBoxes = charStats.GetStatBoxes(CharStats.StatVal.intimidation);
-        charStatData.endurance = charStats.GetCurrStat(CharStats.StatVal.endurance, false);
+        charStatData.endurance = charStats.GetRawStat(CharStats.StatVal.endurance);
         charStatData.enduranceBoxes = charStats.GetStatBoxes(CharStats.StatVal.endurance);
-        charStatData.guile = charStats.GetCurrStat(CharStats.StatVal.guile, false);
+        charStatData.guile = charStats.GetRawStat(CharStats.StatVal.guile);
         charStatData.guileBoxes = charStats.GetStatBoxes(CharStats.StatVal.guile);
-        charStatData.precision = charStats.GetCurrStat(CharStats.StatVal.precision, false);
+        charStatData.precision = charStats.GetRawStat(CharStats.StatVal.precision);
         charStatData.precisionBoxes = charStats.GetStatBoxes(CharStats.StatVal.precision);
-        charStatData.sleightOfHand = charStats.GetCurrStat(CharStats.StatVal.sleightOfHand, false);
+        charStatData.sleightOfHand = charStats.GetRawStat(CharStats.StatVal.sleightOfHand);
         charStatData.sleightOfHandBoxes = charStats.GetStatBoxes(CharStats.StatVal.sleightOfHand);
-        charStatData.stealth = charStats.GetCurrStat(CharStats.StatVal.stealth, false);
+        charStatData.stealth = charStats.GetRawStat(CharStats.StatVal.stealth);
         charStatData.stealthBoxes = charStats.GetStatBoxes(CharStats.StatVal.stealth);
-        charStatData.persuasion = charStats.GetCurrStat(CharStats.StatVal.persuasion, false);
+        charStatData.persuasion = charStats.GetRawStat(CharStats.StatVal.persuasion);
         charStatData.persuasionBoxes = charStats.GetStatBoxes(CharStats.StatVal.persuasion);
-        charStatData.physick = charStats.GetCurrStat(CharStats.StatVal.physick, false);
+        charStatData.physick = charStats.GetRawStat(CharStats.StatVal.physick);
         charStatData.physickBoxes = charStats.GetStatBoxes(CharStats.StatVal.physick);
-        charStatData.perception = charStats.GetCurrStat(CharStats.StatVal.insight, false);
+        charStatData.perception = charStats.GetRawStat(CharStats.StatVal.insight);
         charStatData.perceptionBoxes = charStats.GetStatBoxes(CharStats.StatVal.insight);
-        charStatData.arcana = charStats.GetCurrStat(CharStats.StatVal.arcana, false);
+        charStatData.arcana = charStats.GetRawStat(CharStats.StatVal.arcana);
         charStatData.arcanaBoxes = charStats.GetStatBoxes(CharStats.StatVal.arcana);
 
         return charStatData;

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
 
-public class Enemy : Character
+public class Enemy : Character  // TODO: rename npc
 {
     public BaseCombatBehavior CombatBehavior;
 
@@ -14,7 +14,6 @@ public class Enemy : Character
 
     public AggroRad AggroRad;
     public AwareRad AwareRad;
-    public bool onSight;
 
     public List<GameObject> AwarePlayers = new List<GameObject>();
 
@@ -31,9 +30,9 @@ public class Enemy : Character
     public override void Start()
     {
         AggroRad.enemy = this;
-        AwareRad.enemy = this;
+        AwareRad.npc = this;
 
-        combatantType = CombatManager.CombatantType.Enemy;
+        //combatantType = CombatManager.CombatantType.Enemy;
         base.Start();
     }
 
@@ -43,10 +42,10 @@ public class Enemy : Character
         GetComponent<Outline>().OutlineColor = Color.red;
     }
 
-    public override void SetToCombat()
-    {
-        if(AwarePlayers.Count > 0) base.SetToCombat();
-    }
+    //public override void SetToCombat()
+    //{
+    //    if(AwarePlayers.Count > 0) base.SetToCombat();
+    //}
 
     public override void SetStates()
     {
@@ -78,6 +77,6 @@ public class Enemy : Character
 
     public void Alert()  // TODO: maybe move this to Character and make a more universal system?
     {
-        if(onSight) isAggroed = true;
+        if(onSight) combatantType = CombatManager.CombatantType.Enemy;
     }
 }

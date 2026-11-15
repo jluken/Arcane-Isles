@@ -102,11 +102,16 @@ public class MoveToClick : MonoBehaviour
         }
     }
 
+    private bool ValidAgent()
+    {
+        return agent.isActiveAndEnabled && agent.isOnNavMesh;
+    }
+
     public NavMeshPath PathToPoint(Vector3 dest)
     {
         NavMeshPath path = new NavMeshPath();
         NavMeshHit hit;
-        if(NavMesh.SamplePosition(dest, out hit, 25.0f, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path)) return path;
+        if(ValidAgent() && NavMesh.SamplePosition(dest, out hit, 25.0f, NavMesh.AllAreas) && agent.CalculatePath(hit.position, path)) return path;
         else return null;
     }
 

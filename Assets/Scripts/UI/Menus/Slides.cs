@@ -26,6 +26,7 @@ public class Slides : MenuScreen
 
     public override void DeactivateMenu()
     {
+        Debug.Log("Close slides");
         slide.SetActive(false);
         slideOpen = false;
     }
