@@ -1,5 +1,6 @@
 using System.Data;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -13,11 +14,15 @@ public class NavMapScript : MenuScreen
     public GameObject worldMap;
 
     public static NavMapScript Instance;
+    public NavMapPage pageInteraction;
 
     public RectTransform mapWindow;
     public RectTransform worldMapContent;
 
+    public TMP_Text miles;
+
     //public GameObject ui;
+    public bool traveling;
 
     private bool mapOpen;
 
@@ -59,6 +64,8 @@ public class NavMapScript : MenuScreen
                 System.Math.Max(worldMapContent.localScale.y + (zoomSpeed * zoom), 0.5f),
                 System.Math.Max(worldMapContent.localScale.z + (zoomSpeed * zoom), 0.5f));
 
+            miles.text = (1 / worldMapContent.localScale.y).ToString("0.00") + " mi";
+
             
             CenterMapOnPoint(new Vector2(xPrior, yPrior));
         }
@@ -66,14 +73,17 @@ public class NavMapScript : MenuScreen
 
     public override void DeactivateMenu()
     {
-        worldMap.SetActive(false);;
+        worldMap.SetActive(false);
+        traveling = false;
         mapOpen = false;
     }
 
     public override void ActivateMenu()
     {
+        
         ActivateWorldMap();
         mapOpen = true;
+        pageInteraction.enabled = traveling;
     }
 
     public override bool IsActive()
@@ -97,6 +107,7 @@ public class NavMapScript : MenuScreen
 
     public void ActivateWorldMap()
     {
+        PartyController.Instance.worldMapPos = GetMapLoc(SceneLoader.Instance.GetLevelName()).MapPos();  // TODO: eventually handle "wilderness" outside of level
         worldMap.SetActive(true);
         worldMapContent.localScale = new Vector3(1,1,1);  // TODO: don't hardcode zoom (based on sea vs land)
         mapOpen = true;

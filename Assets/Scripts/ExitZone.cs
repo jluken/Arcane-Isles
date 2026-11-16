@@ -21,7 +21,6 @@ public class ExitZone : MonoBehaviour
         {
             Debug.Log("Level Name: " + SceneLoader.Instance.GetLevelName());
             Debug.Log("Level ins: " + NavMapScript.Instance.GetMapLoc(SceneLoader.Instance.GetLevelName()));
-            PartyController.Instance.worldMapPos = NavMapScript.Instance.GetMapLoc(SceneLoader.Instance.GetLevelName()).MapPos();
             UIController.Instance.ActivateNavMap();
         }
     }

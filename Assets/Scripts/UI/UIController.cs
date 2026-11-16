@@ -125,7 +125,7 @@ public class UIController : MonoBehaviour
         uiActions = InputSystem.actions.FindActionMap("UI");
         screenKeyCodes = new Dictionary<string, MenuScreen>
         {
-            { "Map", mapScript },
+            { "Map", NavMap },
             { "Journal", journalScript },
             { "Inventory" , charInventoryMenu},
             { "CharScreen" , characterMenu}
@@ -169,12 +169,19 @@ public class UIController : MonoBehaviour
         bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking;
         if (OverlayMenus.Any(menu => menu.IsActive())) ActivateDefaultScreen();
         else if (!noButtonMenus) ActivatePauseMenu();
+        else if (NavMap.IsActive() && !NavMap.traveling) ActivateDefaultScreen();
         else if (intro) ActivateCharacterCreation();
     }
+
+    private bool JournalLocked()
+    {
+        return JournalLockMenus.Any(menu => menu.IsActive() && (menu != NavMap || NavMap.traveling)) || talking || intro;
+    }
+
     public void HandleJournalKey(string key)
     {
-        bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking || intro;
-        if (!noButtonMenus && !JournalLockMenus.Any(menu => menu.IsActive()))
+        //bool noButtonMenus = SceneScreens.Any(menu => menu.IsActive()) || talking || intro;
+        if (!JournalLocked())
         {
             var currOpen = screenKeyCodes[key].IsActive();
             Debug.Log("Go close book");
@@ -195,6 +202,7 @@ public class UIController : MonoBehaviour
     public void CloseLogbook()
     {
         foreach (var menu in LogbookMenus) { menu.DeactivateMenu(); }
+        NavMap.DeactivateMenu(); // TODO: temp duct tape for special map handling case
         defaultUI.ActivateMenu();
     }
 
@@ -327,6 +335,7 @@ public class UIController : MonoBehaviour
     public void ActivateNavMap()
     {
         DeactivateAllMenus();
+        NavMap.traveling = true;
         NavMap.ActivateMenu();
     }
 
