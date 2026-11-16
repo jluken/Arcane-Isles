@@ -35,11 +35,18 @@ public class SceneLoader : MonoBehaviour
         UIController.Instance.ActivateMainMenu();
     }
 
-    public void InitSpawn()  // TODO: this might go somewhere else for handling custom script behavior
+    public void InitPreSpawn()  // TODO: this might go somewhere else for handling custom script behavior
     {
+        UIController.Instance.intro = false;
+        Slides.Instance.slidesEnd += InitSpawn;
+        UIController.Instance.StartSlides(initCutscene);
+    }
+
+    public void InitSpawn()
+    {
+        Slides.Instance.slidesEnd -= InitSpawn;
         SetToLevelSpawn("BeachManager", spawnLoc: 0);
         PartyController.Instance.playerChar.mover.GetDown();
-        UIController.Instance.StartSlides(initCutscene);
     }
 
 

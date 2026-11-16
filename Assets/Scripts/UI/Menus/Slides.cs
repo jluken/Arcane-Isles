@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -11,9 +12,13 @@ public class Slides : MenuScreen
     private int slideNum;
 
     private InputActionMap uiActions;
+    public event Action slidesEnd;
+
+    public static Slides Instance;
 
     private void Awake()
     {
+        Instance = this;
         uiActions = InputSystem.actions.FindActionMap("UI");
     }
 
@@ -48,7 +53,11 @@ public class Slides : MenuScreen
     {
         if (!slideOpen) return;
         slideNum++;
-        if(slideNum >= slideshow.slides.Count) UIController.Instance.ActivateDefaultScreen();
+        if (slideNum >= slideshow.slides.Count)
+        {
+            slidesEnd.Invoke();
+            //UIController.Instance.ActivateDefaultScreen();
+        }
         else SetSlide(slideshow.slides[slideNum]);
     }
 

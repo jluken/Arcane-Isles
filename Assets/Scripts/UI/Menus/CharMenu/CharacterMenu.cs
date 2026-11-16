@@ -213,7 +213,7 @@ public class CharacterMenu : MenuScreen
         currChar.charStats.setDerivedStats();
         currChar.charStats.updateHealth(currChar.charStats.GetRawStat(CharStats.StatVal.maxHealth) - preHealth);  // Update health if max health went up
         if (!initLevel) ActivateMenu();
-        else { UIController.Instance.intro = false; SceneLoader.Instance.InitSpawn(); }
+        else {  SceneLoader.Instance.InitPreSpawn(); }
     }
 
     private void DisplaySigils()

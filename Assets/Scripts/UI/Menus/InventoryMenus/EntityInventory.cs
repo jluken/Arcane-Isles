@@ -130,6 +130,7 @@ public class EntityInventory : MonoBehaviour
         //equipment[EquipmentInvType.neck] = initNecklace;
         //equipment[EquipmentInvType.hands] = initHands;
         //equipment[EquipmentInvType.leftHand] = initLeftHand;
+        EquipModel();
     }
 
     public void LoadFromSaveData(EntityInventorySaveData saveData)
@@ -147,6 +148,7 @@ public class EntityInventory : MonoBehaviour
             if(!Enum.TryParse(kvp.Key, out EquipmentInvType equipType)) Debug.LogError("Invalid equipment type " + kvp.Key);
             equipment[equipType] = kvp.Value == "" ? null : Resources.Load<InventoryData>("Scriptables/" + kvp.Value);
         }
+        EquipModel();
 
         money = saveData.money;
         merchant = saveData.merchant;
@@ -199,23 +201,35 @@ public class EntityInventory : MonoBehaviour
     public void SetEquipment(EquipmentInvType type, InventoryData itemData)
     {
         Debug.Log("Set Equipment type " + type + " to " + itemData);
-        if (itemData != null && itemData.name.ToLower().Contains("sword") && GetComponent<PlaceholderEquip>() != null)  // TODO: placeholder until modular avatar
-        {
-            GetComponent<PlaceholderEquip>().Equip("sword");
-        }
-        else if (itemData != null && itemData.name.ToLower().Contains("knife") && GetComponent<PlaceholderEquip>() != null)
-        {
-            GetComponent<PlaceholderEquip>().Equip("knife");
-        }
-        else if (itemData != null && itemData.name.ToLower().Contains("gun") && GetComponent<PlaceholderEquip>() != null)
-        {
-            GetComponent<PlaceholderEquip>().Equip("gun");
-        }
-        else if (type == EquipmentInvType.holdMainHand && GetComponent<PlaceholderEquip>() != null)
-        {
-            GetComponent<PlaceholderEquip>().Unequip();
-        }
+        
         equipment[type] = itemData;
+        EquipModel();
+    }
+
+    public void EquipModel() // TODO: placeholder for more complex equipment system
+    {
+        if(GetComponent<PlaceholderEquip>() != null)
+        {
+            foreach (var (type, itemData) in equipment)
+            {
+                if (itemData != null && itemData.name.ToLower().Contains("sword"))
+                {
+                    GetComponent<PlaceholderEquip>().Equip("sword");
+                }
+                else if (itemData != null && itemData.name.ToLower().Contains("knife"))
+                {
+                    GetComponent<PlaceholderEquip>().Equip("knife");
+                }
+                else if (itemData != null && itemData.name.ToLower().Contains("gun"))
+                {
+                    GetComponent<PlaceholderEquip>().Equip("gun");
+                }
+                else if (type == EquipmentInvType.holdMainHand)
+                {
+                    GetComponent<PlaceholderEquip>().Unequip();
+                }
+            }
+        }
     }
 
     public void Dequip(EquipmentInvType equipSlot)
@@ -228,6 +242,7 @@ public class EntityInventory : MonoBehaviour
             equipment[equipSlot] = null;
         }
         if (leftover != null) leftover.DropItem(transform.position);
+        EquipModel(); // TODO: figure out how to grab "equipped" inventory
     }
 
     public InventoryData GetEquipment(EquipmentInvType type)

@@ -97,13 +97,14 @@ public class JournalScript : MenuScreen
         var questDetails = DialogueInterface.Instance.GetQuestDetails(questName).Where(qe => qe.startTime > 0).OrderBy(e => e.startTime).ToList();
         foreach (var displayedQuest in displayedDetails) Destroy(displayedQuest);
         displayedDetails.Clear();
-        foreach (var qd in questDetails)
+        foreach (var qd in questDetails) // TODO: automatically wrap long lists into next page
         {
             Debug.Log("qe: " + qd);
             var qdPrefab = qd.state == QuestState.Active ? QuestDetailPrefab : ClosedQuestDetailPrefab;
             var journalQuestDetailEntry = Instantiate(qdPrefab, questDetailList.transform);
             journalQuestDetailEntry.GetComponent<QuestDetail>().dateText.text = GameData.DateString((float)qd.startTime);
             journalQuestDetailEntry.GetComponent<QuestDetail>().descriptionText.text = qd.entry;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(questDetailList.GetComponent<RectTransform>());
             displayedDetails.Add(journalQuestDetailEntry);
         }
 

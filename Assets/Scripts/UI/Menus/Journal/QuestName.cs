@@ -16,6 +16,7 @@ public class QuestName : MonoBehaviour
 
     public void SelectQuest()
     {
+        Debug.Log("Select quest " + questName);
         JournalScript.Instance.OpenQuest(questName);
     }
 }
