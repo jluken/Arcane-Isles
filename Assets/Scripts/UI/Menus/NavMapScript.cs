@@ -23,6 +23,7 @@ public class NavMapScript : MenuScreen
 
     //public GameObject ui;
     public bool traveling;
+    public GameObject exitButton;
 
     private bool mapOpen;
 
@@ -84,6 +85,7 @@ public class NavMapScript : MenuScreen
         ActivateWorldMap();
         mapOpen = true;
         pageInteraction.enabled = traveling;
+        exitButton.SetActive(!traveling);
     }
 
     public override bool IsActive()

@@ -20,6 +20,7 @@ public class SavesMenuScript : MenuScreen
     public GameObject SavePanelPrefab;
     private string activeSave;
     public TMP_Text currentSaveName;
+    public Image currentSaveImg;
     public Button saveGameButton;
     public Button deleteGameButton;
     public Button loadGameButton;
@@ -82,6 +83,7 @@ public class SavesMenuScript : MenuScreen
     {
         activeSave = null;
         currentSaveName.text = "";
+        currentSaveImg.sprite = null;
         saveGameButton.interactable = false;
         deleteGameButton.interactable = false;
         loadGameButton.interactable = false;
@@ -118,6 +120,9 @@ public class SavesMenuScript : MenuScreen
     {
         activeSave = saveName;
         currentSaveName.text = saveName;
+        var savedImg = SaveSystem.GetSaveThumbnail(saveName);
+        if (savedImg != null) currentSaveImg.sprite = Sprite.Create(savedImg, new Rect(0, 0, savedImg.width, savedImg.height), new Vector2());
+        else currentSaveImg.sprite = null;
         saveGameButton.interactable = true;
         deleteGameButton.interactable = true;
         loadGameButton.interactable = true;

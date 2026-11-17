@@ -10,7 +10,9 @@ public static class SaveSystem
 {
 
     public static string saveFolder = "saves";
+    public static string saveThumbnailFolder = "thumbnails";
     private static string saveFormat = ".sav";
+    private static string thumbnailFormat = ".png";
 
     private static string newSaveSlot = "saveNum";
     private static string autoSaveSlot = "autoNum";
@@ -21,6 +23,7 @@ public static class SaveSystem
         int prevAutoSaveNum = PlayerPrefs.GetInt(autoSaveSlot, 0);
         int newAutoNum = (prevAutoSaveNum) % autoSaves;
         string autosaveName = "Autosave " + (newAutoNum + 1);
+        SaveTempThumbnail();
         SaveGame(autosaveName);
         PlayerPrefs.SetInt(autoSaveSlot, newAutoNum);
     }
@@ -62,6 +65,7 @@ public static class SaveSystem
 
         formatter.Serialize(stream, gameSaveData);
         stream.Close();
+        SaveThumbnail(saveName);
     }
 
     public static GameSaveData LoadGame(string saveName)
@@ -93,6 +97,49 @@ public static class SaveSystem
         {
             //Debug.LogError("Save File not found");
             return null;
+        }
+    }
+
+    public static Texture2D GetSaveThumbnail(string saveName)
+    {
+        Directory.CreateDirectory(Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder);
+        string path = Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder + "/" + saveName + thumbnailFormat;
+        if (File.Exists(path))
+        {
+            try
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                Texture2D texture = new Texture2D(2, 2);
+                texture.LoadImage(bytes);
+                return texture;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("corrupted save image file " + path + ": " + e);
+                return null;
+
+            }
+        }
+        else return null;
+    }
+
+    public static void SaveTempThumbnail()
+    {
+        Directory.CreateDirectory(Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder);
+        Directory.CreateDirectory(Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder + "/temp");
+        string path = Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder + "/temp/img" + thumbnailFormat;
+        ScreenCapture.CaptureScreenshot(path);
+        //File.WriteAllBytes(path, image.EncodeToPNG());
+    }
+
+    public static void SaveThumbnail(string saveName)
+    {
+        Directory.CreateDirectory(Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder);
+        string tempImgPath = Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder + "/temp/img" + thumbnailFormat;
+        string savePath = Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder + "/" + saveName + thumbnailFormat;
+        if (File.Exists(tempImgPath))
+        {
+            File.Copy(tempImgPath, savePath, true);
         }
     }
 

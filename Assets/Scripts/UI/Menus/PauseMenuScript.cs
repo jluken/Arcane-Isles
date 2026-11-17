@@ -31,6 +31,7 @@ public class PauseMenuScript : MenuScreen
 
     public override void ActivateMenu()
     {
+        SaveSystem.SaveTempThumbnail();  // TODO: figure out way to get screenshot without menu
         menu.SetActive(true);
         menuOpen = true;
 
