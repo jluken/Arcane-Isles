@@ -49,7 +49,7 @@ public class CombatManager : MonoBehaviour
     //public AbilityAction currentAction;
     private int initiativeTurn;
 
-    private float turnTravel;
+    public float turnTravel { get; private set; }
     public int ActionPoints { get; private set; }
     public int OnDeckActionPoints { get; private set; }
 
@@ -59,6 +59,7 @@ public class CombatManager : MonoBehaviour
     public static int weaponIdx = 0;
     public static int sigilIdx = 6;
     public int selectedIdx;
+    public int previewIdx;
     //public int displayIdx;
 
     public Sprite runIcon;
@@ -101,6 +102,16 @@ public class CombatManager : MonoBehaviour
 
     public bool IsPartyTurn => !combatActive || (combatantInitiative.Any() && combatantInitiative[initiativeTurn].type == CombatantType.Party);
 
+    public void ResetCombat()
+    {
+        combatantInitiative = new List<InitiativeEntry>();
+        activeCombatant = null;
+        selectedIdx = -1;
+
+        combatActive = false;
+        sneaking = false;
+    }
+
     public int GetCurrentAP(Character character)
     {
         if (!combatActive) return int.MaxValue;
@@ -116,7 +127,9 @@ public class CombatManager : MonoBehaviour
 
     public float GetMaxPath()
     {
-        return !combatActive ? float.PositiveInfinity : GetCurrentAP(activeCombatant) * activeCombatant.charStats.runModifier;
+        float pipReduction = ((turnTravel / activeCombatant.charStats.runModifier) % 1);
+        pipReduction = pipReduction > 0.01 ? pipReduction : 0f;
+        return !combatActive ? float.PositiveInfinity : (GetCurrentAP(activeCombatant) - pipReduction) * activeCombatant.charStats.runModifier ;
     }
 
     public void insertIntoInitiative(Character character, CombatantType type)
@@ -246,6 +259,7 @@ public class CombatManager : MonoBehaviour
             yield return plant;
         }
         if (!combatActive) yield break;  // double check to see if combat ended dueing yields (eg player death)
+        while(InAction()) yield return null; // account for if waiting for surprise attack to finish
         activeCombatant = combatantInitiative[turn].character;
         activeCombatant.SetActiveChar();
         // Set active combatant into navmesh agent
@@ -343,13 +357,14 @@ public class CombatManager : MonoBehaviour
         }
         if (!InAction())
         {
-            if (action != null && (action.CanUseAbility() || (AbilityAction.RunningAction(action)  && action.CheckValidAction())))
+            if (action != null && (action.CanUseAbility()))// || (AbilityAction.RunningAction(action)  && action.CheckValidAction() && )))
             {
                 var prev = SelectionController.Instance.playerUnderControl;
                 SelectionController.Instance.playerUnderControl = false;
                 LockAction(action);
                 Debug.Log("Starting action: " + action);
                 StartCoroutine(action.UseAbility());
+                if (!combatActive) InitiateCombat(new List<Character> { PartyController.Instance.activePartyMember });
                 //SpendActionPoints(currentAction.UseAbility(activeCombatant, target));
                 SelectionController.Instance.playerUnderControl = prev;
             }
@@ -381,7 +396,7 @@ public class CombatManager : MonoBehaviour
     {
         //Disable display fx to start
         //Debug.Log("Updating with idx " + ActionIdx + " and action " + action);
-        //selectedIdx = ActionIdx;
+        previewIdx = ActionIdx;
         abilityEffectMarker.SetActive(false);
         NavLine.Instance.DisableLine();
         if (action == null || action.actor == null || action.actor.mover.planted)
@@ -413,8 +428,11 @@ public class CombatManager : MonoBehaviour
         if(!InAction() && rangeAction != null) rangeAction.DisplayTarget();
     }
 
+    public int ActionIdx => selectedIdx >= 0 ? selectedIdx : previewIdx;
+
     public void LogTravel(NavMeshAgent agent, float dist)
     {
+        if (activeCombatant == null) return;
         int prevPipTravel = (int)Math.Floor(turnTravel / activeCombatant.charStats.runModifier);
         turnTravel += dist;
         if (agent == activeCombatant.mover.agent && (int)Math.Floor(turnTravel / activeCombatant.charStats.runModifier) > prevPipTravel) SpendActionPoints(1);
@@ -426,9 +444,10 @@ public class CombatManager : MonoBehaviour
         executingAction = action;
     }
 
-    public void FinishAction()
+    public void FinishAction(AbilityAction finishingAction = null)
     {
-        if (executingAction == null) return;
+        if (executingAction == null || (finishingAction != null && finishingAction != executingAction)) return;
+        Debug.Log("Finish Action");
         var actor = executingAction.actor;
         executingAction = null;
 

@@ -7,6 +7,7 @@ using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
+using static CharStats;
 //ing UnityEngine.UIElements;
 
 public class DefaultUI : MenuScreen 
@@ -36,6 +37,8 @@ public class DefaultUI : MenuScreen
 
     public ScrollRect chatWindowScroll;
     public GameObject chatWindowContent;
+
+    public GameObject JournalNotification;
 
     public GameObject portraitPanel;
     public charIcon[] charIcons = new charIcon[PartyController.maxParty];
@@ -86,6 +89,9 @@ public class DefaultUI : MenuScreen
                 charIcon.UpdateIcon(currentParty[i], true);
             }
         }
+
+        JournalNotification.SetActive(PartyController.Instance.GetLevelByXP() > PartyController.Instance.playerChar.charStats.GetCurrStat(StatVal.level));
+
         UpdateActions();
         UpdateInitiative();  // TODO: break out initiative trigger into its own event listener
     }
@@ -135,7 +141,7 @@ public class DefaultUI : MenuScreen
                 if (selectedNPC != PartyController.Instance.activePartyMember || CombatManager.Instance.InAction()) actionButtons[i].GetComponent<Button>().interactable = false;
                 else actionButtons[i].GetComponent<Button>().interactable = true;
                 //buttonActions.Add(action);
-                if(i == CombatManager.Instance.selectedIdx) actionButtons[i].GetComponent<Button>().image.color = Color.red; // TODO: temp effect
+                if(i == CombatManager.Instance.ActionIdx) actionButtons[i].GetComponent<Button>().image.color = Color.red; // TODO: temp effect
                 else actionButtons[i].GetComponent<Button>().image.color = Color.white;
                 actionButtons[i].SetActive(true);
             }

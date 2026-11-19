@@ -16,12 +16,12 @@ public class Sword : WeaponItem
 
     public override AbilityAction DefaultAttack()
     {
-        return new AttackAction(name: "Swing", icon: swordIcon, range: 1.5f, attackCost: swingAp, damageDice: damageDie, modifier: 1, animation: "sword", powerAttack: power, precisionAttack: precision);
+        return new AttackAction(name: "Swing", icon: swordIcon, range: 1.5f, attackCost: swingAp, damageDice: damageDie, modifier: modifier, animation: "sword", powerAttack: power, precisionAttack: precision);
     }
 
     public override List<AbilityAction> ItemActions()
     {
-        return new List<AbilityAction>() { new AttackAction(name: "Swing", icon: swordIcon, range: 1.5f, attackCost: swingAp, damageDice: damageDie, modifier: 1, animation: "sword", powerAttack: power, precisionAttack: precision) };
+        return new List<AbilityAction>() { new AttackAction(name: "Swing", icon: swordIcon, range: 1.5f, attackCost: swingAp, damageDice: damageDie, modifier: modifier, animation: "sword", powerAttack: power, precisionAttack: precision) };
         // TODO: steal ideas from 5e24's knick/etc; have minor action can take even if not proper attack
     }
 }

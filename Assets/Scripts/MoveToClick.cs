@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
+using static UnityEngine.GraphicsBuffer;
 
 public class MoveToClick : MonoBehaviour
 {
@@ -28,6 +30,8 @@ public class MoveToClick : MonoBehaviour
 
     private Character followTarget;
     private float followDist = 1.5f;
+
+    private GameObject rotateTarget;
 
     private Vector3 lastPoint;
 
@@ -100,6 +104,16 @@ public class MoveToClick : MonoBehaviour
             character.animator.Play(animationOverride);
             animationOverride = null;
         }
+
+        if(rotateTarget != null)
+        {
+            Vector3 direction = (rotateTarget.transform.position - transform.position).normalized;
+            direction.y = 0f;
+            Vector3 goal = transform.forward.normalized;
+            goal.y = 0f;
+            if (Vector3.Dot(goal, direction) > 0.7) rotateTarget = null;
+            else transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), agent.angularSpeed * Time.deltaTime);
+        }
     }
 
     private bool ValidAgent()
@@ -170,7 +184,6 @@ public class MoveToClick : MonoBehaviour
     }
 
     public IEnumerator DefaultAvoidanceAsync() {
-        Debug.Log("Default");
         obstacle.enabled = false;
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
@@ -256,7 +269,12 @@ public class MoveToClick : MonoBehaviour
             NavLine.Instance.DisableLine();
         }
         stopCount = 0;
-        CombatManager.Instance.FinishAction();  // Necessary for action to register as finished before next frame
+        CombatManager.Instance.FinishAction(CombatManager.Instance.defaultRun);  // Necessary for action to register as finished before next frame
+    }
+
+    public void RotateTowards(GameObject target)
+    {
+        rotateTarget = target;
     }
 
     public void OnDisable()

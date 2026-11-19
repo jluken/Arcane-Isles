@@ -55,6 +55,11 @@ public class MoveToPoint : AbilityAction  // TODO: possibly rethink movetopoint 
         return !actor.mover.pathLocked;
     }
 
+    public override bool CanUseAbility()
+    {
+        return CheckValidAction() && CombatManager.Instance.GetCurrentAP(actor) > 0;
+    }
+
     public override IEnumerator UseAbility()
     {
         //Debug.Log("Using MoveToPoint for point " + target);
@@ -74,7 +79,8 @@ public class MoveToPoint : AbilityAction  // TODO: possibly rethink movetopoint 
 
     public override int GetActionCost()
     {
-        return (int)Math.Ceiling(PathDistToTarget(actor) / actor.charStats.runModifier);
+        float leftover = (CombatManager.Instance.turnTravel / actor.charStats.runModifier) % 1;
+        return (int)Math.Floor(PathDistToTarget(actor) / actor.charStats.runModifier + leftover);
     }
 
     public override void DisplayTarget()

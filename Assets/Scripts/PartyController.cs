@@ -24,7 +24,7 @@ public class PartyController : MonoBehaviour
     public event Action updatePartyEvent;
 
     public int xp;
-    public static int[] levelThresholds = { 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200 };
+    public static int[] levelThresholds = { 0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500, 5500, 6600, 7800, 9100, 10400 };
 
     public Vector2 worldMapPos;
 

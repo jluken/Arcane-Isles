@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using static CharStats;
 
@@ -21,7 +22,7 @@ public class AttackAction : InteractionAction
     public override bool CheckValidTarget(Selectable target)
     {
         if (target == null || target == actor.GetComponent<Selectable>()) return false;
-        var dist = Vector3.Distance(actor.gameObject.transform.position, target.gameObject.transform.position);
+        var dist = Vector3.Distance(actor.gameObject.transform.position, target.gameObject.GetComponent<Collider>().ClosestPoint(actor.gameObject.transform.position));
         if (target.GetComponent<Character>() != null && dist < range)
         {
             return Utils.LineOfSight(actor.gameObject, target.gameObject);
@@ -31,14 +32,20 @@ public class AttackAction : InteractionAction
 
     public override IEnumerator UseAbility()
     {
+        Debug.Log("Attack");
         var victim = target.GetComponent<Character>();
-        var damage = Dice.RollDie(damageDice);
+        var damage = damageDice * Dice.RollDie(6);
         damage = Math.Max(damage + modifier, 1) + (powerAttack ? actor.charStats.GetCurrStat(StatVal.vigor) / 2 : 0);
         if (CombatManager.Instance.sneaking) CombatManager.Instance.ToggleSneak();
-        if(actor.animator != null) actor.animator.CrossFade(animation, 0.25f);  // TODO: generalize this
+        
+        if (actor.animator != null) actor.animator.CrossFade(animation, 0.25f);  // TODO: generalize this
 
         CombatManager.Instance.LockAction(this);
         CombatManager.Instance.SpendActionPoints(actionCost); // account for floating point and wiggle room
+        if (actor == PartyController.Instance.activePartyMember) victim.FightMe();
+
+        actor.mover.RotateTowards(target.gameObject);
+
         yield return new WaitForSeconds(1.0f);
 
         var diceRoll = Dice.RollDie(6) + Dice.RollDie(6);
@@ -56,7 +63,7 @@ public class AttackAction : InteractionAction
         }
         else DialogueInterface.Instance.LogLine(actor.charStats.charName + " misses.");
         CombatManager.Instance.FinishAction();
-        victim.FightMe();
+        
         yield break;
     }
 

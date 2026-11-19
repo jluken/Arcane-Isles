@@ -339,7 +339,7 @@ MonoBehaviour:
       type: 2
       typeString: CustomFieldType_Boolean
     - title: Entry Count
-      value: 1
+      value: 13
       type: 1
       typeString: CustomFieldType_Number
     - title: Entry 1 State
@@ -350,6 +350,274 @@ MonoBehaviour:
       value: Early this morning our captain fled into the storms of the Swirling
         Sea as an unknown ship gave chase. Now our sloop is lost and I've washed
         up on the beach of a mysterious island. I must find some means of rescue.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 1 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 XP
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 2 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 2
+      value: I am not the sole survivor from the Albatross. Some of the crew have
+        gathered together in a camp set up on a beach across the bay from where I
+        awoke. They may know some way off the island.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 2 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 2 XP
+      value: 20
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 3 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 3
+      value: The crew of the Albatross must be forgotten. I will find another way
+        home.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 3 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 3 XP
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 4 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 4
+      value: Dr Braam has joined me in my quest for deliverance along with any other
+        survivors we might find.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 4 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 4 XP
+      value: 10
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 5 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 5
+      value: Captain Taylor holds the navigational charts we need to sail home. He's
+        headed north into the jungles of the island for some mysterious purpose and
+        no one has heard from him since.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 5 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 5 XP
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 6 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 6
+      value: With the Albatross dashed upon the shoals by the storm, we will need
+        a new ship to get home. It will be some time before one can be constructed
+        from the wreckage.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 6 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 6 XP
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 7 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 7
+      value: Some of the pirates which chased us to this island have set up camp
+        on the north side of the Island. While they possess a ship in working order,
+        they are as stranded as I am without the Albatross' navigational charts.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 7 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 7 XP
+      value: 20
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 8 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 8
+      value: I've dealt with the pirates so they will no longer be any trouble. Now
+        their ship can be used to sail home.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 8 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 8 XP
+      value: 50
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 9 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 9
+      value: I've convinced one of the pirates, Lucy, to turn on the captain which
+        cursed us all to this remote land. For at least the time being, she's willing
+        to help us.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 9 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 9 XP
+      value: 40
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 10 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 10
+      value: There is an ancient temple hidden deep in the jungles of the island.
+        Perhaps there is more here than first anticipated.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 10 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 10 XP
+      value: 20
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 11 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 11
+      value: I've found Captain Taylor and his navigational charts, but the captain
+        himself has perished at the hands of a group of assailants. Nevertheless,
+        the map will be the key to finding the way home.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 11 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 11 XP
+      value: 10
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 12 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 12
+      value: I and the remaining crew of the Albatross managed to sail away from
+        the island and the Swirling Sea back towards Sabre's Point, leaving nothing
+        but a poor memory.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 12 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 12 XP
+      value: 60
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 13 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 13
+      value: 'I was able to make my way back to Sabre''s Point aboard the same ship
+        that chased us to the island in the first place. '
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry 13 StartTime
+      value: 0
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 13 XP
+      value: 50
+      type: 1
+      typeString: CustomFieldType_Number
+  - id: 3
+    fields:
+    - title: Name
+      value: A Lost Treasure
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: 
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: The late Captain Taylor's journal revealed that he has possibly found
+        the trail to the lost City of Uruzar, rumored to house immense wealth and
+        arcane power. He believes that someone in Sabre's Point might know more about
+        ruins throughout the Arcane Isles which will lead to the city.
       type: 0
       typeString: CustomFieldType_Text
     - title: Entry 1 StartTime
@@ -1615,8 +1883,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 15.517273, y: 453.4485}
-    canvasZoom: 0.58000004
+    canvasScrollPosition: {x: 0, y: 0}
+    canvasZoom: 0.4900001
   - id: 2
     fields:
     - title: Title
@@ -2139,7 +2407,7 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 529.71405
+        x: 528.07477
         y: 419.95706
         width: 160
         height: 30
@@ -2470,7 +2738,7 @@ MonoBehaviour:
         type: 0
         typeString: CustomFieldType_Text
       - title: Sequence
-        value: 
+        value: Continue()
         type: 0
         typeString: CustomFieldType_Text
       conversationID: 4
@@ -2831,8 +3099,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 787.30786
-        y: 306.6884
+        x: 779.11115
+        y: 295.21298
         width: 160
         height: 30
     - id: 15
@@ -3021,8 +3289,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 1416.8391
-        y: 178.16364
+        x: 1390.6096
+        y: 163.40955
         width: 160
         height: 30
     - id: 18
@@ -3349,6 +3617,12 @@ MonoBehaviour:
         destinationDialogueID: 8
         isConnector: 0
         priority: 2
+      - originConversationID: 5
+        originDialogueID: 6
+        destinationConversationID: 5
+        destinationDialogueID: 12
+        isConnector: 0
+        priority: 2
       conditionsString: 
       userScript: Variable["SwirlingIsle_Beach_WreckFound"] = true
       onExecute:
@@ -3415,7 +3689,7 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 466.3484
+        x: 386.02057
         y: 872.98145
         width: 160
         height: 30
@@ -3464,7 +3738,7 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 714.8864
+        x: 887.01746
         y: 863.5922
         width: 160
         height: 30
@@ -3513,8 +3787,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 468.41714
-        y: 972.7164
+        x: 348.7451
+        y: 985.8311
         width: 160
         height: 30
     - id: 10
@@ -3569,7 +3843,7 @@ MonoBehaviour:
       canvasRect:
         serializedVersion: 2
         x: 107.5052
-        y: 850.7819
+        y: 854.0606
         width: 160
         height: 30
     - id: 11
@@ -3628,8 +3902,121 @@ MonoBehaviour:
         y: 978.41327
         width: 160
         height: 30
+    - id: 12
+      fields:
+      - title: Title
+        value: 
+        type: 0
+        typeString: 
+      - title: Description
+        value: 
+        type: 0
+        typeString: 
+      - title: Actor
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Conversant
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Menu Text
+        value: <color=red>[Athletics]</color> <i>Check underneath the wreckage for
+          supplies.</i>
+        type: 0
+        typeString: 
+      - title: Dialogue Text
+        value: 
+        type: 0
+        typeString: 
+      - title: Sequence
+        value: 
+        type: 0
+        typeString: 
+      conversationID: 5
+      isRoot: 0
+      isGroup: 0
+      nodeColor: 
+      delaySimStatus: 0
+      falseConditionAction: Block
+      conditionPriority: 2
+      outgoingLinks:
+      - originConversationID: 5
+        originDialogueID: 12
+        destinationConversationID: 5
+        destinationDialogueID: 13
+        isConnector: 0
+        priority: 2
+      conditionsString: SkillCheck("athletics") < 4 and Variable["SwirlingIsle_Beach_WreckLooted"]
+        == false
+      userScript: 
+      onExecute:
+        m_PersistentCalls:
+          m_Calls: []
+      canvasRect:
+        serializedVersion: 2
+        x: 623.0787
+        y: 872.9347
+        width: 160
+        height: 30
+    - id: 13
+      fields:
+      - title: Title
+        value: 
+        type: 0
+        typeString: 
+      - title: Description
+        value: 
+        type: 0
+        typeString: 
+      - title: Actor
+        value: 3
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Conversant
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Menu Text
+        value: 
+        type: 0
+        typeString: 
+      - title: Dialogue Text
+        value: You attempt to search for supplies buried beneath the waves and sand,
+          but the briny water rushes into your mouth forcing you back to the surface.
+        type: 0
+        typeString: 
+      - title: Sequence
+        value: 
+        type: 0
+        typeString: 
+      conversationID: 5
+      isRoot: 0
+      isGroup: 0
+      nodeColor: 
+      delaySimStatus: 0
+      falseConditionAction: Block
+      conditionPriority: 2
+      outgoingLinks:
+      - originConversationID: 5
+        originDialogueID: 13
+        destinationConversationID: 5
+        destinationDialogueID: 6
+        isConnector: 0
+        priority: 2
+      conditionsString: 
+      userScript: 
+      onExecute:
+        m_PersistentCalls:
+          m_Calls: []
+      canvasRect:
+        serializedVersion: 2
+        x: 600.12787
+        y: 1003.26263
+        width: 160
+        height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 511.83704}
+    canvasScrollPosition: {x: 0, y: 359.3781}
     canvasZoom: 0.6100004
   - id: 6
     fields:
@@ -8464,8 +8851,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 4748.7007, y: 708.67017}
-    canvasZoom: 0.7299998
+    canvasScrollPosition: {x: 3154.3623, y: 3268.438}
+    canvasZoom: 0.36999997
   - id: 7
     fields:
     - title: Title
@@ -11353,7 +11740,7 @@ MonoBehaviour:
         value: None()
         type: 0
         typeString: 
-      conversationID: 0
+      conversationID: 9
       isRoot: 1
       isGroup: 0
       nodeColor: 

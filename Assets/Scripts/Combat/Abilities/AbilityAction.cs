@@ -40,7 +40,7 @@ public abstract class AbilityAction
 
     public abstract int GetActionCost();
 
-    public bool CanUseAbility()
+    public virtual bool CanUseAbility()
     {
         return CheckValidAction() && GetActionCost() <= CombatManager.Instance.GetCurrentAP(actor);
     }

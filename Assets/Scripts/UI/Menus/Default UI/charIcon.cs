@@ -32,13 +32,13 @@ public class charIcon : MonoBehaviour
         statusIcons = new();
     }
 
-    private void Start()
+    private void OnEnable()
     {
         EventHandler.Instance.hoverObj += Glow;
         EventHandler.Instance.unhoverObj += Deglow;
     }
 
-    public void OnDestroy()
+    public void OnDisable()
     {
         EventHandler.Instance.hoverObj -= Glow;
         EventHandler.Instance.unhoverObj -= Deglow;

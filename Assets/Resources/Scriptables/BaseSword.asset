@@ -12,19 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4831c1a46adc8c14c8a63f7b5afe6e61, type: 3}
   m_Name: BaseSword
   m_EditorClassIdentifier: Assembly-CSharp::Sword
-  itemName: Sword
+  itemName: Cutlass
   description: Pretty good
   sprite: {fileID: 21300000, guid: 9cdd97799b791064da4993559680c672, type: 3}
   itemPrefab: {fileID: 798153174228863648, guid: 52a4a696821639c4793ec908d539851f, type: 3}
   price: 5
   weight: 1
   dt: 0
-  APCost: 0
+  EquipAPCost: 0
   maxStackSize: 1
   itemType: 1
   equipStats: []
   consumeOnUse: 0
   consumeStats: []
-  damageDie: 6
-  swingAp: 4
+  damageDie: 1
+  swingAp: 6
+  modifier: 1
+  power: 0
+  precision: 0
   swordIcon: {fileID: 21300000, guid: 9cdd97799b791064da4993559680c672, type: 3}

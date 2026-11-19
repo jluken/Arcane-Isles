@@ -30,7 +30,6 @@ public class SceneObjectManager : MonoBehaviour
         // NPCs are unique enough that they aren't loaded from prefabs, but all possible NPCs are already inside a scene and then which ones are active is determined by settings/save
         foreach (GameObject npc in npcs)
         {
-            foreach (var i in sceneData.NPCs) Debug.Log(i.id);
             if (sceneData.NPCs.Any(saveNpc => saveNpc.id == npc.name))
             {
                 SceneSaveData.CharData npcSceneData = sceneData.NPCs.First(saveNpc => saveNpc.id == npc.name);

@@ -248,6 +248,8 @@ public class SceneLoader : MonoBehaviour
             StartCoroutine(character.mover.DefaultAvoidanceAsync()); 
             character.SetStates(); }  // initialize chars before manipulating
         PartyController.Instance.DeactivateParty();
+        CombatManager.Instance.ResetCombat();
+        DialogueInterface.Instance.ResetChat();
         if (levelManager != null) DeactivateLevel(levelManager);
         Debug.Log("level manager reset");
         levelManager = null;

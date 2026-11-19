@@ -54,6 +54,11 @@ public class DialogueInterface : MonoBehaviour
         //descriptionBarkUI = Instantiate(descriptionBarkUIPrefab, transform) as AbstractBarkUI;
     }
 
+    public void ResetChat()
+    {
+        chatHistory.Clear(); // TODO: maybe save
+    }
+
     void OnEnable()
     {
         Lua.RegisterFunction("SpeechEvent", this, typeof(DialogueInterface).GetMethod("SpeechEvent"));
@@ -119,6 +124,7 @@ public class DialogueInterface : MonoBehaviour
         //Debug.Log("Record:");
         var speaker = PixelCrushers.DialogueSystem.CharacterInfo.GetLocalizedDisplayNameInDatabase(line.speakerInfo.nameInDatabase);
         var words = line.dialogueEntry.currentDialogueText;
+        if (String.IsNullOrEmpty(words)) return;
         if(words.StartsWith("[")) words = Regex.Replace(words, @"#\[.*\] ", string.Empty);
         chatHistory.Add(!string.IsNullOrEmpty(speaker) ? (speaker + ": " + words) : words );
         updateChatLog.Invoke(chatHistory);
@@ -239,7 +245,7 @@ public class DialogueInterface : MonoBehaviour
         QuestLog.SetQuestState(questName, QuestState.Active);
         DialogueLua.SetQuestField(questName, "StartTime", GameData.Instance.gameTime);
         if(initEntryNum > 0) ActivateQuestEntry(questName, initEntryNum);
-        LogLine("Journal updated");
+        //LogLine("Journal updated");
     }
 
     public void ActivateQuestEntry(string questName, double entryNumd)
@@ -247,21 +253,30 @@ public class DialogueInterface : MonoBehaviour
         int entryNum = (int)entryNumd;
         QuestLog.SetQuestEntryState(questName, entryNum, QuestState.Active);
         DialogueLua.SetQuestField(questName, QuestEntryField(entryNum, "StartTime"), GameData.Instance.gameTime);
+
+        int objectiveXP = DialogueLua.GetQuestField(questName, QuestEntryField(entryNum, "XP")).asInt;
+        if (objectiveXP > 0)
+        {
+            PartyController.Instance.xp += objectiveXP;
+            LogLine("+" + objectiveXP + "XP");
+            DefaultUI.Instance.UpdateStats();
+        }
+        LogLine("Journal updated");
     }
 
     public void FinishQuest(string questName)
     {
         QuestLog.CompleteQuest(questName);
-        int totalXp = 0;
-        for (int e = 1; e <= QuestLog.GetQuestEntryCount(questName); e++) {
-            if (QuestLog.GetQuestEntryState(questName, e) == QuestState.Success)
-            {
-                totalXp += DialogueLua.GetQuestField(questName, QuestEntryField(e, "XP")).asInt;
-            }
-        }
-        PartyController.Instance.xp += totalXp;
-        LogLine("+" + totalXp + "XP");
-        LogLine("Journal updated");
+        //int totalXp = 0;
+        //for (int e = 1; e <= QuestLog.GetQuestEntryCount(questName); e++) {
+        //    if (QuestLog.GetQuestEntryState(questName, e) == QuestState.Success)
+        //    {
+        //        totalXp += DialogueLua.GetQuestField(questName, QuestEntryField(e, "XP")).asInt;
+        //    }
+        //}
+        //PartyController.Instance.xp += totalXp;
+        //LogLine("+" + totalXp + "XP");
+        //LogLine("Journal updated");
     }
 
     public struct QuestData

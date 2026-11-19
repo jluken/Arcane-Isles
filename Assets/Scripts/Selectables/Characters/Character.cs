@@ -117,7 +117,6 @@ public class Character : Selectable
 
         mover.agent.Warp(new Vector3(charSaveData.pos[0], charSaveData.pos[1], charSaveData.pos[2]));
         transform.rotation = Quaternion.identity * Quaternion.Euler(charSaveData.rot[0], charSaveData.rot[1], charSaveData.rot[2]);
-        Debug.Log("Loading State + " + charSaveData.stateName + " for " + charStats.charName);
         if (!Enum.TryParse(charSaveData.combatantType, out combatantType)) combatantType = CombatManager.CombatantType.Bystander;
         LoadState(charSaveData.stateName);
     }
