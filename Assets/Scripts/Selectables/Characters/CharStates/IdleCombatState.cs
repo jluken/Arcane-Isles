@@ -43,12 +43,14 @@ public class IdleCombatState: CharState
 
     public override void EndCombat()
     {
+        Debug.Log("Ending combat for " + character.name + " into state " + character.IdleState);
         charStateMachine.ChangeState(character.IdleState);
     }
 
     public override void EnterCombat()
     {
         // Do nothing
+        CombatManager.Instance.insertIntoInitiative(character, character.combatantType);
     }
 
 }

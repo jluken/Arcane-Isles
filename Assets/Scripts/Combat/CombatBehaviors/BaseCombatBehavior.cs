@@ -52,7 +52,8 @@ public class BaseCombatBehavior : ScriptableObject
     {
         float minDist = Mathf.Infinity;
         Character closest = null;
-        foreach(var target in CombatManager.Instance.Allies)
+        var validTargets = attacker.combatantType == CombatManager.CombatantType.Enemy ? CombatManager.Instance.Allies : CombatManager.Instance.enemies;
+        foreach (var target in validTargets)
         {
             var path = attacker.GetComponent<MoveToClick>().PathToObj(target.character);
             var dist = path != null ? MoveToClick.PathDist(path) : Mathf.Infinity;

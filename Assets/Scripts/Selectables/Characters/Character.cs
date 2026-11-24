@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Windows;
 using static PartyData;
@@ -40,6 +41,10 @@ public class Character : Selectable
     public bool onSight = false;  // Will character attack on sight
     public CombatManager.CombatantType SideToJoin = CombatManager.CombatantType.Bystander;  // Which side will they join if they see fight
     //public bool isAggroed = false;
+    public BaseCombatBehavior CombatBehavior;
+    public List<GameObject> AwarePlayers = new List<GameObject>();
+    public AggroRad AggroRad;
+    public AwareRad AwareRad;
 
     public override void Awake()
     {
@@ -77,6 +82,8 @@ public class Character : Selectable
     public override void Start()
     {
         interactRad.character = this;
+        AggroRad.enemy = this;
+        AwareRad.npc = this;
         interactRad.interactCollider.radius = reach;
 
         CombatManager.Instance.callToArms += SetToCombat;
@@ -106,10 +113,12 @@ public class Character : Selectable
 
         //Debug.Log("Load material " + charSaveData.charMaterial);
         Debug.Log("Curr materials " + renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials.Length);
+        Debug.Log("Loading chardata for " + name);
 
         var materials = new Material[charSaveData.charMaterials.Length];
         for (int i = 0; i < charSaveData.charMaterials.Length; i++)
         {
+            Debug.Log("Loading material " + charSaveData.charMaterials[i]);
             materials[i] = (Resources.Load<Material>("Materials/" + charSaveData.charMaterials[i]));
         }
         renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials = materials;
@@ -212,6 +221,16 @@ public class Character : Selectable
         CombatManager.Instance.TargetObj(this);
     }
 
+    public void TakeAction()
+    {
+        StartCoroutine(CombatBehavior.CombatTurn(this));
+    }
+
+    public void Alert()  // TODO: maybe move this to Character and make a more universal system?
+    {
+        if (onSight) combatantType = CombatManager.CombatantType.Enemy;
+    }
+
     private void FixedUpdate()
     {
         StateMachine.CurrentPlayerState.PhysicsUpdate();
@@ -219,19 +238,22 @@ public class Character : Selectable
 
     public virtual void FightMe()
     {
+        Debug.Log("Fight me for " + gameObject.name);
         combatantType = CombatManager.CombatantType.Enemy;
         //isAggroed = true;
         //SetToCombat();
-        CombatManager.Instance.InitiateCombat();
+        CombatManager.Instance.InitiateCombat(new List<Character> { this });
     }
 
     public virtual void SetToCombat()
     {
+        Debug.Log("Set to combat for " + gameObject.name);
         StateMachine.CurrentPlayerState.EnterCombat();
     }
 
     public virtual void EndCombat()
     {
+        Debug.Log("Ending combat under state " + StateMachine.CurrentPlayerState + " for " + gameObject.name);
         StateMachine.CurrentPlayerState.EndCombat();
     }
 
@@ -249,6 +271,7 @@ public class Character : Selectable
     public virtual void Die()
     {
         foreach (var equipSlot in inventory.equipment.Keys) inventory.Dequip(equipSlot);
+        combatantType = CombatManager.CombatantType.Dead;  // TODO: should this be a state machine?
         StateMachine.ChangeState(DeadState);
         StartCoroutine(mover.PlantFeetAsync());
         EventHandler.Instance.TriggerDeathEvent(this);

@@ -27,7 +27,7 @@ MonoBehaviour:
   consumeStats: []
   damageDie: 1
   swingAp: 6
-  modifier: 1
+  modifier: 2
   power: 0
   precision: 0
   swordIcon: {fileID: 21300000, guid: 9cdd97799b791064da4993559680c672, type: 3}

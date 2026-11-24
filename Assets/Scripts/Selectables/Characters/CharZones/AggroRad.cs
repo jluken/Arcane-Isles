@@ -3,7 +3,7 @@ using UnityEngine.Rendering.Universal;
 
 public class AggroRad : MonoBehaviour
 {
-    public Enemy enemy;
+    public Character enemy;
     public DecalProjector visRange;
 
     public void Start()

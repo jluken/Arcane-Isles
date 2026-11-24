@@ -40,7 +40,8 @@ public class CombatManager : MonoBehaviour
         Party,
         Ally,
         Enemy,
-        Bystander
+        Bystander,
+        Dead
     }
 
     public List<InitiativeEntry> combatantInitiative;
@@ -104,7 +105,9 @@ public class CombatManager : MonoBehaviour
 
     public void ResetCombat()
     {
+        Debug.Log("reset combat");
         combatantInitiative = new List<InitiativeEntry>();
+        initiativeTurn = -1;
         activeCombatant = null;
         selectedIdx = -1;
 
@@ -134,7 +137,8 @@ public class CombatManager : MonoBehaviour
 
     public void insertIntoInitiative(Character character, CombatantType type)
     {
-        if (type == CombatantType.Bystander || combatantInitiative.Any(entry => entry.character == character)) return;  // TODO: figure out different "bystander behaviors" like fleeing, wandering, etc
+        Debug.Log("Enter initiative for " + character.name);
+        if (type == CombatantType.Bystander || type == CombatantType.Dead || combatantInitiative.Any(entry => entry.character == character)) return;  // TODO: figure out different "bystander behaviors" like fleeing, wandering, etc
         var initiative = Dice.SkillCheck(6, character.charStats.GetCurrStat(CharStats.StatVal.finesse));
 
         int idx = 0;
@@ -145,6 +149,7 @@ public class CombatManager : MonoBehaviour
             idx++;
         }
         combatantInitiative.Insert(idx, new InitiativeEntry() { character = character, initiative = initiative, type = type });
+        ResetInitiative();
         combatStatUpdate.Invoke();
     }
 
@@ -189,7 +194,15 @@ public class CombatManager : MonoBehaviour
 
     public void InitiateCombat(List<Character> initialCombatants = null)
     {
-        if (combatActive) return;
+        if (combatActive)
+        {
+            foreach (var combatant in initialCombatants ?? Enumerable.Empty<Character>())
+            {
+                combatant.SetToCombat();  // TODO: refactor
+            }
+            return;
+        }
+        initiativeTurn = 0;
         Debug.Log("initiate combat");
         combatActive = true;
         combatantInitiative = new List<InitiativeEntry>();
@@ -204,7 +217,7 @@ public class CombatManager : MonoBehaviour
 
         callToArms.Invoke();
 
-        initiativeTurn = 0;
+        
         StartCoroutine(SetCombatant(initiativeTurn));
     }
 
@@ -226,6 +239,7 @@ public class CombatManager : MonoBehaviour
     public void EndCombat()
     {
         Debug.Log("End Combat");
+        ResetCombat();
         setPeace.Invoke();
         combatActive = false;
         SelectionController.Instance.playerUnderControl = true;
@@ -266,13 +280,13 @@ public class CombatManager : MonoBehaviour
         yield return activeCombatant.mover.DefaultAvoidanceAsync();
         turnTravel = 0;
         ActionPoints = activeCombatant.charStats.GetCurrStat(CharStats.StatVal.actionPoints);
-        bool isEnemy = combatantInitiative[turn].type == CombatantType.Enemy;
+        bool isNPC = combatantInitiative[turn].type == CombatantType.Enemy || combatantInitiative[turn].type == CombatantType.Ally;
         UIController.Instance.ActivateCombatUI();
         camScript.Instance.TrackObj(activeCombatant.gameObject);
         SelectionController.Instance.playerUnderControl = combatantInitiative[turn].type == CombatantType.Party;
-        if (isEnemy)
+        if (isNPC)
         {
-            activeCombatant.GetComponent<Enemy>().TakeAction();
+            activeCombatant.TakeAction();
         }
         else if (SelectionController.Instance.playerUnderControl)
         {

@@ -40,7 +40,7 @@ public class EnemyPatrolState: IdleState
 
         if (enemy.combatantType == CombatManager.CombatantType.Enemy)
         {
-            CombatManager.Instance.InitiateCombat();
+            CombatManager.Instance.InitiateCombat(new List<Character> { enemy });
         }
     }
 

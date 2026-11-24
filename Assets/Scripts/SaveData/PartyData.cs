@@ -78,6 +78,7 @@ public class PartyData
 
     public static CharSaveData LoadCharData(string name, Vector3 pos, Vector3 EulerRot, Character npc, CharStats charStats, EntityInventory inv, CharSigils charSigils)
     {
+        Debug.Log("Loading chardata for " + name);
         CharSaveData charSaveData = new CharSaveData();
         charSaveData.id = name;
         charSaveData.pos = new float[] { pos.x, pos.y, pos.z };
@@ -91,6 +92,8 @@ public class PartyData
         charSaveData.combatantType = npc.combatantType.ToString();
 
         Debug.Log("Material: " + npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials[0]);
+        Debug.Log("Material count: " + npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials.Count());
+        Debug.Log("Material solo: " + npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterial);
         charSaveData.charMaterials = npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMaterials.Select(mat => mat.name).ToArray();
         Debug.Log("Shared mesh: " + npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMesh);
         charSaveData.charMesh = npc.renderBody.GetComponent<SkinnedMeshRenderer>().sharedMesh.name;

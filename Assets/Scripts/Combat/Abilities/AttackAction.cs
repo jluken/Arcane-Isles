@@ -35,7 +35,7 @@ public class AttackAction : InteractionAction
         Debug.Log("Attack");
         var victim = target.GetComponent<Character>();
         var damage = damageDice * Dice.RollDie(6);
-        damage = Math.Max(damage + modifier, 1) + (powerAttack ? actor.charStats.GetCurrStat(StatVal.vigor) / 2 : 0);
+        damage = (damage > 0 ? Math.Max(damage + modifier, 1) : 0) + (powerAttack ? actor.charStats.GetCurrStat(StatVal.vigor) / 2 : 0);
         if (CombatManager.Instance.sneaking) CombatManager.Instance.ToggleSneak();
         
         if (actor.animator != null) actor.animator.CrossFade(animation, 0.25f);  // TODO: generalize this

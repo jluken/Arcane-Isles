@@ -23,7 +23,7 @@ public static class SaveSystem
         int prevAutoSaveNum = PlayerPrefs.GetInt(autoSaveSlot, 0);
         int newAutoNum = (prevAutoSaveNum) % autoSaves;
         string autosaveName = "Autosave " + (newAutoNum + 1);
-        SaveTempThumbnail();
+        SaveTempThumbnail(false);
         SaveGame(autosaveName);
         PlayerPrefs.SetInt(autoSaveSlot, newAutoNum);
     }
@@ -65,7 +65,7 @@ public static class SaveSystem
 
         formatter.Serialize(stream, gameSaveData);
         stream.Close();
-        SaveThumbnail(saveName);
+        SaveThumbnail(saveName);  // TODO: handle this better, including Autosave being one behind due to frames
     }
 
     public static GameSaveData LoadGame(string saveName)
@@ -123,13 +123,13 @@ public static class SaveSystem
         else return null;
     }
 
-    public static void SaveTempThumbnail()
+    public static void SaveTempThumbnail(bool useScreenshot = true)
     {
         Directory.CreateDirectory(Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder);
         Directory.CreateDirectory(Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder + "/temp");
         string path = Application.persistentDataPath + "/" + saveFolder + "/" + saveThumbnailFolder + "/temp/img" + thumbnailFormat;
-        ScreenCapture.CaptureScreenshot(path);
-        //File.WriteAllBytes(path, image.EncodeToPNG());
+        if (useScreenshot) ScreenCapture.CaptureScreenshot(path);
+        else if (File.Exists(path)) File.Delete(path);  // TODO: placeholder until better way to save for autosave on level load (manual triggers?)
     }
 
     public static void SaveThumbnail(string saveName)

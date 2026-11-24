@@ -5523,7 +5523,7 @@ MonoBehaviour:
   levelDims: []
   levelMap: {fileID: 0}
   levelScenes:
-  - Beach
+  - SurvivorCampScene
   sceneTriggers:
   - {fileID: 1654093457}
   visRegions: []
@@ -6332,7 +6332,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8370366971599707688, guid: 07555fee3f1006d479a3d244e95edf1d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -86.4
+      value: 39.3
       objectReference: {fileID: 0}
     - target: {fileID: 8370366971599707688, guid: 07555fee3f1006d479a3d244e95edf1d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6340,7 +6340,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8370366971599707688, guid: 07555fee3f1006d479a3d244e95edf1d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -95.9
+      value: -46.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -7895,7 +7895,7 @@ GameObject:
   - component: {fileID: 1654093459}
   - component: {fileID: 1654093458}
   m_Layer: 0
-  m_Name: Beach
+  m_Name: SurvivorCampScene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

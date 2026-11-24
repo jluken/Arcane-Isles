@@ -21,7 +21,6 @@ public class SceneTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {
-        Debug.Log("Test enter scene trigger ");
         if (other.gameObject.GetComponent<PartyMember>() != null && !SceneLoader.Instance.SceneLoaded(sceneName))  // TODO: check for player enter gets reused a lot
         {
             StartCoroutine(SceneLoader.Instance.ActivateSubscene(sceneName));

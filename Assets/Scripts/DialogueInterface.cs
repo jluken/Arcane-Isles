@@ -1,12 +1,14 @@
 using NUnit.Framework;
 using PixelCrushers.DialogueSystem;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Unity.Multiplayer.Center.Common;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 using UnityEngine.Windows;
 
 public class DialogueInterface : MonoBehaviour
@@ -15,6 +17,7 @@ public class DialogueInterface : MonoBehaviour
     public static DialogueInterface Instance { get; private set; }
 
     public GameObject DialogueCanvas;
+    public ScrollRect chatWindowScroll;
 
     public AbstractBarkUI descriptionBarkUIPrefab;
     private AbstractBarkUI descriptionBarkUI;
@@ -30,6 +33,8 @@ public class DialogueInterface : MonoBehaviour
 
     public delegate void DialogueEvent(string tag);
     public event DialogueEvent dialogueEvent;
+
+    private int prevSpeakerId;
 
     private void Awake()
     {
@@ -56,7 +61,7 @@ public class DialogueInterface : MonoBehaviour
 
     public void ResetChat()
     {
-        chatHistory.Clear(); // TODO: maybe save
+        chatHistory = new List<string>(); // TODO: maybe save
     }
 
     void OnEnable()
@@ -99,8 +104,31 @@ public class DialogueInterface : MonoBehaviour
         DialogueLua.SetActorField("Player", "Display Name", player.charStats.charName);
         DialogueManager.masterDatabase.GetActor("Player").spritePortrait = player.charStats.charImage;
         actor = player;
+        prevSpeakerId = -1;
         DialogueManager.StartConversation(conversationName, player.transform, obj.transform);
         //DialogueManager.Set
+    }
+
+    private void OnConversationLine(Subtitle subtitle)
+    {
+        if (subtitle == null || subtitle.speakerInfo == null) return;
+
+        int currentSpeakerID = subtitle.speakerInfo.id;
+
+        if (prevSpeakerId != -1 && currentSpeakerID != prevSpeakerId)
+        {
+            string speakerTag = String.IsNullOrEmpty(subtitle.speakerInfo.Name) ? "" : $"<b>{subtitle.speakerInfo.Name}:</b> ";
+            subtitle.formattedText.text = "\n" + speakerTag + subtitle.formattedText.text;
+        }
+
+        prevSpeakerId = currentSpeakerID;
+        StartCoroutine(DisplayNewDialogue());
+    }
+
+    private IEnumerator DisplayNewDialogue()
+    {
+        yield return new WaitForEndOfFrame();
+        chatWindowScroll.verticalNormalizedPosition = 0f;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

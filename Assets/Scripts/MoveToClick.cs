@@ -197,6 +197,7 @@ public class MoveToClick : MonoBehaviour
         var agentWidth = Math.Max(agent.transform.localScale.x, agent.transform.localScale.z);
         var interactRad = agent.GetComponent<Character>().reach;
         var rawPath = PathToPoint(target.transform.position);
+        if (rawPath == null) return agent.transform.position; // too close to move "near" target; stay still
         const float interactBuffer = 0.05f;
 
         int backtrack = 1;

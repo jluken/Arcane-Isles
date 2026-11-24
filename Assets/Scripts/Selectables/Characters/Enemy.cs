@@ -8,19 +8,14 @@ using static UnityEngine.GraphicsBuffer;
 
 public class Enemy : Character  // TODO: rename npc
 {
-    public BaseCombatBehavior CombatBehavior;
+    //public BaseCombatBehavior CombatBehavior;
 
     public List<GameObject> PathMarkers; // TODO: move to Character?
 
-    public AggroRad AggroRad;
-    public AwareRad AwareRad;
-
-    public List<GameObject> AwarePlayers = new List<GameObject>();
-
     
     
     
-    public enum AnimationTriggerType
+    public enum AnimationTriggerType  // TODO: figure out what this is and whether it should be moved to Character
     {
         EnemyDamaged,
         PlayFootstepSound
@@ -29,8 +24,7 @@ public class Enemy : Character  // TODO: rename npc
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        AggroRad.enemy = this;
-        AwareRad.npc = this;
+        
 
         //combatantType = CombatManager.CombatantType.Enemy;
         base.Start();
@@ -65,18 +59,13 @@ public class Enemy : Character  // TODO: rename npc
         base.Die();
     }
 
-    public override void EndCombat()
-    {
-        SetIdle();
-    }
+    //public override void EndCombat()
+    //{
+    //    SetIdle();
+    //}
 
-    public void TakeAction()
-    {
-        StartCoroutine(CombatBehavior.CombatTurn(this));
-    }
-
-    public void Alert()  // TODO: maybe move this to Character and make a more universal system?
-    {
-        if(onSight) combatantType = CombatManager.CombatantType.Enemy;
-    }
+    //public void TakeAction()
+    //{
+    //    StartCoroutine(CombatBehavior.CombatTurn(this));
+    //}
 }

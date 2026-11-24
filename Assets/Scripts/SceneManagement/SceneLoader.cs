@@ -144,6 +144,7 @@ public class SceneLoader : MonoBehaviour
     public void DeactivateLevel(LevelManager level)
     {
         LevelData[level.LevelName] = new LevelSaveData(level.visRegions);
+        CombatManager.Instance.EndCombat();
         foreach (string sceneName in level.levelScenes) { StartCoroutine(DeactivateSubscene(sceneName)); }
         SceneManager.UnloadSceneAsync(level.LevelName); ;
     }
@@ -188,7 +189,6 @@ public class SceneLoader : MonoBehaviour
     {
         if (SceneObjectManagers.ContainsKey(sceneName)) {
             var manager = SceneObjectManagers[sceneName];
-            Debug.Log("Adding scene Data " + manager.sceneName + " with droppable " + (manager.GroundObjects.Count > 0 ? manager.GroundObjects[0].name : "null"));
             SceneData[sceneName] = new SceneSaveData(manager.npcs, manager.containers, manager.GroundObjects);
             SceneData[sceneName].loaded = false;
             SceneObjectManagers.Remove(sceneName);

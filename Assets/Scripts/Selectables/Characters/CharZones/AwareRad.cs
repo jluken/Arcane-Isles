@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AwareRad : MonoBehaviour
 {
-    public Enemy npc;
+    public Character npc;
     
 
     void OnTriggerStay(Collider other)  // TODO: figure out "hiding" logic and when they should be "forgotten"/when effect take place (check player hide status?) [Stealth]
@@ -13,8 +13,12 @@ public class AwareRad : MonoBehaviour
             {  // Stealth check
                 npc.AwarePlayers.Add(other.gameObject);
                 if (npc.joinIn && CombatManager.Instance.combatActive) {
-                    npc.combatantType = npc.SideToJoin;
+                    if(npc.combatantType == CombatManager.CombatantType.Bystander) npc.combatantType = npc.SideToJoin;
                     npc.SetToCombat();
+                }
+                else if (npc.combatantType == CombatManager.CombatantType.Enemy)
+                {
+                    npc.FightMe();  // npcs marked as enemies always fight on sight
                 }
             }   
         }

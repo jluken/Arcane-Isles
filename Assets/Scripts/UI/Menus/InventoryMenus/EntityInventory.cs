@@ -183,7 +183,7 @@ public class EntityInventory : MonoBehaviour
         return inventory[idx];
     }
 
-    public InventoryData SwapOutEquipment(InventoryData inv)
+    public InventoryData SwapOutEquipment(InventoryData inv)  // TODO: add AP check/deduction
     {
         if (!defaultEquipSlot.ContainsKey(inv.itemType)) return inv;
         var targetSlot = defaultEquipSlot[inv.itemType][0];
