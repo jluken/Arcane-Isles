@@ -44,6 +44,7 @@ public class IdleCombatState: CharState
     public override void EndCombat()
     {
         Debug.Log("Ending combat for " + character.name + " into state " + character.IdleState);
+        character.mover.unfreezeCaller();
         charStateMachine.ChangeState(character.IdleState);
     }
 

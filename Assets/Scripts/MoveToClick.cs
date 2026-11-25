@@ -192,6 +192,11 @@ public class MoveToClick : MonoBehaviour
         agent.avoidancePriority = 50;
     }
 
+    public void unfreezeCaller()
+    {
+        StartCoroutine(DefaultAvoidanceAsync());
+    }
+
     public Vector3 PointNearObject(Selectable target)
     {
         var agentWidth = Math.Max(agent.transform.localScale.x, agent.transform.localScale.z);

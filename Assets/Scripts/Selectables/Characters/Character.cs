@@ -239,7 +239,7 @@ public class Character : Selectable
     public virtual void FightMe()
     {
         Debug.Log("Fight me for " + gameObject.name);
-        combatantType = CombatManager.CombatantType.Enemy;
+        combatantType = CombatManager.CombatantType.Enemy;  // TODO: handle other possible alliances (only considering player attacking rando?)
         //isAggroed = true;
         //SetToCombat();
         CombatManager.Instance.InitiateCombat(new List<Character> { this });

@@ -1,3 +1,4 @@
+using PixelCrushers.DialogueSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -100,6 +101,7 @@ public class PartyMember : Character
     {
         CombatManager.Instance.RemoveCombatant(this);
         PartyController.Instance.RemoveCompanion(this);  // TODO: allow for only mostly dead (still in party, but disabled and can be rezzed)
+        DialogueLua.SetVariable("SwirlingIsle.Camp.RecruitCharles", false);  // TODO: placeholder until more robust companion checker (and companion dismissal)
         StateMachine.ChangeState(DeadState);
         EventHandler.Instance.TriggerDeathEvent(this);
     }

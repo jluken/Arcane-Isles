@@ -23,7 +23,7 @@ public class CharState
 
     public virtual bool isActive => false;
 
-    public virtual void EnterState() { }
+    public virtual void EnterState() { Debug.Log(character.name + " entering state " + stateName); }
 
     public virtual void ExitState() { }
 
@@ -47,6 +47,7 @@ public class CharState
     public virtual void EndCombat()
     {
         Debug.Log(character.charStats.charName + "ending combat");
+        character.mover.unfreezeCaller();
         charStateMachine.ChangeState(character.IdleState);
     }
 

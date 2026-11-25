@@ -42,7 +42,7 @@ public class AttackAction : InteractionAction
 
         CombatManager.Instance.LockAction(this);
         CombatManager.Instance.SpendActionPoints(actionCost); // account for floating point and wiggle room
-        if (actor == PartyController.Instance.activePartyMember) victim.FightMe();
+        if (actor == PartyController.Instance.activePartyMember && victim.combatantType == CombatManager.CombatantType.Bystander) victim.FightMe();
 
         actor.mover.RotateTowards(target.gameObject);
 

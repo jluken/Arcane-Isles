@@ -13,7 +13,7 @@ public class AwareRad : MonoBehaviour
             {  // Stealth check
                 npc.AwarePlayers.Add(other.gameObject);
                 if (npc.joinIn && CombatManager.Instance.combatActive) {
-                    if(npc.combatantType == CombatManager.CombatantType.Bystander) npc.combatantType = npc.SideToJoin;
+                    if(npc.combatantType == CombatManager.CombatantType.Bystander) npc.combatantType = npc.SideToJoin;  // TODO: behavior should probably live in state machine (combatant type or char state)
                     npc.SetToCombat();
                 }
                 else if (npc.combatantType == CombatManager.CombatantType.Enemy)

@@ -107,6 +107,7 @@ public class CombatManager : MonoBehaviour
     {
         Debug.Log("reset combat");
         combatantInitiative = new List<InitiativeEntry>();
+        prevCarveouts = new Dictionary<Character, bool> { };
         initiativeTurn = -1;
         activeCombatant = null;
         selectedIdx = -1;

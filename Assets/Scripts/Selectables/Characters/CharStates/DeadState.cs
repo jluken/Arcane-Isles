@@ -17,6 +17,7 @@ public class DeadState : CharState
     public override void EnterState()
     {
         character.mover.StopMoving();
+        character.combatantType = CombatManager.CombatantType.Dead;
         //character.mover.PlantFeet();
         base.EnterState();
     }
@@ -38,6 +39,10 @@ public class DeadState : CharState
     }
 
     public override void EnterCombat()
+    {
+    }
+
+    public override void EndCombat()
     {
     }
 
